@@ -1,35 +1,19 @@
 import androidx.compose.material.MaterialTheme
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import jatx.expense.manager.readXlsx
-
-@Composable
-@Preview
-fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
-
-    MaterialTheme {
-        Button(onClick = {
-            text = "Hello, Desktop!"
-        }) {
-            Text(text)
-        }
-    }
-}
+import jatx.expense.manager.data.theXlsPath
+import jatx.expense.manager.presentation.view.ExpenseTable
+import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 
 fun main() {
-    readXlsx()
+    val expenseViewModel = ExpenseViewModel()
+    expenseViewModel.loadXlsx(theXlsPath)
+
     application {
         Window(onCloseRequest = ::exitApplication) {
-            App()
+            MaterialTheme {
+                ExpenseTable(expenseViewModel)
+            }
         }
     }
 }
