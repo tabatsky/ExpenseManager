@@ -1,6 +1,6 @@
 package jatx.expense.manager.presentation.view
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -10,20 +10,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextAlign
+import jatx.expense.manager.data.lohKey
 import jatx.expense.manager.data.utf8toCP1251
 import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
+import jatx.expense.manager.presentation.res.*
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.launch
 
@@ -31,11 +32,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
     val parsedXlsx by expenseViewModel.parsedXlsx.collectAsState()
-
-    val firstCellWidth = 90.dp
-    val secondCellWidth = 150.dp
-    val cellWidth = 70.dp
-    val cellHeight = 36.dp
 
     parsedXlsx?.let { theParsedXlsx ->
         val coroutineScope = rememberCoroutineScope()
@@ -57,11 +53,11 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
         Row {
             Column {
                 Row {
-                    Text(
+                    ExpenseCell(
                         modifier = Modifier.width(firstCellWidth).height(cellHeight),
                         text = ""
                     )
-                    Text(
+                    ExpenseCell(
                         modifier = Modifier.width(secondCellWidth).height(cellHeight),
                         text = ""
                     )
@@ -87,14 +83,14 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                 ) {
                     items(theParsedXlsx.allRowKeys) {rowKey ->
                         Row {
-                            Text(
+                            ExpenseCell(
                                 modifier = Modifier
                                     .width(firstCellWidth)
                                     .height(cellHeight)
                                     .background(colorByKey(rowKey.third)),
                                 text = rowKey.first.utf8toCP1251()
                             )
-                            Text(
+                            ExpenseCell(
                                 modifier = Modifier
                                     .width(secondCellWidth)
                                     .height(cellHeight)
@@ -122,7 +118,7 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                     Column {
                         Row {
                             theParsedXlsx.allDates.forEach { date ->
-                                Text(
+                                ExpenseCell(
                                     modifier = Modifier.width(cellWidth).height(cellHeight),
                                     text = date.formattedMonthAndYear
                                 )
@@ -161,14 +157,18 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                                                 ?: ExpenseEntry.makeFromDouble(
                                                     rowKey.first,
                                                     rowKey.second,
+                                                    rowKey.third,
                                                     date,
                                                     0.0
                                                 )
-                                        Text(
+                                        ExpenseCell(
                                             modifier = Modifier
                                                 .width(cellWidth)
                                                 .height(cellHeight)
-                                                .background(colorByKey(rowKey.third)),
+                                                .background(colorByKey(rowKey.third))
+                                                .clickable {
+                                                    expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
+                                                },
                                             text = expenseEntry.paymentSum.toString()
                                         )
                                     }
@@ -182,13 +182,29 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
     }
 }
 
+@Composable
+fun ExpenseCell(modifier: Modifier, text: String) {
+    Box(
+        modifier = modifier
+            .border(BorderStroke(borderWidth, blackColor)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
 val cellColors = listOf(
-    Color(0xFFAAAAFF),
-    Color(0xFFCCAAFF),
-    Color(0xFFAAFFAA)
+    blueColor,
+    violetColor,
+    greenColor
 )
 
 fun colorByKey(key: Int): Color {
+    val key2 = (key - 1) % 1000
+    if (key2 == lohKey) return redColor
     val key1 = key / 1000 - 1
-    return cellColors.getOrNull(key1) ?: Color.White
+    return cellColors.getOrNull(key1) ?: whiteColor
 }

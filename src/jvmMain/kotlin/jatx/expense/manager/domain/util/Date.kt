@@ -20,6 +20,16 @@ val Date.formattedMonthAndYear: String
         return "${month + 1}.$year"
     }
 
+val Date.formattedForPaymentList: String
+    get() {
+        val calendar = Calendar.getInstance()
+        calendar.time = this
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        return "$dayOfMonth.${month + 1}.$year"
+    }
+
 fun Date.plusMonth(): Date {
     val calendar = Calendar.getInstance()
     calendar.time = this

@@ -11,127 +11,132 @@ import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 
-val theXlsPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
+const val theXlsPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
 
-val skipLoh = false
+val totalCategory = "Всего".cp1251toUTF8()
+val lohCategory = "Лоханулся".cp1251toUTF8()
+const val lohKey = 900
 
-fun parseXlsx(xlsPath: String): ParsedXlsx {
-    val inputStream = File(xlsPath).inputStream()
-    val workbook = WorkbookFactory.create(inputStream)
+class XlsxParser(private val xlsPath: String) {
+    private val allRowKeys = arrayListOf<RowKey>()
+    private val allCardNames = arrayListOf<String>()
+    private val allCategories = arrayListOf<ArrayList<String>>()
 
-    val workSheet = workbook.getSheetAt(0)
-    val lastRowNum = workSheet.lastRowNum
+    private val expenseHashMap = hashMapOf<Triple<String, String, Int>, ExpenseEntry>()
 
-    val allDates = parseFirstRow(workSheet)
+    fun parseXlsx(): ParsedXlsx {
+        val inputStream = File(xlsPath).inputStream()
+        val workbook = WorkbookFactory.create(inputStream)
 
-    val allRowKeys = arrayListOf<RowKey>()
-    val allCardNames = arrayListOf<String>()
-    val allCategories = arrayListOf<ArrayList<String>>()
+        val workSheet = workbook.getSheetAt(0)
+        val lastRowNum = workSheet.lastRowNum
 
-    val expenseHashMap = hashMapOf<Triple<String, String, Int>, ExpenseEntry>()
+        val allDates = parseFirstRow(workSheet)
 
-    for (rowNum in 1 until lastRowNum) {
-        val expenseEntry = parseExpenseRow(workSheet, rowNum, allDates)
-        expenseEntry?.getOrNull(0)?.let {
-            val key1 = allCardNames
-                .indexOf(it.cardName)
-                .takeIf { it >= 0 }
-                ?: run {
-                    allCardNames.add(it.cardName)
-                    allCategories.add(arrayListOf())
-                    allCardNames.size - 1
-                }
-            val categories = allCategories[key1]
-            val key2 = categories
-                .indexOf(it.category)
-                .takeIf { it >= 0 }
-                ?: run {
-                    categories.add(it.category)
-                    categories.size - 1
-                }
-            val key = 1000 * (key1 + 1) + key2 + 1
 
-            val rowKey = Triple(it.cardName, it.category, key)
-            allRowKeys.add(rowKey)
+        for (rowNum in 1 until lastRowNum) {
+            parseExpenseRow(workSheet, rowNum, allDates)
         }
-        expenseEntry?.forEach {
-            expenseHashMap[Triple(it.cardName, it.category, it.monthKey)] = it
+
+        return ParsedXlsx(expenseHashMap, allDates, allRowKeys)
+    }
+
+    private fun parseFirstRow(workSheet: Sheet): List<Date> {
+        val firstRow = workSheet.getRow(0)
+
+        val lastCellNum = firstRow.lastCellNum
+        if (lastCellNum < 4) throw IllegalStateException("First row is not quite long")
+
+        val result = arrayListOf<Date>()
+
+        for (cellNum in 3 until lastCellNum) {
+            val cell = firstRow.getCell(cellNum)
+            if (cell.cellType != CellType.NUMERIC)
+                throw IllegalStateException("Date cell is not numeric")
+            if (!DateUtil.isCellDateFormatted(cell))
+                throw IllegalStateException("Date cell is not containing date")
+            val date = cell.dateCellValue
+            result.add(date)
         }
+
+        val currentMonthKey = Date().monthKey
+
+        var lastDate = result.last()
+
+        while (lastDate.monthKey < currentMonthKey) {
+            lastDate = lastDate.plusMonth()
+            result.add(lastDate)
+        }
+
+        return result
     }
 
-    return ParsedXlsx(expenseHashMap, allDates, allRowKeys)
-}
+    private fun parseExpenseRow(workSheet: Sheet, rowNum: Int, allDates: List<Date>): List<ExpenseEntry>? {
+        val row = workSheet.getRow(rowNum)
 
-fun parseFirstRow(workSheet: Sheet): List<Date> {
-    val firstRow = workSheet.getRow(0)
+        val lastCellNum = row.lastCellNum
+        if (lastCellNum < 4) return null
 
-    val lastCellNum = firstRow.lastCellNum
-    if (lastCellNum < 4) throw IllegalStateException("First row is not quite long")
+        val firstCell = row.getCell(0)
+        if (firstCell.cellType != CellType.STRING) return null
+        val cardName = firstCell.stringCellValue.cp1251toUTF8()
+        if (cardName == "-") return null
+        val secondCell = row.getCell(1)
+        if (secondCell.cellType != CellType.STRING) return null
+        val category = secondCell.stringCellValue.cp1251toUTF8()
+        if (category == totalCategory) return null
 
-    val result = arrayListOf<Date>()
-
-    for (cellNum in 3 until lastCellNum) {
-        val cell = firstRow.getCell(cellNum)
-        if (cell.cellType != CellType.NUMERIC)
-            throw IllegalStateException("Date cell is not numeric")
-        if (!DateUtil.isCellDateFormatted(cell))
-            throw IllegalStateException("Date cell is not containing date")
-        val date = cell.dateCellValue
-        result.add(date)
-    }
-
-    val currentMonthKey = Date().monthKey
-
-    var lastDate = result.last()
-
-    while (lastDate.monthKey < currentMonthKey) {
-        lastDate = lastDate.plusMonth()
-        result.add(lastDate)
-    }
-
-    return result
-}
-
-fun parseExpenseRow(workSheet: Sheet, rowNum: Int, allDates: List<Date>): List<ExpenseEntry>? {
-    val row = workSheet.getRow(rowNum)
-
-    val lastCellNum = row.lastCellNum
-    if (lastCellNum < 4) return null
-
-    val firstCell = row.getCell(0)
-    if (firstCell.cellType != CellType.STRING) return null
-    val cardName = firstCell.stringCellValue.cp1251toUTF8()
-    if (cardName == "-") return null
-    val secondCell = row.getCell(1)
-    if (secondCell.cellType != CellType.STRING) return null
-    val category = secondCell.stringCellValue.cp1251toUTF8()
-    if (category == "Всего".cp1251toUTF8()) return null
-    if (skipLoh && category == "Лоханулся".cp1251toUTF8()) return null
-
-    val result = arrayListOf<ExpenseEntry>()
-
-    val dateIterator = allDates.iterator()
-
-    for (cellNum in 3 until lastCellNum) {
-        val date = dateIterator.next()
-        val cell = row.getCell(cellNum)
-        when (cell.cellType) {
-            CellType.NUMERIC -> {
-                result.add(
-                    ExpenseEntry.makeFromDouble(cardName, category, date, cell.numericCellValue))
+        val key1 = allCardNames
+            .indexOf(cardName)
+            .takeIf { it >= 0 }
+            ?: run {
+                allCardNames.add(cardName)
+                allCategories.add(arrayListOf())
+                allCardNames.size - 1
             }
-            CellType.FORMULA -> {
-                result.add(
-                    ExpenseEntry.makeFromStringList(cardName, category, date, parseFormula(cell.cellFormula)))
+        val categories = allCategories[key1]
+        val key2 = if (category == lohCategory)
+            lohKey
+        else
+            categories
+            .indexOf(category)
+            .takeIf { it >= 0 }
+            ?: run {
+                categories.add(category)
+                categories.size - 1
             }
-            else -> {}
-        }
-    }
+        val key = 1000 * (key1 + 1) + key2 + 1
 
-    return result
+        val rowKey = Triple(cardName, category, key)
+        allRowKeys.add(rowKey)
+
+        val result = arrayListOf<ExpenseEntry>()
+
+        val dateIterator = allDates.iterator()
+
+        for (cellNum in 3 until lastCellNum) {
+            val date = dateIterator.next()
+            val cell = row.getCell(cellNum)
+            val expenseEntry = when (cell.cellType) {
+                CellType.NUMERIC -> {
+                    ExpenseEntry.makeFromDouble(cardName, category, key, date, cell.numericCellValue)
+                }
+                CellType.FORMULA -> {
+                    ExpenseEntry.makeFromStringList(cardName, category, key, date, parseFormula(cell.cellFormula))
+                }
+                else -> null
+            }
+            expenseEntry?.let {
+                expenseHashMap[Triple(cardName, category, date.monthKey)] = it
+            }
+        }
+
+
+        return result
+    }
 }
 
-fun parseFormula(formula: String): List<String> {
+private fun parseFormula(formula: String): List<String> {
     val result = arrayListOf<String>()
     var sb = StringBuilder()
 
@@ -161,7 +166,6 @@ fun parseFormula(formula: String): List<String> {
     return result
 }
 
-
 fun printParsedXlsx(parsedXlsx: ParsedXlsx) {
     val delim = "\t\t"
 
@@ -184,7 +188,7 @@ fun printParsedXlsx(parsedXlsx: ParsedXlsx) {
 
         parsedXlsx.allDates.forEach { date ->
             val expenseEntry = parsedXlsx.allCells[Triple(rowKey.first, rowKey.second, date.monthKey)]
-                ?: ExpenseEntry.makeFromDouble(rowKey.first, rowKey.second, date, 0.0)
+                ?: ExpenseEntry.makeFromDouble(rowKey.first, rowKey.second, rowKey.third, date, 0.0)
             lineBuilder.append(expenseEntry.paymentSum)
             lineBuilder.append(delim)
         }
@@ -202,7 +206,7 @@ fun printRow(workSheet: Sheet, rowNum: Int) {
     }
 }
 
-fun printCell(cell: Cell) {
+private fun printCell(cell: Cell) {
     when (cell.cellType) {
         CellType.STRING -> {
             println(cell.stringCellValue.cp1251toUTF8())
