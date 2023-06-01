@@ -1,3 +1,5 @@
+package jatx.expense.manager
+
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.Window

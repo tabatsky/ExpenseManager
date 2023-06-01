@@ -25,6 +25,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
                 implementation("org.apache.poi:poi:5.2.3")
                 implementation("org.apache.poi:poi-ooxml:5.2.3")
@@ -37,12 +38,17 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "jatx.expense.manager.MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ExpenseManager"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "jatx.expense.manager.MainKt"
     }
 }
 
