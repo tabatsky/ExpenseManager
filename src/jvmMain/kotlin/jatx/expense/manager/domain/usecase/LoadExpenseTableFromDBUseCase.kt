@@ -6,7 +6,6 @@ import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
