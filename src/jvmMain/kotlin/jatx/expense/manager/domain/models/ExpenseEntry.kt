@@ -10,8 +10,7 @@ data class ExpenseEntry(
     val date: Date,
     val payments: List<PaymentEntry>
 ) {
-    val monthKey = date.monthKey
-    val dbKey = makeDbKey(rowKeyInt, date)
+    private val monthKey = date.monthKey
 
     val paymentSum = payments.sumOf { it.amount }
     override fun toString() = "$cardName, $category, $monthKey: $payments"
@@ -26,7 +25,9 @@ data class ExpenseEntry(
                 paymentsStr.map {
                     PaymentEntry(
                         0,
-                        makeDbKey(rowKeyInt, date),
+                        cardName,
+                        category,
+                        rowKeyInt,
                         date,
                         it.toInt(),
                         makeDefaultComment(it.toInt())
@@ -47,7 +48,9 @@ data class ExpenseEntry(
                     listOf(
                         PaymentEntry(
                             0,
-                            makeDbKey(rowKeyInt, date),
+                            cardName,
+                            category,
+                            rowKeyInt,
                             date,
                             amount.toInt(),
                             makeDefaultComment(amount.toInt())
@@ -57,11 +60,6 @@ data class ExpenseEntry(
                     listOf()
         )
     }
-}
-
-fun makeDbKey(rowKeyInt: Int, date: Date): Int {
-    val monthKey = date.monthKey
-    return rowKeyInt * 100000 + monthKey
 }
 
 fun makeDefaultComment(amount: Int) =

@@ -19,11 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
-import jatx.expense.manager.data.lohKey
-import jatx.expense.manager.data.utf8toCP1251
-import jatx.expense.manager.domain.models.ExpenseEntry
+import jatx.expense.manager.data.filesystem.lohKey
+import jatx.expense.manager.data.filesystem.utf8toCP1251
 import jatx.expense.manager.domain.util.formattedMonthAndYear
-import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.presentation.res.*
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.launch
@@ -31,11 +29,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
-    val parsedXlsx by expenseViewModel.parsedXlsx.collectAsState()
+    val expenseTable by expenseViewModel.expenseTable.collectAsState()
 
-    parsedXlsx?.let { theParsedXlsx ->
+    expenseTable?.let { theExpenseTable ->
         val coroutineScope = rememberCoroutineScope()
-        val rowScrollState = rememberLazyListState()
+        val rowListState = rememberLazyListState()
         val firstColumnListState = rememberLazyListState()
         val columnListState = rememberLazyListState()
         val firstColumnScrollState = rememberScrollState()
@@ -79,9 +77,9 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                             }
                         }
                         .verticalScroll(firstColumnScrollState)
-                        .height(cellHeight * theParsedXlsx.allRowKeys.size)
+                        .height(cellHeight * theExpenseTable.allRowKeys.size)
                 ) {
-                    items(theParsedXlsx.allRowKeys) {rowKey ->
+                    items(theExpenseTable.allRowKeys) {rowKey ->
                         Row {
                             ExpenseCell(
                                 modifier = Modifier
@@ -103,13 +101,13 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
             }
 
             LazyRow(
-                state = rowScrollState,
+                state = rowListState,
                 modifier = Modifier
                     .draggable(
                         orientation = Orientation.Horizontal,
                         state = rememberDraggableState { delta ->
                             coroutineScope.launch {
-                                rowScrollState.scrollBy(-delta)
+                                rowListState.scrollBy(-delta)
                             }
                         }
                     )
@@ -117,7 +115,7 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                 item {
                     Column {
                         Row {
-                            theParsedXlsx.allDates.forEach { date ->
+                            theExpenseTable.allDates.forEach { date ->
                                 ExpenseCell(
                                     modifier = Modifier.width(cellWidth).height(cellHeight),
                                     text = date.formattedMonthAndYear
@@ -142,25 +140,14 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                                     }
                                 }
                                 .verticalScroll(columnScrollState)
-                                .height(cellHeight * theParsedXlsx.allRowKeys.size)
+                                .height(cellHeight * theExpenseTable.allRowKeys.size)
                                 .fillMaxWidth()
                         ) {
-                            items(theParsedXlsx.allRowKeys) { rowKey ->
+                            items(theExpenseTable.allRowKeys) { rowKey ->
                                 Row {
-                                    theParsedXlsx.allDates.forEach { date ->
+                                    theExpenseTable.allDates.forEach { date ->
                                         val expenseEntry =
-                                            theParsedXlsx.allCells[Triple(
-                                                rowKey.first,
-                                                rowKey.second,
-                                                date.monthKey
-                                            )]
-                                                ?: ExpenseEntry.makeFromDouble(
-                                                    rowKey.first,
-                                                    rowKey.second,
-                                                    rowKey.third,
-                                                    date,
-                                                    0.0
-                                                )
+                                            theExpenseTable.getCell(rowKey, date)
                                         ExpenseCell(
                                             modifier = Modifier
                                                 .width(cellWidth)
@@ -178,6 +165,10 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                     }
                 }
             }
+        }
+
+        LaunchedEffect(true) {
+            rowListState.scrollBy(500f * theExpenseTable.allDates.size)
         }
     }
 }

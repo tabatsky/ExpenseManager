@@ -1,7 +1,7 @@
-package jatx.expense.manager.data
+package jatx.expense.manager.data.filesystem
 
 import jatx.expense.manager.domain.models.ExpenseEntry
-import jatx.expense.manager.domain.models.ParsedXlsx
+import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
@@ -24,7 +24,7 @@ class XlsxParser(private val xlsPath: String) {
 
     private val expenseHashMap = hashMapOf<Triple<String, String, Int>, ExpenseEntry>()
 
-    fun parseXlsx(): ParsedXlsx {
+    fun parseXlsx(): ExpenseTable {
         val inputStream = File(xlsPath).inputStream()
         val workbook = WorkbookFactory.create(inputStream)
 
@@ -38,7 +38,7 @@ class XlsxParser(private val xlsPath: String) {
             parseExpenseRow(workSheet, rowNum, allDates)
         }
 
-        return ParsedXlsx(expenseHashMap, allDates, allRowKeys)
+        return ExpenseTable(expenseHashMap, allDates, allRowKeys)
     }
 
     private fun parseFirstRow(workSheet: Sheet): List<Date> {
@@ -166,29 +166,28 @@ private fun parseFormula(formula: String): List<String> {
     return result
 }
 
-fun printParsedXlsx(parsedXlsx: ParsedXlsx) {
+fun printParsedXlsx(expenseTable: ExpenseTable) {
     val delim = "\t\t"
 
     val dateLineBuilder = StringBuilder()
     dateLineBuilder.append("$delim$delim")
 
-    parsedXlsx.allDates.forEach { date ->
+    expenseTable.allDates.forEach { date ->
         dateLineBuilder.append(date.formattedMonthAndYear)
         dateLineBuilder.append(delim)
     }
 
     println(dateLineBuilder.toString())
 
-    parsedXlsx.allRowKeys.forEach { rowKey ->
+    expenseTable.allRowKeys.forEach { rowKey ->
         val lineBuilder = StringBuilder()
         lineBuilder.append(rowKey.first)
         lineBuilder.append(delim)
         lineBuilder.append(rowKey.second)
         lineBuilder.append(delim)
 
-        parsedXlsx.allDates.forEach { date ->
-            val expenseEntry = parsedXlsx.allCells[Triple(rowKey.first, rowKey.second, date.monthKey)]
-                ?: ExpenseEntry.makeFromDouble(rowKey.first, rowKey.second, rowKey.third, date, 0.0)
+        expenseTable.allDates.forEach { date ->
+            val expenseEntry = expenseTable.getCell(rowKey, date)
             lineBuilder.append(expenseEntry.paymentSum)
             lineBuilder.append(delim)
         }
