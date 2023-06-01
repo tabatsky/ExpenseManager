@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 import java.util.*
 
 class LoadExpenseTableFromDBUseCase(
-    private val paymentRepository: PaymentRepository,
-    private val coroutineScope: CoroutineScope
+    private val paymentRepository: PaymentRepository
 ) {
     fun execute(): Flow<ExpenseTable> = flow {
         val allPayments = paymentRepository.selectAll()

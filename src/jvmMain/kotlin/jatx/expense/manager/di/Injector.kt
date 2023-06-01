@@ -20,7 +20,7 @@ class Injector(
     private val saveExpenseTableToDBUseCase =
         SaveExpenseTableToDBUseCase(paymentRepository, coroutineScope)
     private val loadExpenseTableFromDBUseCase =
-        LoadExpenseTableFromDBUseCase(paymentRepository, coroutineScope)
+        LoadExpenseTableFromDBUseCase(paymentRepository)
     private val expenseViewModel =
         ExpenseViewModel(
             saveExpenseTableToDBUseCase,

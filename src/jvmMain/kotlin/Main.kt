@@ -6,7 +6,6 @@ import jatx.expense.manager.data.db.DatabaseDriverFactory
 import jatx.expense.manager.data.filesystem.theXlsPath
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.presentation.view.MainScreen
-import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 
 fun main() {
     application {

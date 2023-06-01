@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
 
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
