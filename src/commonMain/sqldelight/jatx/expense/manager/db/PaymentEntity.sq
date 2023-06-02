@@ -1,3 +1,6 @@
+dropTableIfExists:
+DROP TABLE IF EXISTS paymentEntity;
+
 createTableIfNotExists:
 CREATE TABLE IF NOT EXISTS paymentEntity
 (id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -22,6 +22,11 @@ class ExpenseViewModel(
     private val _currentExpenseEntry: MutableStateFlow<ExpenseEntry?> = MutableStateFlow(null)
     val currentExpenseEntry = _currentExpenseEntry.asStateFlow()
 
+    private val _needShowXlsxChooserDialog = MutableStateFlow(false)
+    val needShowXlsxChooserDialog = _needShowXlsxChooserDialog.asStateFlow()
+    private val _xlsxChooserDialogShowCounter = MutableStateFlow(0)
+    val xlsxChooserDialogShowCounter = _xlsxChooserDialogShowCounter.asStateFlow()
+
     fun loadXlsxToDB(xlsPath: String) {
         val expenseTable = XlsxParser(xlsPath).parseXlsx()
         saveExpenseTableToDBUseCase.execute(expenseTable)
@@ -37,5 +42,10 @@ class ExpenseViewModel(
 
     fun updateCurrentExpenseEntry(expenseEntry: ExpenseEntry) {
         _currentExpenseEntry.value = expenseEntry
+    }
+
+    fun showXlsxChooserDialog(show: Boolean) {
+        _needShowXlsxChooserDialog.value = show
+        _xlsxChooserDialogShowCounter.value += 1
     }
 }

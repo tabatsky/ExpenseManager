@@ -167,7 +167,7 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
             }
         }
 
-        LaunchedEffect(true) {
+        LaunchedEffect(expenseTable) {
             rowListState.scrollBy(500f * theExpenseTable.allDates.size)
         }
     }

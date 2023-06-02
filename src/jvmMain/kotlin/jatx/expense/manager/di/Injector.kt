@@ -6,6 +6,7 @@ import jatx.expense.manager.db.AppDatabase
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.usecase.LoadExpenseTableFromDBUseCase
 import jatx.expense.manager.domain.usecase.SaveExpenseTableToDBUseCase
+import jatx.expense.manager.presentation.menu.MenuCallbacks
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.CoroutineScope
 
@@ -27,6 +28,7 @@ class Injector(
             loadExpenseTableFromDBUseCase,
             coroutineScope
         )
+    private val menuCallbacks = MenuCallbacks()
 
     companion object {
         private lateinit var INSTANCE: Injector
@@ -34,8 +36,17 @@ class Injector(
         val expenseViewModel: ExpenseViewModel
             get() = INSTANCE.expenseViewModel
 
-        fun init(databaseDriverFactory: DatabaseDriverFactory, coroutineScope: CoroutineScope) {
+        val menuCallbacks: MenuCallbacks
+            get() = INSTANCE.menuCallbacks
+
+        fun init(
+            databaseDriverFactory: DatabaseDriverFactory,
+            coroutineScope: CoroutineScope
+        ) {
             INSTANCE = Injector(databaseDriverFactory, coroutineScope)
+            menuCallbacks.onLoadXlsx = {
+                expenseViewModel.showXlsxChooserDialog(true)
+            }
         }
     }
 }

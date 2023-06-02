@@ -9,6 +9,17 @@ import jatx.expense.manager.domain.repository.PaymentRepository
 class PaymentRepositoryImpl(
     private val appDatabase: AppDatabase
 ): PaymentRepository {
+
+    override suspend fun dropTableIfExists() {
+        appDatabase
+            .paymentEntityQueries
+            .dropTableIfExists()
+    }
+    override suspend fun createTableIfNotExists() {
+        appDatabase
+            .paymentEntityQueries
+            .createTableIfNotExists()
+    }
     override suspend fun insertPayments(payments: List<PaymentEntry>) {
         val paymentEntityQueries = appDatabase.paymentEntityQueries
         paymentEntityQueries.transaction {

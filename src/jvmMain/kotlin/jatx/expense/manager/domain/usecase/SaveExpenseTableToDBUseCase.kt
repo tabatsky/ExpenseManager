@@ -10,6 +10,8 @@ class SaveExpenseTableToDBUseCase(
     private val coroutineScope: CoroutineScope
 ) {
     fun execute(expenseTable: ExpenseTable) = coroutineScope.launch {
+        paymentRepository.dropTableIfExists()
+        paymentRepository.createTableIfNotExists()
         paymentRepository.insertPayments(expenseTable.allPayments)
     }
 }

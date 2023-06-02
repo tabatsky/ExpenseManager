@@ -11,6 +11,7 @@ import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 
+const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
 const val theXlsPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
 
 val totalCategory = "Всего".cp1251toUTF8()

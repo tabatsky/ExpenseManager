@@ -13,10 +13,6 @@ class DatabaseDriverFactory() {
         if (!File(dbFile).exists()) {
             AppDatabase.Schema.create(driver)
         }
-        AppDatabase
-            .invoke(driver)
-            .paymentEntityQueries
-            .createTableIfNotExists()
         return driver
     }
 }
