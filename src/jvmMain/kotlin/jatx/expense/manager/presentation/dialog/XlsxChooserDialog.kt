@@ -2,7 +2,7 @@ package jatx.expense.manager.presentation.dialog
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.WindowScope
-import jatx.expense.manager.data.filesystem.theFolderPath
+import jatx.expense.manager.data.xlsx.theFolderPath
 import jatx.expense.manager.di.Injector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -12,19 +12,21 @@ import javax.swing.filechooser.FileNameExtensionFilter
 
 @Composable
 fun WindowScope.XlsxChooserDialogWrapper() {
+    val expenseViewModel = Injector.expenseViewModel
+
     val needShowXlsxChooserDialog
-            by Injector.expenseViewModel.needShowXlsxChooserDialog.collectAsState()
+            by expenseViewModel.needShowXlsxChooserDialog.collectAsState()
     val xlsxChooserDialogShowCounter
-            by Injector.expenseViewModel.xlsxChooserDialogShowCounter.collectAsState()
+            by expenseViewModel.xlsxChooserDialogShowCounter.collectAsState()
+
     if (needShowXlsxChooserDialog) {
         XlsxChooserDialog(
             coroutineScope = rememberCoroutineScope(),
             onFileOpened = {
-                Injector.expenseViewModel.loadXlsxToDB(it.absolutePath)
-                Injector.expenseViewModel.loadExpenseTableFromDB()
+                expenseViewModel.loadXlsxToDB(it.absolutePath)
             },
             onDispose = {
-                Injector.expenseViewModel.showXlsxChooserDialog(false)
+                expenseViewModel.showXlsxChooserDialog(false)
             },
             showCounter = xlsxChooserDialogShowCounter
         )
@@ -32,7 +34,7 @@ fun WindowScope.XlsxChooserDialogWrapper() {
 }
 
 @Composable
-fun WindowScope.XlsxChooserDialog(
+private fun WindowScope.XlsxChooserDialog(
     coroutineScope: CoroutineScope,
     onFileOpened: (File) -> Unit,
     onDispose: () -> Unit,

@@ -12,6 +12,10 @@ class DatabaseDriverFactory() {
         val driver = JdbcSqliteDriver("jdbc:sqlite:$dbFile")
         if (!File(dbFile).exists()) {
             AppDatabase.Schema.create(driver)
+            AppDatabase
+                .invoke(driver)
+                .paymentEntityQueries
+                .createTableIfNotExists()
         }
         return driver
     }

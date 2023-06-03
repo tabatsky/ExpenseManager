@@ -11,11 +11,16 @@ date INTEGER NOT NULL,
 amount INTEGER NOT NULL,
 comment TEXT NOT NULL);
 
+selectAll:
+SELECT * FROM paymentEntity;
+
 insertPayment:
 INSERT INTO paymentEntity
 (cardName, category, rowKeyInt, date, amount, comment)
 VALUES
 (?, ?, ?, ?, ?, ?);
 
-selectAll:
-SELECT * FROM paymentEntity;
+updatePayment:
+UPDATE paymentEntity SET
+amount=?, comment=?
+WHERE id=?;

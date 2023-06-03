@@ -19,21 +19,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
-import jatx.expense.manager.data.filesystem.lohKey
-import jatx.expense.manager.data.filesystem.utf8toCP1251
+import jatx.expense.manager.data.xlsx.lohKey
+import jatx.expense.manager.data.xlsx.utf8toCP1251
+import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.util.formattedMonthAndYear
+import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.presentation.res.*
-import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
+fun ExpenseTable() {
+    val expenseViewModel = Injector.expenseViewModel
+
     val expenseTable by expenseViewModel.expenseTable.collectAsState()
+
+    val rowListState = rememberLazyListState()
 
     expenseTable?.let { theExpenseTable ->
         val coroutineScope = rememberCoroutineScope()
-        val rowListState = rememberLazyListState()
         val firstColumnListState = rememberLazyListState()
         val columnListState = rememberLazyListState()
         val firstColumnScrollState = rememberScrollState()
@@ -166,10 +170,15 @@ fun ExpenseTable(expenseViewModel: ExpenseViewModel) {
                 }
             }
         }
+    }
 
-        LaunchedEffect(expenseTable) {
-            rowListState.scrollBy(500f * theExpenseTable.allDates.size)
-        }
+
+    val launchedEffectKey =
+        (expenseTable?.allDates?.maxOfOrNull { it.monthKey } ?: 0) +
+                (expenseTable?.allRowKeys?.maxOfOrNull { it.third } ?: 0)
+
+    LaunchedEffect(launchedEffectKey) {
+        rowListState.scrollBy(500f * (expenseTable?.allDates?.size ?: 0))
     }
 }
 

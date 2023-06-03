@@ -15,13 +15,14 @@ fun main() {
     application {
         val factory = DatabaseDriverFactory()
         Injector.init(factory, rememberCoroutineScope())
+        Injector.expenseViewModel.onAppStart()
 
         Window(onCloseRequest = ::exitApplication) {
             window.placement = WindowPlacement.Maximized
             XlsxChooserDialogWrapper()
             MainMenuBar(Injector.menuCallbacks)
             MaterialTheme {
-                MainScreen(Injector.expenseViewModel)
+                MainScreen()
             }
         }
     }

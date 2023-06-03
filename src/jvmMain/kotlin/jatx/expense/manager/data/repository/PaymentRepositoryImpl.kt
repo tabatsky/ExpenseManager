@@ -20,10 +20,10 @@ class PaymentRepositoryImpl(
             .paymentEntityQueries
             .createTableIfNotExists()
     }
-    override suspend fun insertPayments(payments: List<PaymentEntry>) {
+    override suspend fun insertPayments(paymentEntries: List<PaymentEntry>) {
         val paymentEntityQueries = appDatabase.paymentEntityQueries
         paymentEntityQueries.transaction {
-            payments
+            paymentEntries
                 .map { it.toDBEntity() }
                 .forEach {
                     paymentEntityQueries.insertPayment(
@@ -36,6 +36,17 @@ class PaymentRepositoryImpl(
                     )
                 }
         }
+    }
+
+    override suspend fun updatePayment(paymentEntry: PaymentEntry) {
+        val paymentEntity = paymentEntry.toDBEntity()
+        appDatabase
+            .paymentEntityQueries
+            .updatePayment(
+                amount = paymentEntity.amount,
+                comment = paymentEntity.comment,
+                id = paymentEntity.id
+            )
     }
 
     override suspend fun selectAll(): List<PaymentEntry> =

@@ -1,4 +1,4 @@
-package jatx.expense.manager.data.filesystem
+package jatx.expense.manager.data.xlsx
 
 import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.models.ExpenseTable
@@ -6,27 +6,29 @@ import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.plusMonth
+import jatx.expense.manager.domain.xlsx.XlsxParser
+import jatx.expense.manager.domain.xlsx.XlsxParserFactory
 import org.apache.poi.ss.usermodel.*
 import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 
 const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
-const val theXlsPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
+const val theXlsxPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
 
 val totalCategory = "Всего".cp1251toUTF8()
 val lohCategory = "Лоханулся".cp1251toUTF8()
 const val lohKey = 900
 
-class XlsxParser(private val xlsPath: String) {
+class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     private val allRowKeys = arrayListOf<RowKey>()
     private val allCardNames = arrayListOf<String>()
     private val allCategories = arrayListOf<ArrayList<String>>()
 
     private val expenseHashMap = hashMapOf<Triple<String, String, Int>, ExpenseEntry>()
 
-    fun parseXlsx(): ExpenseTable {
-        val inputStream = File(xlsPath).inputStream()
+    override fun parseXlsx(): ExpenseTable {
+        val inputStream = File(xlsxPath).inputStream()
         val workbook = WorkbookFactory.create(inputStream)
 
         val workSheet = workbook.getSheetAt(0)
@@ -135,6 +137,11 @@ class XlsxParser(private val xlsPath: String) {
 
         return result
     }
+}
+
+class XlsxParserFactoryImpl: XlsxParserFactory {
+    override fun newInstance(xlsxPath: String) = XlsxParserImpl(xlsxPath)
+
 }
 
 private fun parseFormula(formula: String): List<String> {
