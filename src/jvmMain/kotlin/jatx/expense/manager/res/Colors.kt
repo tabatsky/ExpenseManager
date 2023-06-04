@@ -1,4 +1,4 @@
-package jatx.expense.manager.presentation.res
+package jatx.expense.manager.res
 
 import androidx.compose.ui.graphics.Color
 

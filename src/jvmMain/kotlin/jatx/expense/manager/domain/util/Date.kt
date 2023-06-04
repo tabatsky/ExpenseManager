@@ -1,5 +1,6 @@
 package jatx.expense.manager.domain.util
 
+import jatx.expense.manager.res.totalDate
 import java.util.*
 
 val Date.monthKey: Int
@@ -91,6 +92,7 @@ val Long.fromDbPresentation: Date
 
 val Date.formattedMonthAndYear: String
     get() {
+        if (this.time == 0L) return totalDate
         val calendar = Calendar.getInstance()
         calendar.time = this
         val year = calendar.get(Calendar.YEAR)
@@ -114,3 +116,10 @@ fun Date.plusMonth(): Date {
     calendar.add(Calendar.MONTH, 1)
     return calendar.time
 }
+
+val zeroDate: Date
+    get() {
+        val date = Date()
+        date.time = 0L
+        return date
+    }

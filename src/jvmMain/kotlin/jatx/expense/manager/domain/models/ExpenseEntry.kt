@@ -1,6 +1,10 @@
 package jatx.expense.manager.domain.models
 
 import jatx.expense.manager.domain.util.monthKey
+import jatx.expense.manager.res.defaultCommentNegativeAmount
+import jatx.expense.manager.res.defaultCommentPositiveAmount
+import jatx.expense.manager.res.defaultCommentZeroAmount
+import jatx.expense.manager.res.msgWrongNumberFormat
 import java.util.Date
 
 data class ExpenseEntry(
@@ -16,41 +20,41 @@ data class ExpenseEntry(
     override fun toString() = "$cardName, $category, $monthKey: $payments"
 
     companion object {
-        fun makeFromStringList(cardName: String, category: String, rowKeyInt: Int, date: Date, paymentsStr: List<String>) = ExpenseEntry(
-            cardName,
-            category,
-            rowKeyInt,
+        fun makeFromStringList(rowKey: RowKey, date: Date, paymentsStr: List<String>) = ExpenseEntry(
+            rowKey.cardName,
+            rowKey.category,
+            rowKey.rowKeyInt,
             date,
             try {
                 paymentsStr.map {
                     PaymentEntry(
                         0,
-                        cardName,
-                        category,
-                        rowKeyInt,
+                        rowKey.cardName,
+                        rowKey.category,
+                        rowKey.rowKeyInt,
                         date,
                         it.toInt(),
                         makeDefaultComment(it.toInt())
                     )
                 }
             } catch (e: NumberFormatException) {
-                println("Wrong number format")
+                println(msgWrongNumberFormat)
                 listOf()
             }
         )
 
-        fun makeFromDouble(cardName: String, category: String, rowKeyInt: Int, date: Date, amount: Double) = ExpenseEntry(
-                cardName,
-                category,
-                rowKeyInt,
+        fun makeFromDouble(rowKey: RowKey, date: Date, amount: Double) = ExpenseEntry(
+                rowKey.cardName,
+                rowKey.category,
+                rowKey.rowKeyInt,
                 date,
                 if (amount.toInt() != 0)
                     listOf(
                         PaymentEntry(
                             0,
-                            cardName,
-                            category,
-                            rowKeyInt,
+                            rowKey.cardName,
+                            rowKey.category,
+                            rowKey.rowKeyInt,
                             date,
                             amount.toInt(),
                             makeDefaultComment(amount.toInt())
@@ -64,8 +68,8 @@ data class ExpenseEntry(
 
 fun makeDefaultComment(amount: Int) =
     if (amount > 0)
-        "Расход"
+        defaultCommentPositiveAmount
     else if (amount < 0)
-        "Доход"
+        defaultCommentNegativeAmount
     else
-        "---"
+        defaultCommentZeroAmount

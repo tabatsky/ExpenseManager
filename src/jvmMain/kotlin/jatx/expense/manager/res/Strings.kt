@@ -1,0 +1,24 @@
+package jatx.expense.manager.res
+
+import jatx.expense.manager.domain.util.cp1251toUTF8
+
+
+val totalCardName = "-".cp1251toUTF8()
+val totalCategory = "Всего".cp1251toUTF8()
+val totalDate = "Всего".cp1251toUTF8()
+val lohCategory = "Лоханулся".cp1251toUTF8()
+
+const val defaultCommentPositiveAmount = "Расход"
+const val defaultCommentNegativeAmount = "Доход"
+const val defaultCommentZeroAmount = "---"
+
+const val buttonSaveLabel = "Сохранить"
+
+const val menuFileLabel = "Файл"
+const val menuLoadXlsxLabel = "Загрузить XLSX"
+
+const val dialogFileChooserTitle = "Открыть XLSX"
+const val dialogFileChooserXLSXDescription = "Таблица Excel"
+const val dialogFileChooserXLSXExtension = "xlsx"
+
+const val msgWrongNumberFormat = "Wrong number format"

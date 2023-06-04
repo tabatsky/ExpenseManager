@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.util.formattedForPaymentList
-import jatx.expense.manager.presentation.res.yellowColor
+import jatx.expense.manager.res.yellowColor
 
 @Composable
 fun PaymentListView() {

@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
-import jatx.expense.manager.data.xlsx.lohKey
-import jatx.expense.manager.data.xlsx.utf8toCP1251
 import jatx.expense.manager.di.Injector
+import jatx.expense.manager.domain.models.cardNameKey
+import jatx.expense.manager.domain.models.categoryKey
+import jatx.expense.manager.domain.models.lohKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
-import jatx.expense.manager.presentation.res.*
+import jatx.expense.manager.domain.util.utf8toCP1251
+import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -83,21 +85,21 @@ fun ExpenseTable() {
                         .verticalScroll(firstColumnScrollState)
                         .height(cellHeight * theExpenseTable.allRowKeys.size)
                 ) {
-                    items(theExpenseTable.allRowKeys) {rowKey ->
+                    items(theExpenseTable.allRowKeys) { rowKey ->
                         Row {
                             ExpenseCell(
                                 modifier = Modifier
                                     .width(firstCellWidth)
                                     .height(cellHeight)
-                                    .background(colorByKey(rowKey.third)),
-                                text = rowKey.first.utf8toCP1251()
+                                    .background(colorByKey(rowKey.rowKeyInt)),
+                                text = rowKey.cardName.utf8toCP1251()
                             )
                             ExpenseCell(
                                 modifier = Modifier
                                     .width(secondCellWidth)
                                     .height(cellHeight)
-                                    .background(colorByKey(rowKey.third)),
-                                text = rowKey.second.utf8toCP1251()
+                                    .background(colorByKey(rowKey.rowKeyInt)),
+                                text = rowKey.category.utf8toCP1251()
                             )
                         }
                     }
@@ -122,7 +124,7 @@ fun ExpenseTable() {
                             theExpenseTable.allDates.forEach { date ->
                                 ExpenseCell(
                                     modifier = Modifier.width(cellWidth).height(cellHeight),
-                                    text = date.formattedMonthAndYear
+                                    text = date.formattedMonthAndYear.utf8toCP1251()
                                 )
                             }
                         }
@@ -156,7 +158,7 @@ fun ExpenseTable() {
                                             modifier = Modifier
                                                 .width(cellWidth)
                                                 .height(cellHeight)
-                                                .background(colorByKey(rowKey.third))
+                                                .background(colorByKey(rowKey.rowKeyInt))
                                                 .clickable {
                                                     expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
                                                 },
@@ -175,7 +177,7 @@ fun ExpenseTable() {
 
     val launchedEffectKey =
         (expenseTable?.allDates?.maxOfOrNull { it.monthKey } ?: 0) +
-                (expenseTable?.allRowKeys?.maxOfOrNull { it.third } ?: 0)
+                (expenseTable?.allRowKeys?.maxOfOrNull { it.rowKeyInt } ?: 0)
 
     LaunchedEffect(launchedEffectKey) {
         rowListState.scrollBy(500f * (expenseTable?.allDates?.size ?: 0))
@@ -192,6 +194,7 @@ fun ExpenseCell(modifier: Modifier, text: String) {
         Text(
             text = text,
             textAlign = TextAlign.Center,
+            fontSize = commonFontSize
         )
     }
 }
@@ -203,8 +206,8 @@ val cellColors = listOf(
 )
 
 fun colorByKey(key: Int): Color {
-    val key2 = (key - 1) % 1000
-    if (key2 == lohKey) return redColor
-    val key1 = key / 1000 - 1
-    return cellColors.getOrNull(key1) ?: whiteColor
+    val categoryKey = key.categoryKey
+    if (categoryKey == lohKey) return redColor
+    val cardNameKey = key.cardNameKey
+    return cellColors.getOrNull(cardNameKey - 1) ?: whiteColor
 }

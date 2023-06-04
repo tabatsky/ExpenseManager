@@ -3,6 +3,7 @@ package jatx.expense.manager.presentation.viewmodel
 import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.models.PaymentEntry
+import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.usecase.LoadExpenseTableFromDBUseCase
 import jatx.expense.manager.domain.usecase.LoadXlsxUseCase
 import jatx.expense.manager.domain.usecase.SaveExpenseTableToDBUseCase
@@ -78,7 +79,7 @@ class ExpenseViewModel(
     }
     fun reloadCurrentExpenseEntry() {
         currentExpenseEntry.value?.let {
-            val rowKey = Triple(it.cardName, it.category, it.rowKeyInt)
+            val rowKey = RowKey(it.cardName, it.category, it.rowKeyInt)
             val date = it.date
             val updatedExpenseEntry = expenseTable.value?.getCell(rowKey, date)
             _currentExpenseEntry.value = updatedExpenseEntry

@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
+import jatx.expense.manager.res.buttonSaveLabel
+import jatx.expense.manager.res.msgWrongNumberFormat
 
 
 @Composable
@@ -47,7 +49,7 @@ private fun EditPaymentDialog(paymentEntry: PaymentEntry) {
                         val tmpAmount = it.toInt()
                         amount = tmpAmount
                     } catch (e: NumberFormatException) {
-                        println("wrong number format")
+                        println(msgWrongNumberFormat)
                     }
                 }
             )
@@ -76,7 +78,7 @@ private fun EditPaymentDialog(paymentEntry: PaymentEntry) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "Сохранить"
+                    text = buttonSaveLabel
                 )
             }
         }

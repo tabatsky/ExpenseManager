@@ -1,13 +1,13 @@
 package jatx.expense.manager.data.xlsx
 
-import jatx.expense.manager.domain.models.ExpenseEntry
-import jatx.expense.manager.domain.models.ExpenseTable
-import jatx.expense.manager.domain.models.RowKey
+import jatx.expense.manager.domain.models.*
+import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.plusMonth
 import jatx.expense.manager.domain.xlsx.XlsxParser
 import jatx.expense.manager.domain.xlsx.XlsxParserFactory
+import jatx.expense.manager.res.totalCategory
 import org.apache.poi.ss.usermodel.*
 import java.io.File
 import java.lang.IllegalStateException
@@ -16,16 +16,12 @@ import java.util.*
 const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
 const val theXlsxPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
 
-val totalCategory = "Всего".cp1251toUTF8()
-val lohCategory = "Лоханулся".cp1251toUTF8()
-const val lohKey = 900
-
 class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     private val allRowKeys = arrayListOf<RowKey>()
     private val allCardNames = arrayListOf<String>()
     private val allCategories = arrayListOf<ArrayList<String>>()
 
-    private val expenseHashMap = hashMapOf<Triple<String, String, Int>, ExpenseEntry>()
+    private val expenseHashMap = hashMapOf<CellKey, ExpenseEntry>()
 
     override fun parseXlsx(): ExpenseTable {
         val inputStream = File(xlsxPath).inputStream()
@@ -89,28 +85,7 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
         val category = secondCell.stringCellValue.cp1251toUTF8()
         if (category == totalCategory) return null
 
-        val key1 = allCardNames
-            .indexOf(cardName)
-            .takeIf { it >= 0 }
-            ?: run {
-                allCardNames.add(cardName)
-                allCategories.add(arrayListOf())
-                allCardNames.size - 1
-            }
-        val categories = allCategories[key1]
-        val key2 = if (category == lohCategory)
-            lohKey
-        else
-            categories
-            .indexOf(category)
-            .takeIf { it >= 0 }
-            ?: run {
-                categories.add(category)
-                categories.size - 1
-            }
-        val key = 1000 * (key1 + 1) + key2 + 1
-
-        val rowKey = Triple(cardName, category, key)
+        val rowKey = RowKey(cardName, category).withIntKey(allCardNames, allCategories)
         allRowKeys.add(rowKey)
 
         val result = arrayListOf<ExpenseEntry>()
@@ -122,15 +97,15 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
             val cell = row.getCell(cellNum)
             val expenseEntry = when (cell.cellType) {
                 CellType.NUMERIC -> {
-                    ExpenseEntry.makeFromDouble(cardName, category, key, date, cell.numericCellValue)
+                    ExpenseEntry.makeFromDouble(rowKey, date, cell.numericCellValue)
                 }
                 CellType.FORMULA -> {
-                    ExpenseEntry.makeFromStringList(cardName, category, key, date, parseFormula(cell.cellFormula))
+                    ExpenseEntry.makeFromStringList(rowKey, date, parseFormula(cell.cellFormula))
                 }
                 else -> null
             }
             expenseEntry?.let {
-                expenseHashMap[Triple(cardName, category, date.monthKey)] = it
+                expenseHashMap[CellKey(cardName, category, date.monthKey)] = it
             }
         }
 
@@ -189,9 +164,9 @@ fun printParsedXlsx(expenseTable: ExpenseTable) {
 
     expenseTable.allRowKeys.forEach { rowKey ->
         val lineBuilder = StringBuilder()
-        lineBuilder.append(rowKey.first)
+        lineBuilder.append(rowKey.cardName)
         lineBuilder.append(delim)
-        lineBuilder.append(rowKey.second)
+        lineBuilder.append(rowKey.category)
         lineBuilder.append(delim)
 
         expenseTable.allDates.forEach { date ->
@@ -237,14 +212,3 @@ private fun printCell(cell: Cell) {
     }
 }
 
-fun String.cp1251toUTF8(): String {
-    val w1251 = charset("Windows-1251")
-    val utf8 = charset("UTF-8")
-    return this.toByteArray(utf8).toString(w1251)
-}
-
-fun String.utf8toCP1251(): String {
-    val w1251 = charset("Windows-1251")
-    val utf8 = charset("UTF-8")
-    return this.toByteArray(w1251).toString(utf8)
-}

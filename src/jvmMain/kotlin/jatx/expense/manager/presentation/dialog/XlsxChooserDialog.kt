@@ -4,6 +4,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.window.WindowScope
 import jatx.expense.manager.data.xlsx.theFolderPath
 import jatx.expense.manager.di.Injector
+import jatx.expense.manager.res.dialogFileChooserTitle
+import jatx.expense.manager.res.dialogFileChooserXLSXDescription
+import jatx.expense.manager.res.dialogFileChooserXLSXExtension
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -43,7 +46,7 @@ private fun WindowScope.XlsxChooserDialog(
     DisposableEffect(showCounter) {
         val job = coroutineScope.launch {
             val fileChooser = JFileChooser()
-            fileChooser.dialogTitle = "Open XLSX"
+            fileChooser.dialogTitle = dialogFileChooserTitle
             File(theFolderPath)
                 .takeIf { it.exists() }
                 .let {
@@ -51,7 +54,9 @@ private fun WindowScope.XlsxChooserDialog(
                 }
             fileChooser.isMultiSelectionEnabled = false
             listOf(
-                FileNameExtensionFilter("Excel Table", "xlsx")
+                FileNameExtensionFilter(
+                    dialogFileChooserXLSXDescription,
+                    dialogFileChooserXLSXExtension)
             ).forEach {
                 fileChooser.addChoosableFileFilter(it)
             }

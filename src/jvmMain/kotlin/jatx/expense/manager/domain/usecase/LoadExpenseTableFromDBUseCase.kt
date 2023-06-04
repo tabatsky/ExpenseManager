@@ -3,6 +3,7 @@ package jatx.expense.manager.domain.usecase
 import jatx.expense.manager.domain.models.CellKey
 import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.models.ExpenseTable
+import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
@@ -18,9 +19,9 @@ class LoadExpenseTableFromDBUseCase(
     fun execute(): Flow<ExpenseTable> = flow {
         val allPayments = paymentRepository.selectAll()
         val allRowKeys = allPayments
-            .map { Triple(it.cardName, it.category, it.rowKeyInt) }
+            .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
             .distinct()
-            .sortedBy { it.third }
+            .sortedBy { it.rowKeyInt }
         val minMonthKey = allPayments
             .map { it.date.monthKey }
             .minOrNull() ?: Date().monthKey
@@ -32,16 +33,16 @@ class LoadExpenseTableFromDBUseCase(
         allRowKeys.forEach { rowKey ->
             allMonthKeys.forEach { monthKey ->
                 val payments = allPayments
-                    .filter { it.rowKeyInt == rowKey.third && it.date.monthKey == monthKey }
+                    .filter { it.rowKeyInt == rowKey.rowKeyInt && it.date.monthKey == monthKey }
                     .sortedBy { it.id }
                 val expenseEntry = ExpenseEntry(
-                    cardName = rowKey.first,
-                    category = rowKey.second,
-                    rowKeyInt = rowKey.third,
+                    cardName = rowKey.cardName,
+                    category = rowKey.category,
+                    rowKeyInt = rowKey.rowKeyInt,
                     date = monthKey.dateFromMonthKey,
                     payments = payments
                 )
-                allCells[Triple(expenseEntry.cardName, expenseEntry.category, monthKey)] = expenseEntry
+                allCells[CellKey(expenseEntry.cardName, expenseEntry.category, monthKey)] = expenseEntry
             }
         }
         val expenseTable = ExpenseTable(
