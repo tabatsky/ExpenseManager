@@ -1,24 +1,20 @@
 package jatx.expense.manager.presentation.viewmodel
 
-import jatx.expense.manager.domain.models.ExpenseEntry
-import jatx.expense.manager.domain.models.ExpenseTable
-import jatx.expense.manager.domain.models.PaymentEntry
-import jatx.expense.manager.domain.models.RowKey
-import jatx.expense.manager.domain.usecase.LoadExpenseTableFromDBUseCase
-import jatx.expense.manager.domain.usecase.LoadXlsxUseCase
-import jatx.expense.manager.domain.usecase.SaveExpenseTableToDBUseCase
-import jatx.expense.manager.domain.usecase.UpdatePaymentUseCase
+import jatx.expense.manager.domain.models.*
+import jatx.expense.manager.domain.usecase.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.IllegalStateException
 
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
     private val loadExpenseTableFromDBUseCase: LoadExpenseTableFromDBUseCase,
     private val loadXlsxUseCase: LoadXlsxUseCase,
     private val updatePaymentUseCase: UpdatePaymentUseCase,
+    private val insertPaymentUseCase: InsertPaymentUseCase,
     private val coroutineScope: CoroutineScope
 ) {
     private val _expenseTable: MutableStateFlow<ExpenseTable?> = MutableStateFlow(null)
@@ -34,6 +30,8 @@ class ExpenseViewModel(
 
     private val _currentPaymentEntry: MutableStateFlow<PaymentEntry?> = MutableStateFlow(null)
     val currentPaymentEntry = _currentPaymentEntry.asStateFlow()
+    private val _newPaymentEntry: MutableStateFlow<PaymentEntry?> = MutableStateFlow(null)
+    val newPaymentEntry = _newPaymentEntry.asStateFlow()
 
     fun onAppStart() {
         coroutineScope.launch {
@@ -70,14 +68,33 @@ class ExpenseViewModel(
         _currentPaymentEntry.value = paymentEntry
     }
 
+    fun showAddPaymentDialog(show: Boolean) {
+        val expenseEntry = currentExpenseEntry.value ?: throw IllegalStateException("Current expense entry is null")
+        _newPaymentEntry.value = PaymentEntry(
+            cardName = expenseEntry.cardName,
+            category = expenseEntry.category,
+            rowKeyInt = expenseEntry.rowKeyInt,
+            date = expenseEntry.date,
+            amount = 0,
+            comment = ""
+        ).takeIf { show }
+    }
 
-    fun saveExpenseEntryToDB(paymentEntry: PaymentEntry) {
+    fun updateExpenseEntryToDB(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             updatePaymentUseCase.execute(paymentEntry)
             loadExpenseTableFromDB()
         }
     }
-    fun reloadCurrentExpenseEntry() {
+
+    fun insertExpenseEntryToDB(paymentEntry: PaymentEntry) {
+        coroutineScope.launch {
+            insertPaymentUseCase.execute(paymentEntry)
+            loadExpenseTableFromDB()
+        }
+    }
+
+    private fun reloadCurrentExpenseEntry() {
         currentExpenseEntry.value?.let {
             val rowKey = RowKey(it.cardName, it.category, it.rowKeyInt)
             val date = it.date

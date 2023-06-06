@@ -3,7 +3,7 @@ package jatx.expense.manager.domain.models
 import java.util.*
 
 data class PaymentEntry(
-    val id: Long,
+    val id: Long = 0,
     val cardName: String,
     val category: String,
     val rowKeyInt: Int,

@@ -5,10 +5,7 @@ import jatx.expense.manager.data.repository.PaymentRepositoryImpl
 import jatx.expense.manager.data.xlsx.XlsxParserFactoryImpl
 import jatx.expense.manager.db.AppDatabase
 import jatx.expense.manager.domain.repository.PaymentRepository
-import jatx.expense.manager.domain.usecase.LoadExpenseTableFromDBUseCase
-import jatx.expense.manager.domain.usecase.LoadXlsxUseCase
-import jatx.expense.manager.domain.usecase.SaveExpenseTableToDBUseCase
-import jatx.expense.manager.domain.usecase.UpdatePaymentUseCase
+import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.xlsx.XlsxParserFactory
 import jatx.expense.manager.presentation.menu.MenuCallbacks
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
@@ -32,12 +29,15 @@ class Injector(
         LoadXlsxUseCase(xlsxParserFactory)
     private val updatePaymentUseCase =
         UpdatePaymentUseCase(paymentRepository)
+    private val insertPaymentUseCase =
+        InsertPaymentUseCase(paymentRepository)
     private val expenseViewModel =
         ExpenseViewModel(
             saveExpenseTableToDBUseCase,
             loadExpenseTableFromDBUseCase,
             loadXlsxUseCase,
             updatePaymentUseCase,
+            insertPaymentUseCase,
             coroutineScope
         )
     private val menuCallbacks = MenuCallbacks()

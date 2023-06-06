@@ -28,13 +28,12 @@ data class ExpenseEntry(
             try {
                 paymentsStr.map {
                     PaymentEntry(
-                        0,
-                        rowKey.cardName,
-                        rowKey.category,
-                        rowKey.rowKeyInt,
-                        date,
-                        it.toInt(),
-                        makeDefaultComment(it.toInt())
+                        cardName = rowKey.cardName,
+                        category = rowKey.category,
+                        rowKeyInt = rowKey.rowKeyInt,
+                        date = date,
+                        amount = it.toInt(),
+                        comment = makeDefaultComment(it.toInt())
                     )
                 }
             } catch (e: NumberFormatException) {
@@ -51,13 +50,12 @@ data class ExpenseEntry(
                 if (amount.toInt() != 0)
                     listOf(
                         PaymentEntry(
-                            0,
-                            rowKey.cardName,
-                            rowKey.category,
-                            rowKey.rowKeyInt,
-                            date,
-                            amount.toInt(),
-                            makeDefaultComment(amount.toInt())
+                            cardName = rowKey.cardName,
+                            category = rowKey.category,
+                            rowKeyInt = rowKey.rowKeyInt,
+                            date = date,
+                            amount = amount.toInt(),
+                            comment = makeDefaultComment(amount.toInt())
                         )
                     )
                 else

@@ -38,6 +38,20 @@ class PaymentRepositoryImpl(
         }
     }
 
+    override suspend fun insertPayment(paymentEntry: PaymentEntry) {
+        val paymentEntity = paymentEntry.toDBEntity()
+        appDatabase
+            .paymentEntityQueries
+            .insertPayment(
+                cardName = paymentEntity.cardName,
+                category = paymentEntity.category,
+                rowKeyInt = paymentEntity.rowKeyInt,
+                date = paymentEntity.date,
+                amount = paymentEntity.amount,
+                comment = paymentEntity.comment
+            )
+    }
+
     override suspend fun updatePayment(paymentEntry: PaymentEntry) {
         val paymentEntity = paymentEntry.toDBEntity()
         appDatabase

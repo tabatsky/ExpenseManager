@@ -22,20 +22,48 @@ fun EditPaymentDialogWrapper() {
             by expenseViewModel.currentPaymentEntry.collectAsState()
 
     currentPaymentEntry?.let {
-        EditPaymentDialog(it)
+        AddOrEditPaymentDialog(
+            paymentEntry = it,
+            onDismiss = {
+                expenseViewModel.showEditPaymentDialog(null)
+            },
+            onSave = {
+                expenseViewModel.updateExpenseEntryToDB(it)
+            }
+        )
     }
 }
 
 @Composable
-private fun EditPaymentDialog(paymentEntry: PaymentEntry) {
+fun AddPaymentDialogWrapper() {
     val expenseViewModel = Injector.expenseViewModel
 
+    val newPaymentEntry
+            by expenseViewModel.newPaymentEntry.collectAsState()
+
+    newPaymentEntry?.let {
+        AddOrEditPaymentDialog(
+            paymentEntry = it,
+            onDismiss = {
+                expenseViewModel.showAddPaymentDialog(false)
+            },
+            onSave = {
+                expenseViewModel.insertExpenseEntryToDB(it)
+            }
+        )
+    }
+}
+
+@Composable
+private fun AddOrEditPaymentDialog(
+    paymentEntry: PaymentEntry,
+    onDismiss: () -> Unit,
+    onSave: (PaymentEntry) -> Unit
+) {
     var amount by remember { mutableStateOf(paymentEntry.amount) }
     var comment by remember { mutableStateOf(paymentEntry.comment) }
 
-    Dialog(onCloseRequest = {
-        expenseViewModel.showEditPaymentDialog(null)
-    }) {
+    Dialog(onCloseRequest = { onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -65,14 +93,8 @@ private fun EditPaymentDialog(paymentEntry: PaymentEntry) {
                 modifier = Modifier
                     .fillMaxWidth(),
                 onClick = {
-                    expenseViewModel
-                        .saveExpenseEntryToDB(
-                            paymentEntry
-                                .copy(
-                                    amount = amount,
-                                    comment = comment
-                                )
-                        )
+                    onSave(paymentEntry.copy(amount = amount, comment = comment))
+                    onDismiss()
                 }
             ) {
                 Text(

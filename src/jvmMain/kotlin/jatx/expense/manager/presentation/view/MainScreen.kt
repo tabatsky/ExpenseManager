@@ -4,12 +4,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import jatx.expense.manager.presentation.dialog.AddPaymentDialogWrapper
 import jatx.expense.manager.presentation.dialog.EditPaymentDialogWrapper
 
 @Composable
 fun MainScreen() {
     Box {
         EditPaymentDialogWrapper()
+        AddPaymentDialogWrapper()
         Row {
             Box(modifier = Modifier
                 .fillMaxHeight()
