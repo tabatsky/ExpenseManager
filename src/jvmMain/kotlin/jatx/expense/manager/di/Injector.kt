@@ -31,6 +31,8 @@ class Injector(
         UpdatePaymentUseCase(paymentRepository)
     private val insertPaymentUseCase =
         InsertPaymentUseCase(paymentRepository)
+    private val deletePaymentUseCase =
+        DeletePaymentUseCase(paymentRepository)
     private val expenseViewModel =
         ExpenseViewModel(
             saveExpenseTableToDBUseCase,
@@ -38,6 +40,7 @@ class Injector(
             loadXlsxUseCase,
             updatePaymentUseCase,
             insertPaymentUseCase,
+            deletePaymentUseCase,
             coroutineScope
         )
     private val menuCallbacks = MenuCallbacks()

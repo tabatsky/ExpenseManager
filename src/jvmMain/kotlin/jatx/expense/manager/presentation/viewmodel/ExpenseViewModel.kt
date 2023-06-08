@@ -15,6 +15,7 @@ class ExpenseViewModel(
     private val loadXlsxUseCase: LoadXlsxUseCase,
     private val updatePaymentUseCase: UpdatePaymentUseCase,
     private val insertPaymentUseCase: InsertPaymentUseCase,
+    private val deletePaymentUseCase: DeletePaymentUseCase,
     private val coroutineScope: CoroutineScope
 ) {
     private val _expenseTable: MutableStateFlow<ExpenseTable?> = MutableStateFlow(null)
@@ -48,13 +49,6 @@ class ExpenseViewModel(
         }
     }
 
-    private suspend fun loadExpenseTableFromDB() {
-        loadExpenseTableFromDBUseCase.execute().collectLatest {
-            _expenseTable.value = it
-            reloadCurrentExpenseEntry()
-        }
-    }
-
     fun updateCurrentExpenseEntry(expenseEntry: ExpenseEntry) {
         _currentExpenseEntry.value = expenseEntry
     }
@@ -80,17 +74,31 @@ class ExpenseViewModel(
         ).takeIf { show }
     }
 
-    fun updateExpenseEntryToDB(paymentEntry: PaymentEntry) {
+    fun updatePaymentEntryToDB(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             updatePaymentUseCase.execute(paymentEntry)
             loadExpenseTableFromDB()
         }
     }
 
-    fun insertExpenseEntryToDB(paymentEntry: PaymentEntry) {
+    fun insertPaymentEntryToDB(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             insertPaymentUseCase.execute(paymentEntry)
             loadExpenseTableFromDB()
+        }
+    }
+
+    fun deletePaymentEntryFromDB(paymentEntry: PaymentEntry) {
+        coroutineScope.launch {
+            deletePaymentUseCase.execute(paymentEntry)
+            loadExpenseTableFromDB()
+        }
+    }
+
+    private suspend fun loadExpenseTableFromDB() {
+        loadExpenseTableFromDBUseCase.execute().collectLatest {
+            _expenseTable.value = it
+            reloadCurrentExpenseEntry()
         }
     }
 

@@ -14,6 +14,7 @@ const val defaultCommentZeroAmount = "---"
 
 const val buttonSaveLabel = "Сохранить"
 const val buttonAddLabel = "Добавить"
+const val buttonDeleteLabel = "Удалить"
 
 const val menuFileLabel = "Файл"
 const val menuLoadXlsxLabel = "Загрузить XLSX"

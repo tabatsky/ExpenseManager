@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
+import jatx.expense.manager.res.buttonDeleteLabel
 import jatx.expense.manager.res.buttonSaveLabel
 import jatx.expense.manager.res.msgWrongNumberFormat
 
@@ -21,14 +22,17 @@ fun EditPaymentDialogWrapper() {
     val currentPaymentEntry
             by expenseViewModel.currentPaymentEntry.collectAsState()
 
-    currentPaymentEntry?.let {
+    currentPaymentEntry?.let { paymentEntry ->
         AddOrEditPaymentDialog(
-            paymentEntry = it,
+            paymentEntry = paymentEntry,
             onDismiss = {
                 expenseViewModel.showEditPaymentDialog(null)
             },
             onSave = {
-                expenseViewModel.updateExpenseEntryToDB(it)
+                expenseViewModel.updatePaymentEntryToDB(it)
+            },
+            onDelete = {
+                expenseViewModel.deletePaymentEntryFromDB(it)
             }
         )
     }
@@ -41,14 +45,14 @@ fun AddPaymentDialogWrapper() {
     val newPaymentEntry
             by expenseViewModel.newPaymentEntry.collectAsState()
 
-    newPaymentEntry?.let {
+    newPaymentEntry?.let { paymentEntry ->
         AddOrEditPaymentDialog(
-            paymentEntry = it,
+            paymentEntry = paymentEntry,
             onDismiss = {
                 expenseViewModel.showAddPaymentDialog(false)
             },
             onSave = {
-                expenseViewModel.insertExpenseEntryToDB(it)
+                expenseViewModel.insertPaymentEntryToDB(it)
             }
         )
     }
@@ -58,7 +62,8 @@ fun AddPaymentDialogWrapper() {
 private fun AddOrEditPaymentDialog(
     paymentEntry: PaymentEntry,
     onDismiss: () -> Unit,
-    onSave: (PaymentEntry) -> Unit
+    onSave: (PaymentEntry) -> Unit,
+    onDelete: ((PaymentEntry) -> Unit)? = null
 ) {
     var amount by remember { mutableStateOf(paymentEntry.amount) }
     var comment by remember { mutableStateOf(paymentEntry.comment) }
@@ -92,6 +97,7 @@ private fun AddOrEditPaymentDialog(
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
+                enabled = (amount != 0),
                 onClick = {
                     onSave(paymentEntry.copy(amount = amount, comment = comment))
                     onDismiss()
@@ -102,6 +108,22 @@ private fun AddOrEditPaymentDialog(
                         .fillMaxWidth(),
                     text = buttonSaveLabel
                 )
+            }
+            onDelete?.let {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = {
+                        it.invoke(paymentEntry)
+                        onDismiss()
+                    }
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = buttonDeleteLabel
+                    )
+                }
             }
         }
     }

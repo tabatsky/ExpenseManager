@@ -63,6 +63,15 @@ class PaymentRepositoryImpl(
             )
     }
 
+    override suspend fun deletePayment(paymentEntry: PaymentEntry) {
+        val paymentEntity = paymentEntry.toDBEntity()
+        appDatabase
+            .paymentEntityQueries
+            .deletePayment(
+                id = paymentEntity.id
+            )
+    }
+
     override suspend fun selectAll(): List<PaymentEntry> =
         appDatabase
             .paymentEntityQueries

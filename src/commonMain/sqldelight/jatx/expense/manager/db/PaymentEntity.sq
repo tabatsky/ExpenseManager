@@ -24,3 +24,6 @@ updatePayment:
 UPDATE paymentEntity SET
 amount=?, comment=?
 WHERE id=?;
+
+deletePayment:
+DELETE FROM paymentEntity WHERE id=?;
