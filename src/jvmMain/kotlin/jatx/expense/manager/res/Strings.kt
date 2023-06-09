@@ -13,11 +13,13 @@ const val defaultCommentNegativeAmount = "Доход"
 const val defaultCommentZeroAmount = "---"
 
 const val buttonSaveLabel = "Сохранить"
+const val buttonSaveZeroLabel = "Введите сумму, отличную от нуля"
 const val buttonAddLabel = "Добавить"
 const val buttonDeleteLabel = "Удалить"
 
 const val menuFileLabel = "Файл"
 const val menuLoadXlsxLabel = "Загрузить XLSX"
+const val menuSaveXlsxLabel = "Сохранить XLSX"
 
 const val dialogFileChooserTitle = "Открыть XLSX"
 const val dialogFileChooserXLSXDescription = "Таблица Excel"

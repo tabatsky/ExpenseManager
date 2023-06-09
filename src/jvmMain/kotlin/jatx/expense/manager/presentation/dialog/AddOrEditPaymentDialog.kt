@@ -12,6 +12,7 @@ import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.res.buttonDeleteLabel
 import jatx.expense.manager.res.buttonSaveLabel
+import jatx.expense.manager.res.buttonSaveZeroLabel
 import jatx.expense.manager.res.msgWrongNumberFormat
 
 
@@ -68,6 +69,9 @@ private fun AddOrEditPaymentDialog(
     var amount by remember { mutableStateOf(paymentEntry.amount) }
     var comment by remember { mutableStateOf(paymentEntry.comment) }
 
+    val enabled = amount != 0
+    val saveLabel = if (enabled) buttonSaveLabel else buttonSaveZeroLabel
+
     Dialog(onCloseRequest = { onDismiss() }) {
         Column(
             modifier = Modifier
@@ -97,7 +101,7 @@ private fun AddOrEditPaymentDialog(
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
-                enabled = (amount != 0),
+                enabled = enabled,
                 onClick = {
                     onSave(paymentEntry.copy(amount = amount, comment = comment))
                     onDismiss()
@@ -106,7 +110,7 @@ private fun AddOrEditPaymentDialog(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = buttonSaveLabel
+                    text = saveLabel
                 )
             }
             onDelete?.let {

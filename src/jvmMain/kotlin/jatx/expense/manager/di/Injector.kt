@@ -3,10 +3,13 @@ package jatx.expense.manager.di
 import jatx.expense.manager.data.db.DatabaseDriverFactory
 import jatx.expense.manager.data.repository.PaymentRepositoryImpl
 import jatx.expense.manager.data.xlsx.XlsxParserFactoryImpl
+import jatx.expense.manager.data.xlsx.XlsxSaverFactoryImpl
+import jatx.expense.manager.data.xlsx.outXlsxPath
 import jatx.expense.manager.db.AppDatabase
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.xlsx.XlsxParserFactory
+import jatx.expense.manager.domain.xlsx.XlsxSaverFactory
 import jatx.expense.manager.presentation.menu.MenuCallbacks
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -21,12 +24,16 @@ class Injector(
         PaymentRepositoryImpl(appDatabase)
     private val xlsxParserFactory: XlsxParserFactory =
         XlsxParserFactoryImpl()
+    private val xlsxSaverFactory: XlsxSaverFactory =
+        XlsxSaverFactoryImpl()
     private val saveExpenseTableToDBUseCase =
         SaveExpenseTableToDBUseCase(paymentRepository)
     private val loadExpenseTableFromDBUseCase =
         LoadExpenseTableFromDBUseCase(paymentRepository)
     private val loadXlsxUseCase =
         LoadXlsxUseCase(xlsxParserFactory)
+    private val saveXlsxUseCase =
+        SaveXlsxUseCase(xlsxSaverFactory)
     private val updatePaymentUseCase =
         UpdatePaymentUseCase(paymentRepository)
     private val insertPaymentUseCase =
@@ -38,6 +45,7 @@ class Injector(
             saveExpenseTableToDBUseCase,
             loadExpenseTableFromDBUseCase,
             loadXlsxUseCase,
+            saveXlsxUseCase,
             updatePaymentUseCase,
             insertPaymentUseCase,
             deletePaymentUseCase,
@@ -61,6 +69,9 @@ class Injector(
             INSTANCE = Injector(databaseDriverFactory, coroutineScope)
             menuCallbacks.onLoadXlsx = {
                 expenseViewModel.showXlsxChooserDialog(true)
+            }
+            menuCallbacks.onSaveXlsx = {
+                expenseViewModel.saveXlsx(outXlsxPath)
             }
         }
     }

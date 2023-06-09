@@ -13,6 +13,7 @@ class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
     private val loadExpenseTableFromDBUseCase: LoadExpenseTableFromDBUseCase,
     private val loadXlsxUseCase: LoadXlsxUseCase,
+    private val saveXlsxUseCase: SaveXlsxUseCase,
     private val updatePaymentUseCase: UpdatePaymentUseCase,
     private val insertPaymentUseCase: InsertPaymentUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
@@ -45,6 +46,14 @@ class ExpenseViewModel(
             loadXlsxUseCase.execute(xlsxPath).collectLatest {
                 saveExpenseTableToDBUseCase.execute(it)
                 loadExpenseTableFromDB()
+            }
+        }
+    }
+
+    fun saveXlsx(xlsxPath: String) {
+        coroutineScope.launch {
+            expenseTable.value?.let {
+                saveXlsxUseCase.execute(it, xlsxPath)
             }
         }
     }
