@@ -21,7 +21,8 @@ const val menuFileLabel = "Файл"
 const val menuLoadXlsxLabel = "Загрузить XLSX"
 const val menuSaveXlsxLabel = "Сохранить XLSX"
 
-const val dialogFileChooserTitle = "Открыть XLSX"
+const val dialogFileChooserOpenTitle = "Загрузить XLSX"
+const val dialogFileChooserSaveTitle = "Сохранить XLSX"
 const val dialogFileChooserXLSXDescription = "Таблица Excel"
 const val dialogFileChooserXLSXExtension = "xlsx"
 

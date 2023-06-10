@@ -14,7 +14,6 @@ import java.lang.IllegalStateException
 import java.util.*
 
 const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
-const val theXlsxPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
 
 class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     private val allRowKeys = arrayListOf<RowKey>()
@@ -32,10 +31,11 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
 
         val allDates = parseFirstRow(workSheet)
 
-
         for (rowNum in 1 until lastRowNum) {
             parseExpenseRow(workSheet, rowNum, allDates)
         }
+
+        inputStream.close()
 
         return ExpenseTable(expenseHashMap, allDates, allRowKeys)
     }

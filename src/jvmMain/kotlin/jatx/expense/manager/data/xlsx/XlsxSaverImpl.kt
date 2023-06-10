@@ -2,17 +2,17 @@ package jatx.expense.manager.data.xlsx
 
 import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.models.PaymentEntry
+import jatx.expense.manager.domain.models.cardNameKey
 import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.domain.xlsx.XlsxSaver
 import jatx.expense.manager.domain.xlsx.XlsxSaverFactory
-import jatx.expense.manager.res.totalCardName
-import jatx.expense.manager.res.totalCategory
+import jatx.expense.manager.res.*
+import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.awt.Color
 import java.io.File
-
-const val outXlsxPath = "C:\\Users\\User\\Desktop\\Expense\\таблица.xlsx"
 
 class XlsxSaverImpl(
     private val expenseTable: ExpenseTable,
@@ -51,30 +51,67 @@ class XlsxSaverImpl(
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Sheet1")
         val evaluator = workbook.creationHelper.createFormulaEvaluator()
+        val colorMap = workbook.stylesSource.indexedColors
 
         val firstRow = sheet.createRow(0)
+        val firstRowStyle = workbook.createCellStyle()
+        val firstRowFont = workbook.createFont()
+        firstRowFont.bold = true
+        firstRowStyle.setFont(firstRowFont)
         expenseTable
             .allDates
             .forEachIndexed { j, date ->
                 val colNum = allColNums[j]
                 val cell = firstRow.createCell(colNum)
                 cell.setCellValue(date.formattedMonthAndYear.utf8toCP1251())
+                cell.cellStyle = firstRowStyle
             }
 
         expenseTable
             .allRowKeys
             .forEachIndexed { i, rowKey ->
+                val composeColor = if (rowKey.category == lohCategory)
+                    redColor
+                else
+                    when (rowKey.rowKeyInt.cardNameKey) {
+                        1 -> blueColor
+                        2 -> violetColor
+                        3 -> greenColor
+                        else -> blackColor
+                    }
+                val color = XSSFColor(
+                    Color(composeColor.red, composeColor.green, composeColor.blue),
+                    colorMap
+                )
                 val rowNum = allRowNums[i]
                 val row = sheet.createRow(rowNum)
                 val firstCell = row.createCell(0)
                 firstCell.setCellValue(rowKey.cardName.utf8toCP1251())
+                val firstStyle = workbook.createCellStyle()
+                val firstFont = workbook.createFont()
+                firstFont.bold = true
+                firstFont.setColor(color)
+                firstStyle.setFont(firstFont)
+                firstCell.cellStyle = firstStyle
                 val secondCell = row.createCell(1)
                 secondCell.setCellValue(rowKey.category.utf8toCP1251())
+                val secondStyle = workbook.createCellStyle()
+                val secondFont = workbook.createFont()
+                secondFont.bold = true
+                secondFont.italic = true
+                secondFont.setColor(color)
+                secondStyle.setFont(secondFont)
+                secondCell.cellStyle = secondStyle
                 expenseTable
                     .allDates
                     .forEachIndexed { j, date ->
                         val colNum = allColNums[j]
                         val cell = row.createCell(colNum)
+                        val cellStyle = workbook.createCellStyle()
+                        val cellFont = workbook.createFont()
+                        cellFont.setColor(color)
+                        cellStyle.setFont(cellFont)
+                        cell.cellStyle = cellStyle
 
                         val colLetter = getColumnLetter(colNum)
                         val expenseEntry = expenseTable.getCell(rowKey, date)
@@ -126,6 +163,7 @@ class XlsxSaverImpl(
         val outputStream = File(xlsxPath).outputStream()
         workbook.write(outputStream)
         workbook.close()
+        outputStream.close()
 
         println("save xlsx success: $xlsxPath".cp1251toUTF8())
     }

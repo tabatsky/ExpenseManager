@@ -4,9 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.window.WindowScope
 import jatx.expense.manager.data.xlsx.theFolderPath
 import jatx.expense.manager.di.Injector
-import jatx.expense.manager.res.dialogFileChooserTitle
-import jatx.expense.manager.res.dialogFileChooserXLSXDescription
-import jatx.expense.manager.res.dialogFileChooserXLSXExtension
+import jatx.expense.manager.res.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -19,6 +17,8 @@ fun WindowScope.XlsxChooserDialogWrapper() {
 
     val needShowXlsxChooserDialog
             by expenseViewModel.needShowXlsxChooserDialog.collectAsState()
+    val isSaveDialog
+    by expenseViewModel.isSaveDialog.collectAsState()
     val xlsxChooserDialogShowCounter
             by expenseViewModel.xlsxChooserDialogShowCounter.collectAsState()
 
@@ -26,11 +26,16 @@ fun WindowScope.XlsxChooserDialogWrapper() {
         XlsxChooserDialog(
             coroutineScope = rememberCoroutineScope(),
             onFileOpened = {
-                expenseViewModel.loadXlsxToDB(it.absolutePath)
+                if (isSaveDialog) {
+                    expenseViewModel.saveXlsx(it.absolutePath)
+                } else {
+                    expenseViewModel.loadXlsxToDB(it.absolutePath)
+                }
             },
             onDispose = {
                 expenseViewModel.showXlsxChooserDialog(false)
             },
+            isSaveDialog = isSaveDialog,
             showCounter = xlsxChooserDialogShowCounter
         )
     }
@@ -41,12 +46,16 @@ private fun WindowScope.XlsxChooserDialog(
     coroutineScope: CoroutineScope,
     onFileOpened: (File) -> Unit,
     onDispose: () -> Unit,
+    isSaveDialog: Boolean,
     showCounter: Int
 ) {
     DisposableEffect(showCounter) {
         val job = coroutineScope.launch {
             val fileChooser = JFileChooser()
-            fileChooser.dialogTitle = dialogFileChooserTitle
+            fileChooser.dialogTitle = if (isSaveDialog)
+                dialogFileChooserSaveTitle
+            else
+                dialogFileChooserOpenTitle
             File(theFolderPath)
                 .takeIf { it.exists() }
                 .let {
@@ -61,7 +70,10 @@ private fun WindowScope.XlsxChooserDialog(
                 fileChooser.addChoosableFileFilter(it)
             }
 
-            val result = fileChooser.showOpenDialog(window)
+            val result = if (isSaveDialog)
+                fileChooser.showSaveDialog(window)
+            else
+                fileChooser.showOpenDialog(window)
             when (result) {
                 JFileChooser.APPROVE_OPTION -> {
                     onFileOpened(fileChooser.selectedFile)

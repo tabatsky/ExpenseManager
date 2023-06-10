@@ -4,7 +4,6 @@ import jatx.expense.manager.data.db.DatabaseDriverFactory
 import jatx.expense.manager.data.repository.PaymentRepositoryImpl
 import jatx.expense.manager.data.xlsx.XlsxParserFactoryImpl
 import jatx.expense.manager.data.xlsx.XlsxSaverFactoryImpl
-import jatx.expense.manager.data.xlsx.outXlsxPath
 import jatx.expense.manager.db.AppDatabase
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.usecase.*
@@ -68,10 +67,10 @@ class Injector(
         ) {
             INSTANCE = Injector(databaseDriverFactory, coroutineScope)
             menuCallbacks.onLoadXlsx = {
-                expenseViewModel.showXlsxChooserDialog(true)
+                expenseViewModel.showXlsxChooserDialog(show = true, isSave = false)
             }
             menuCallbacks.onSaveXlsx = {
-                expenseViewModel.saveXlsx(outXlsxPath)
+                expenseViewModel.showXlsxChooserDialog(show = true, isSave = true)
             }
         }
     }

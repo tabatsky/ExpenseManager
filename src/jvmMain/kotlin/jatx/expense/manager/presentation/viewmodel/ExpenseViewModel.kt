@@ -27,6 +27,8 @@ class ExpenseViewModel(
 
     private val _needShowXlsxChooserDialog = MutableStateFlow(false)
     val needShowXlsxChooserDialog = _needShowXlsxChooserDialog.asStateFlow()
+    private val _isXlsxSaveDialog = MutableStateFlow(false)
+    val isSaveDialog = _isXlsxSaveDialog.asStateFlow()
     private val _xlsxChooserDialogShowCounter = MutableStateFlow(0)
     val xlsxChooserDialogShowCounter = _xlsxChooserDialogShowCounter.asStateFlow()
 
@@ -62,7 +64,8 @@ class ExpenseViewModel(
         _currentExpenseEntry.value = expenseEntry
     }
 
-    fun showXlsxChooserDialog(show: Boolean) {
+    fun showXlsxChooserDialog(show: Boolean, isSave: Boolean = false) {
+        _isXlsxSaveDialog.value = isSave
         _needShowXlsxChooserDialog.value = show
         _xlsxChooserDialogShowCounter.value += 1
     }
