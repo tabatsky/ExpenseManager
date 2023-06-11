@@ -23,11 +23,13 @@ class XlsxSaverImpl(
 
     init {
         allRowNums.add(1)
+        allRowNums.add(2)
+        allRowNums.add(3)
         var cardName = totalCardName
-        var rowNum = 3
+        var rowNum = 4
         expenseTable
             .allRowKeys
-            .drop(1)
+            .drop(3)
             .forEach {
                 if (it.cardName != cardName) {
                     cardName = it.cardName
@@ -50,6 +52,7 @@ class XlsxSaverImpl(
     override fun saveXlsx() {
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Sheet1")
+        sheet.createFreezePane(3, 2)
         val evaluator = workbook.creationHelper.createFormulaEvaluator()
         val colorMap = workbook.stylesSource.indexedColors
 
@@ -70,7 +73,7 @@ class XlsxSaverImpl(
         expenseTable
             .allRowKeys
             .forEachIndexed { i, rowKey ->
-                val composeColor = if (rowKey.category == lohCategory)
+                val composeColor = if (rowKey.category == lohCategory || rowKey.category == totalLohCategory)
                     redColor
                 else
                     when (rowKey.rowKeyInt.cardNameKey) {
@@ -121,6 +124,32 @@ class XlsxSaverImpl(
                                 .allRowKeys
                                 .forEachIndexed { k, rowKey ->
                                     if (rowKey.cardName != totalCardName && rowKey.category == totalCategory) {
+                                        val totalRowNum = allRowNums[k]
+                                        val totalCellName = "$colLetter${totalRowNum + 1}"
+                                        totalCellNames.add(totalCellName)
+                                    }
+                                }
+
+                            makeSummFormula(totalCellNames)
+                        } else if (i == 1) {
+                            val totalCellNames = arrayListOf<String>()
+                            expenseTable
+                                .allRowKeys
+                                .forEachIndexed { k, rowKey ->
+                                    if (rowKey.cardName != totalCardName && rowKey.cardName != cashCardName && rowKey.category == totalCategory) {
+                                        val totalRowNum = allRowNums[k]
+                                        val totalCellName = "$colLetter${totalRowNum + 1}"
+                                        totalCellNames.add(totalCellName)
+                                    }
+                                }
+
+                            makeSummFormula(totalCellNames)
+                        } else if (i == 2) {
+                            val totalCellNames = arrayListOf<String>()
+                            expenseTable
+                                .allRowKeys
+                                .forEachIndexed { k, rowKey ->
+                                    if (rowKey.category == lohCategory) {
                                         val totalRowNum = allRowNums[k]
                                         val totalCellName = "$colLetter${totalRowNum + 1}"
                                         totalCellNames.add(totalCellName)

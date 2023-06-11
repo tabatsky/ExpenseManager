@@ -2,8 +2,7 @@ package jatx.expense.manager.domain.models
 
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.zeroDate
-import jatx.expense.manager.res.totalCardName
-import jatx.expense.manager.res.totalCategory
+import jatx.expense.manager.res.*
 import java.util.*
 
 data class CellKey(
@@ -31,7 +30,9 @@ data class ExpenseTable(
                 .distinctBy { it.rowKeyInt.cardNameKey }
                 .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
             result.addAll(totalKeys)
-            result.add(RowKey(totalCardName, totalCategory, 0))
+            result.add(RowKey(totalCardName, totalWithCashCategory, 0))
+            result.add(RowKey(totalCardName, totalCategory, 1))
+            result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
             result.sortedBy { it.rowKeyInt }
         }
     fun getCell(rowKey: RowKey, date: Date): ExpenseEntry {
@@ -49,8 +50,38 @@ data class ExpenseTable(
             )
         }
 
+        if (rowKey.cardName == totalCardName && rowKey.category == totalWithCashCategory) {
+            val payments = _allRowKeys
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { it.payments }
+                .sortedBy { it.id }
+            return ExpenseEntry(
+                totalCardName,
+                totalCategory,
+                0,
+                date,
+                payments
+            )
+        }
+
         if (rowKey.cardName == totalCardName && rowKey.category == totalCategory) {
             val payments = _allRowKeys
+                .filter { it.cardName != cashCardName }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { it.payments }
+                .sortedBy { it.id }
+            return ExpenseEntry(
+                totalCardName,
+                totalCategory,
+                0,
+                date,
+                payments
+            )
+        }
+
+        if (rowKey.cardName == totalCardName && rowKey.category == totalLohCategory) {
+            val payments = _allRowKeys
+                .filter { it.category == lohCategory }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .sortedBy { it.id }

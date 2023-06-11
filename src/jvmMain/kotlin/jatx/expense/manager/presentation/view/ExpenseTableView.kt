@@ -150,6 +150,7 @@ fun ExpenseTable() {
                                 .fillMaxWidth()
                         ) {
                             items(theExpenseTable.allRowKeys) { rowKey ->
+                                println(rowKey)
                                 Row {
                                     theExpenseTable.allDates.forEach { date ->
                                         val expenseEntry =

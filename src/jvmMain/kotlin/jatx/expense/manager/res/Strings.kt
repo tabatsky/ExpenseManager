@@ -4,9 +4,12 @@ import jatx.expense.manager.domain.util.cp1251toUTF8
 
 
 val totalCardName = "-".cp1251toUTF8()
+val cashCardName = "Наличные".cp1251toUTF8()
 val totalCategory = "Всего".cp1251toUTF8()
+val totalWithCashCategory = "Всего с наличными".cp1251toUTF8()
 val totalDate = "Всего".cp1251toUTF8()
 val lohCategory = "Лоханулся".cp1251toUTF8()
+val totalLohCategory = "Всего лоханулся".cp1251toUTF8()
 
 const val defaultCommentPositiveAmount = "Расход"
 const val defaultCommentNegativeAmount = "Доход"

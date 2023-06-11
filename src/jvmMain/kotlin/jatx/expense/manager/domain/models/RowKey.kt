@@ -28,10 +28,10 @@ data class RowKey(
                 makeTotalRowKey(cardNameKey)
             } else run {
                 val categories = allCategories[cardNameKey - 1]
-                val categoryKey = (if (category == lohCategory)
+                val categoryKey = if (category == lohCategory)
                     lohKey
                 else
-                    categories
+                    (categories
                         .indexOf(category)
                         .takeIf { it >= 0 }
                         ?: run {

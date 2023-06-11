@@ -74,7 +74,7 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
         val row = workSheet.getRow(rowNum)
 
         val lastCellNum = row.lastCellNum
-        if (lastCellNum < 4) return null
+        if (lastCellNum < 5) return null
 
         val firstCell = row.getCell(0)
         if (firstCell.cellType != CellType.STRING) return null
