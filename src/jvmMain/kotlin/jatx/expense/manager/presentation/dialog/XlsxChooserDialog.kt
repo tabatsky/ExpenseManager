@@ -32,7 +32,7 @@ fun WindowScope.XlsxChooserDialogWrapper() {
                     expenseViewModel.loadXlsxToDB(it.absolutePath)
                 }
             },
-            onDispose = {
+            onDialogDispose = {
                 expenseViewModel.showXlsxChooserDialog(false)
             },
             isSaveDialog = isSaveDialog,
@@ -45,7 +45,7 @@ fun WindowScope.XlsxChooserDialogWrapper() {
 private fun WindowScope.XlsxChooserDialog(
     coroutineScope: CoroutineScope,
     onFileOpened: (File) -> Unit,
-    onDispose: () -> Unit,
+    onDialogDispose: () -> Unit,
     isSaveDialog: Boolean,
     showCounter: Int
 ) {
@@ -84,7 +84,7 @@ private fun WindowScope.XlsxChooserDialog(
 
         onDispose {
             job.cancel()
-            onDispose()
+            onDialogDispose()
         }
     }
 }
