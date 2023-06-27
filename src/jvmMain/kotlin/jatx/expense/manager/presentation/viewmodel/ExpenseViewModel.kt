@@ -2,10 +2,12 @@ package jatx.expense.manager.presentation.viewmodel
 
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
+import jatx.expense.manager.domain.util.monthKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 
@@ -37,6 +39,9 @@ class ExpenseViewModel(
     private val _newPaymentEntry: MutableStateFlow<PaymentEntry?> = MutableStateFlow(null)
     val newPaymentEntry = _newPaymentEntry.asStateFlow()
 
+    private val _showEditPaymentDialog = MutableStateFlow(false)
+    val showEditPaymentDialog = _showEditPaymentDialog.asStateFlow()
+
     fun onAppStart() {
         coroutineScope.launch {
             loadExpenseTableFromDB()
@@ -45,10 +50,36 @@ class ExpenseViewModel(
 
     fun loadXlsxToDB(xlsxPath: String) {
         coroutineScope.launch {
-            loadXlsxUseCase.execute(xlsxPath).collectLatest {
-                saveExpenseTableToDBUseCase.execute(it)
-                loadExpenseTableFromDB()
-            }
+            loadXlsxUseCase
+                .execute(xlsxPath)
+                .combine(loadExpenseTableFromDBUseCase.execute()) { tableXls, tableDb ->
+                    val allCells = hashMapOf<CellKey, ExpenseEntry>()
+
+                    tableXls._allRowKeys.forEach {
+                        println(it)
+                    }
+
+                    tableXls._allDates.forEach { date ->
+                        tableXls._allRowKeys.forEach { rowKey ->
+                            val expenseEntryXls = tableXls.getCell(rowKey, date)
+                            val expenseEntryDb = tableDb.getCell(rowKey, date)
+
+                            if (expenseEntryDb.paymentSum == expenseEntryXls.paymentSum) {
+                                allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
+                                    expenseEntryDb
+                            } else {
+                                allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
+                                    expenseEntryXls
+                            }
+                        }
+                    }
+
+                    ExpenseTable(allCells, tableXls._allDates, tableXls._allRowKeys)
+                }
+                .collectLatest {
+                    saveExpenseTableToDBUseCase.execute(it)
+                    loadExpenseTableFromDB()
+                }
         }
     }
 
@@ -70,8 +101,9 @@ class ExpenseViewModel(
         _xlsxChooserDialogShowCounter.value += 1
     }
 
-    fun showEditPaymentDialog(paymentEntry: PaymentEntry?) {
+    fun showEditPaymentDialog(paymentEntry: PaymentEntry?, show: Boolean) {
         _currentPaymentEntry.value = paymentEntry
+        _showEditPaymentDialog.value = show
     }
 
     fun showAddPaymentDialog(show: Boolean) {

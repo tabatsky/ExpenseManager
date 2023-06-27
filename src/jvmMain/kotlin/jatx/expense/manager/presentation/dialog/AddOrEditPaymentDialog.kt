@@ -2,40 +2,70 @@ package jatx.expense.manager.presentation.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
-import jatx.expense.manager.res.buttonDeleteLabel
-import jatx.expense.manager.res.buttonSaveLabel
-import jatx.expense.manager.res.buttonSaveZeroLabel
-import jatx.expense.manager.res.msgWrongNumberFormat
+import jatx.expense.manager.res.*
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EditPaymentDialogWrapper() {
     val expenseViewModel = Injector.expenseViewModel
 
-    val currentPaymentEntry
-            by expenseViewModel.currentPaymentEntry.collectAsState()
+    val currentPaymentEntry by expenseViewModel.currentPaymentEntry.collectAsState()
+    val showEditPaymentDialog by expenseViewModel.showEditPaymentDialog.collectAsState()
 
     currentPaymentEntry?.let { paymentEntry ->
-        AddOrEditPaymentDialog(
-            paymentEntry = paymentEntry,
-            onDismiss = {
-                expenseViewModel.showEditPaymentDialog(null)
-            },
-            onSave = {
-                expenseViewModel.updatePaymentEntryToDB(it)
-            },
-            onDelete = {
-                expenseViewModel.deletePaymentEntryFromDB(it)
-            }
-        )
+        var showConfirmation by rememberSaveable { mutableStateOf(false) }
+
+        if (showEditPaymentDialog) {
+            AddOrEditPaymentDialog(
+                paymentEntry = paymentEntry,
+                onDismiss = {
+                    expenseViewModel.showEditPaymentDialog(paymentEntry, false)
+                },
+                onSave = {
+                    expenseViewModel.updatePaymentEntryToDB(it)
+                },
+                onDelete = {
+                    showConfirmation = true
+                }
+            )
+        }
+
+        if (showConfirmation) {
+            AlertDialog(
+                onDismissRequest = {
+                    showConfirmation = false
+                },
+                title = {
+                    Text(text = titleDeletionConfirmationDialog)
+                },
+                text = {
+                    Text(text = textDeletionConfirmationDialog)
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        expenseViewModel.deletePaymentEntryFromDB(paymentEntry)
+                        showConfirmation = false
+                    }) {
+                        Text(text = buttonYesLabel)
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        showConfirmation = false
+                    }) {
+                        Text(text = buttonNoLabel)
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -64,7 +94,7 @@ private fun AddOrEditPaymentDialog(
     paymentEntry: PaymentEntry,
     onDismiss: () -> Unit,
     onSave: (PaymentEntry) -> Unit,
-    onDelete: ((PaymentEntry) -> Unit)? = null
+    onDelete: (() -> Unit)? = null
 ) {
     var amount by remember { mutableStateOf(paymentEntry.amount) }
     var comment by remember { mutableStateOf(paymentEntry.comment) }
@@ -118,7 +148,7 @@ private fun AddOrEditPaymentDialog(
                     modifier = Modifier
                         .fillMaxWidth(),
                     onClick = {
-                        it.invoke(paymentEntry)
+                        it.invoke()
                         onDismiss()
                     }
                 ) {

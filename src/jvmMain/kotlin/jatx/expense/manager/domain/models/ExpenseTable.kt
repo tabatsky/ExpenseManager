@@ -13,8 +13,8 @@ data class CellKey(
 
 data class ExpenseTable(
     private val allCells: Map<CellKey, ExpenseEntry>,
-    private val _allDates: List<Date>,
-    private val _allRowKeys: List<RowKey>
+    val _allDates: List<Date>,
+    val _allRowKeys: List<RowKey>
 ) {
     val allDates: List<Date> by lazy {
         val result = arrayListOf<Date>()

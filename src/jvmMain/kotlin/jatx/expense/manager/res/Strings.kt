@@ -19,6 +19,11 @@ const val buttonSaveLabel = "Сохранить"
 const val buttonSaveZeroLabel = "Введите сумму, отличную от нуля"
 const val buttonAddLabel = "Добавить"
 const val buttonDeleteLabel = "Удалить"
+const val buttonYesLabel = "Да"
+const val buttonNoLabel = "Нет"
+
+const val titleDeletionConfirmationDialog = "Запись будет удалена"
+const val textDeletionConfirmationDialog = "Вы уверены?"
 
 const val menuFileLabel = "Файл"
 const val menuLoadXlsxLabel = "Загрузить XLSX"

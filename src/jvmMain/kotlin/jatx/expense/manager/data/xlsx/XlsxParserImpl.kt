@@ -1,10 +1,7 @@
 package jatx.expense.manager.data.xlsx
 
 import jatx.expense.manager.domain.models.*
-import jatx.expense.manager.domain.util.cp1251toUTF8
-import jatx.expense.manager.domain.util.formattedMonthAndYear
-import jatx.expense.manager.domain.util.monthKey
-import jatx.expense.manager.domain.util.plusMonth
+import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.domain.xlsx.XlsxParser
 import jatx.expense.manager.domain.xlsx.XlsxParserFactory
 import jatx.expense.manager.res.totalCategory
@@ -31,7 +28,7 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
 
         val allDates = parseFirstRow(workSheet)
 
-        for (rowNum in 1 until lastRowNum) {
+        for (rowNum in 1 .. lastRowNum) {
             parseExpenseRow(workSheet, rowNum, allDates)
         }
 
@@ -50,11 +47,9 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
 
         for (cellNum in 3 until lastCellNum) {
             val cell = firstRow.getCell(cellNum)
-            if (cell.cellType != CellType.NUMERIC)
+            if (cell.cellType != CellType.STRING)
                 throw IllegalStateException("Date cell is not numeric")
-            if (!DateUtil.isCellDateFormatted(cell))
-                throw IllegalStateException("Date cell is not containing date")
-            val date = cell.dateCellValue
+            val date = cell.stringCellValue.dateParsedFromMonthAndYear
             result.add(date)
         }
 
@@ -73,7 +68,7 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     private fun parseExpenseRow(workSheet: Sheet, rowNum: Int, allDates: List<Date>): List<ExpenseEntry>? {
         val row = workSheet.getRow(rowNum)
 
-        val lastCellNum = row.lastCellNum
+        val lastCellNum = row?.lastCellNum ?: 0
         if (lastCellNum < 5) return null
 
         val firstCell = row.getCell(0)

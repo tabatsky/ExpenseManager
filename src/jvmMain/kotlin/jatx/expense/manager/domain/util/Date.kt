@@ -100,6 +100,22 @@ val Date.formattedMonthAndYear: String
         return "${month + 1}.$year"
     }
 
+val String.dateParsedFromMonthAndYear: Date
+    get() {
+        val arr = this.split(".")
+        val month = arr[0].toInt() - 1
+        val year = arr[1].toInt()
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.time
+    }
+
 val Date.formattedForPaymentList: String
     get() {
         val calendar = Calendar.getInstance()

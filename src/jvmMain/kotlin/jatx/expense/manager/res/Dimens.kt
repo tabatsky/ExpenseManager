@@ -7,6 +7,7 @@ val firstCellWidth = 72.dp
 val secondCellWidth = 120.dp
 val cellWidth = 52.dp
 val cellHeight = 24.dp
+val paymentCellHeight = 72.dp
 
 val buttonHeight = 36.dp
 
