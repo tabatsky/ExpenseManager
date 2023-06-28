@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
+import java.util.*
 
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
@@ -87,6 +87,40 @@ class ExpenseViewModel(
         }
     }
 
+    fun showStatistics() {
+        expenseTable.value?.let { _table ->
+            val uniqueComments = _table
+                .allPayments
+                .map { it.comment }
+                .distinct()
+            val paymentsForStatistics = arrayListOf<PaymentEntry>()
+            uniqueComments.forEach { _comment ->
+                val amount = _table
+                    .allPayments
+                    .filter { it.comment == _comment }
+                    .sumOf { it.amount }
+                val payment = PaymentEntry(
+                    id = -1L,
+                    cardName = "",
+                    category = "",
+                    rowKeyInt = 0,
+                    date = Date(),
+                    amount = amount,
+                    comment = _comment
+                )
+                paymentsForStatistics.add(payment)
+            }
+            val expenseEntryForStatistics = ExpenseEntry(
+                cardName = "",
+                category = "",
+                rowKeyInt = 0,
+                date = Date(),
+                payments = paymentsForStatistics.sortedBy { it.amount }
+            )
+            updateCurrentExpenseEntry(expenseEntryForStatistics)
+        }
+    }
+
     fun updateCurrentExpenseEntry(expenseEntry: ExpenseEntry) {
         _currentExpenseEntry.value = expenseEntry
     }
@@ -98,20 +132,26 @@ class ExpenseViewModel(
     }
 
     fun showEditPaymentDialog(paymentEntry: PaymentEntry?, show: Boolean) {
-        _currentPaymentEntry.value = paymentEntry
-        _showEditPaymentDialog.value = show
+        paymentEntry?.takeIf { it.id >= 0 }?.let {
+            _currentPaymentEntry.value = it
+            _showEditPaymentDialog.value = show
+        }
     }
 
     fun showAddPaymentDialog(show: Boolean) {
-        val expenseEntry = currentExpenseEntry.value ?: throw IllegalStateException("Current expense entry is null")
-        _newPaymentEntry.value = PaymentEntry(
-            cardName = expenseEntry.cardName,
-            category = expenseEntry.category,
-            rowKeyInt = expenseEntry.rowKeyInt,
-            date = expenseEntry.date,
-            amount = 0,
-            comment = ""
-        ).takeIf { show }
+        currentExpenseEntry
+            .value
+            ?.takeIf { it.cardName.isNotEmpty() && it.category.isNotEmpty() }
+            ?.let {
+                _newPaymentEntry.value = PaymentEntry(
+                    cardName = it.cardName,
+                    category = it.category,
+                    rowKeyInt = it.rowKeyInt,
+                    date = it.date,
+                    amount = 0,
+                    comment = ""
+                ).takeIf { show }
+            }
     }
 
     fun updatePaymentEntryToDB(paymentEntry: PaymentEntry) {

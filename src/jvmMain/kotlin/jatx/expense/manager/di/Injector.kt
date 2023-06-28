@@ -72,6 +72,9 @@ class Injector(
             menuCallbacks.onSaveXlsx = {
                 expenseViewModel.showXlsxChooserDialog(show = true, isSave = true)
             }
+            menuCallbacks.onShowStatistics = {
+                expenseViewModel.showStatistics()
+            }
         }
     }
 }

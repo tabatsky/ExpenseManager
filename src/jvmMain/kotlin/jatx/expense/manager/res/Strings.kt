@@ -28,6 +28,8 @@ const val textDeletionConfirmationDialog = "Вы уверены?"
 const val menuFileLabel = "Файл"
 const val menuLoadXlsxLabel = "Загрузить XLSX"
 const val menuSaveXlsxLabel = "Сохранить XLSX"
+const val menuFunctionLabel = "Функция"
+const val menuStatisticsLabel = "Статистика"
 
 const val dialogFileChooserOpenTitle = "Загрузить XLSX"
 const val dialogFileChooserSaveTitle = "Сохранить XLSX"

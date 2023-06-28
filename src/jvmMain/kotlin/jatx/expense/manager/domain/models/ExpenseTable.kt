@@ -12,7 +12,7 @@ data class CellKey(
 )
 
 data class ExpenseTable(
-    private val allCells: Map<CellKey, ExpenseEntry>,
+    val allCells: Map<CellKey, ExpenseEntry>,
     val dates: List<Date>,
     val rowKeys: List<RowKey>
 ) {
