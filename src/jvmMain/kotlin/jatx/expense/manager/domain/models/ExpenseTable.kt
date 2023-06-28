@@ -13,20 +13,20 @@ data class CellKey(
 
 data class ExpenseTable(
     private val allCells: Map<CellKey, ExpenseEntry>,
-    val _allDates: List<Date>,
-    val _allRowKeys: List<RowKey>
+    val dates: List<Date>,
+    val rowKeys: List<RowKey>
 ) {
     val allDates: List<Date> by lazy {
         val result = arrayListOf<Date>()
         result.add(zeroDate)
-        result.addAll(_allDates)
+        result.addAll(dates)
         result.sortedBy { it.monthKey }
     }
 
     val allRowKeys: List<RowKey> by lazy {
             val result = arrayListOf<RowKey>()
-            result.addAll(_allRowKeys)
-            val totalKeys = _allRowKeys
+            result.addAll(rowKeys)
+            val totalKeys = rowKeys
                 .distinctBy { it.rowKeyInt.cardNameKey }
                 .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
             result.addAll(totalKeys)
@@ -37,7 +37,7 @@ data class ExpenseTable(
         }
     fun getCell(rowKey: RowKey, date: Date): ExpenseEntry {
         if (date.time == zeroDate.time) {
-            val payments = _allDates
+            val payments = dates
                 .map { getCell(rowKey, it) }
                 .flatMap { it.payments }
                 .sortedBy { it.id }
@@ -51,7 +51,7 @@ data class ExpenseTable(
         }
 
         if (rowKey.cardName == totalCardName && rowKey.category == totalWithCashCategory) {
-            val payments = _allRowKeys
+            val payments = rowKeys
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .sortedBy { it.id }
@@ -65,7 +65,7 @@ data class ExpenseTable(
         }
 
         if (rowKey.cardName == totalCardName && rowKey.category == totalCategory) {
-            val payments = _allRowKeys
+            val payments = rowKeys
                 .filter { it.cardName != cashCardName }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
@@ -80,7 +80,7 @@ data class ExpenseTable(
         }
 
         if (rowKey.cardName == totalCardName && rowKey.category == totalLohCategory) {
-            val payments = _allRowKeys
+            val payments = rowKeys
                 .filter { it.category == lohCategory }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
@@ -95,7 +95,7 @@ data class ExpenseTable(
         }
 
         if (rowKey.category == totalCategory) {
-            val payments = _allRowKeys
+            val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }

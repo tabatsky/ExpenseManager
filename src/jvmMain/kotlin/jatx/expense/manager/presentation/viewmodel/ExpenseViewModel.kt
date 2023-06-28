@@ -55,12 +55,8 @@ class ExpenseViewModel(
                 .combine(loadExpenseTableFromDBUseCase.execute()) { tableXls, tableDb ->
                     val allCells = hashMapOf<CellKey, ExpenseEntry>()
 
-                    tableXls._allRowKeys.forEach {
-                        println(it)
-                    }
-
-                    tableXls._allDates.forEach { date ->
-                        tableXls._allRowKeys.forEach { rowKey ->
+                    tableXls.dates.forEach { date ->
+                        tableXls.rowKeys.forEach { rowKey ->
                             val expenseEntryXls = tableXls.getCell(rowKey, date)
                             val expenseEntryDb = tableDb.getCell(rowKey, date)
 
@@ -74,7 +70,7 @@ class ExpenseViewModel(
                         }
                     }
 
-                    ExpenseTable(allCells, tableXls._allDates, tableXls._allRowKeys)
+                    ExpenseTable(allCells, tableXls.dates, tableXls.rowKeys)
                 }
                 .collectLatest {
                     saveExpenseTableToDBUseCase.execute(it)

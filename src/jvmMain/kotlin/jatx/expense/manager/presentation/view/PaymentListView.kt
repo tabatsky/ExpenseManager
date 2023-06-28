@@ -37,7 +37,6 @@ fun PaymentListView() {
         var scrollY by remember { mutableStateOf(0) }
 
         suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) {
-            println(minusDelta)
             scrollY += if (isMouse) minusDelta.toInt() * 20 else minusDelta.toInt()
             columnScrollState.scrollTo(scrollY)
         }

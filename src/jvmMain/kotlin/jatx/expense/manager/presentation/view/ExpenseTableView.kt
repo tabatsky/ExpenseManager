@@ -48,7 +48,6 @@ fun ExpenseTable() {
         var scrollY by remember { mutableStateOf(0) }
 
         suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) {
-            println(minusDelta)
             scrollY += if (isMouse) minusDelta.toInt() * 20 else minusDelta.toInt()
             firstColumnScrollState.scrollTo(scrollY)
             columnScrollState.scrollTo(scrollY)
@@ -150,7 +149,6 @@ fun ExpenseTable() {
                                 .fillMaxWidth()
                         ) {
                             items(theExpenseTable.allRowKeys) { rowKey ->
-                                println(rowKey)
                                 Row {
                                     theExpenseTable.allDates.forEach { date ->
                                         val expenseEntry =
