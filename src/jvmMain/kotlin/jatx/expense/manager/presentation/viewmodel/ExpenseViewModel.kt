@@ -3,6 +3,9 @@ package jatx.expense.manager.presentation.viewmodel
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.util.monthKey
+import jatx.expense.manager.domain.util.utf8toCP1251
+import jatx.expense.manager.res.defaultCommentNegativeAmount
+import jatx.expense.manager.res.defaultCommentPositiveAmount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -89,14 +92,23 @@ class ExpenseViewModel(
 
     fun showStatistics() {
         expenseTable.value?.let { _table ->
-            val uniqueComments = _table
+            val allPayments = _table
                 .allPayments
+                .map {
+                    val comment = it
+                        .comment
+                        .takeIf {
+                            it != defaultCommentPositiveAmount &&
+                                    it != defaultCommentNegativeAmount
+                        } ?: it.category.utf8toCP1251()
+                    it.copy(comment = comment)
+                }
+            val uniqueComments = allPayments
                 .map { it.comment }
                 .distinct()
             val paymentsForStatistics = arrayListOf<PaymentEntry>()
             uniqueComments.forEach { _comment ->
-                val amount = _table
-                    .allPayments
+                val amount = allPayments
                     .filter { it.comment == _comment }
                     .sumOf { it.amount }
                 val payment = PaymentEntry(
