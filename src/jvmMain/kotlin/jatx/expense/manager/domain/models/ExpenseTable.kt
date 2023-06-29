@@ -1,6 +1,7 @@
 package jatx.expense.manager.domain.models
 
 import jatx.expense.manager.domain.util.monthKey
+import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.domain.util.zeroDate
 import jatx.expense.manager.res.*
 import java.util.*
@@ -12,29 +13,74 @@ data class CellKey(
 )
 
 data class ExpenseTable(
-    val allCells: Map<CellKey, ExpenseEntry>,
+    private val allCells: Map<CellKey, ExpenseEntry>,
     val dates: List<Date>,
     val rowKeys: List<RowKey>
 ) {
-    val allDates: List<Date> by lazy {
+    val datesWithZeroDate: List<Date> by lazy {
         val result = arrayListOf<Date>()
         result.add(zeroDate)
         result.addAll(dates)
         result.sortedBy { it.monthKey }
     }
 
-    val allRowKeys: List<RowKey> by lazy {
-            val result = arrayListOf<RowKey>()
-            result.addAll(rowKeys)
-            val totalKeys = rowKeys
-                .distinctBy { it.rowKeyInt.cardNameKey }
-                .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
-            result.addAll(totalKeys)
-            result.add(RowKey(totalCardName, totalWithCashCategory, 0))
-            result.add(RowKey(totalCardName, totalCategory, 1))
-            result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
-            result.sortedBy { it.rowKeyInt }
+    val rowKeysWithTotals: List<RowKey> by lazy {
+        val result = arrayListOf<RowKey>()
+        result.addAll(rowKeys)
+        val totalKeys = rowKeys
+            .distinctBy { it.rowKeyInt.cardNameKey }
+            .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
+        result.addAll(totalKeys)
+        result.add(RowKey(totalCardName, totalWithCashCategory, 0))
+        result.add(RowKey(totalCardName, totalCategory, 1))
+        result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        result.sortedBy { it.rowKeyInt }
+    }
+    val allPayments: List<PaymentEntry>
+        get() = allCells
+            .entries
+            .flatMap { it.value.payments }
+
+    val statisticsEntry: ExpenseEntry
+        get() {
+            val allPaymentsWithComments = allPayments
+                .map {
+                    val comment = it
+                        .comment
+                        .takeIf {
+                            it != defaultCommentPositiveAmount &&
+                                    it != defaultCommentNegativeAmount
+                        } ?: it.category.utf8toCP1251()
+                    it.copy(comment = comment)
+                }
+            val uniqueComments = allPaymentsWithComments
+                .map { it.comment }
+                .distinct()
+            val paymentsForStatistics = arrayListOf<PaymentEntry>()
+            uniqueComments.forEach { _comment ->
+                val amount = allPaymentsWithComments
+                    .filter { it.comment == _comment }
+                    .sumOf { it.amount }
+                val payment = PaymentEntry(
+                    id = -1L,
+                    cardName = "",
+                    category = "",
+                    rowKeyInt = 0,
+                    date = Date(),
+                    amount = amount,
+                    comment = _comment
+                )
+                paymentsForStatistics.add(payment)
+            }
+            return ExpenseEntry(
+                cardName = "",
+                category = "",
+                rowKeyInt = 0,
+                date = Date(),
+                payments = paymentsForStatistics.sortedBy { it.amount }
+            )
         }
+
     fun getCell(rowKey: RowKey, date: Date): ExpenseEntry {
         if (date.time == zeroDate.time) {
             val payments = dates
@@ -122,9 +168,4 @@ data class ExpenseTable(
             0.0
         )
     }
-
-    val allPayments: List<PaymentEntry>
-        get() = allCells
-            .entries
-            .flatMap { it.value.payments }
 }

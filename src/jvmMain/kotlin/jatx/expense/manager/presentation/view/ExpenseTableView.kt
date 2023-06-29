@@ -82,9 +82,9 @@ fun ExpenseTable() {
                             }
                         }
                         .verticalScroll(firstColumnScrollState)
-                        .height(cellHeight * theExpenseTable.allRowKeys.size)
+                        .height(cellHeight * theExpenseTable.rowKeysWithTotals.size)
                 ) {
-                    items(theExpenseTable.allRowKeys) { rowKey ->
+                    items(theExpenseTable.rowKeysWithTotals) { rowKey ->
                         Row {
                             ExpenseCell(
                                 modifier = Modifier
@@ -120,7 +120,7 @@ fun ExpenseTable() {
                 item {
                     Column {
                         Row {
-                            theExpenseTable.allDates.forEach { date ->
+                            theExpenseTable.datesWithZeroDate.forEach { date ->
                                 ExpenseCell(
                                     modifier = Modifier.width(cellWidth).height(cellHeight),
                                     text = date.formattedMonthAndYear.utf8toCP1251()
@@ -145,12 +145,12 @@ fun ExpenseTable() {
                                     }
                                 }
                                 .verticalScroll(columnScrollState)
-                                .height(cellHeight * theExpenseTable.allRowKeys.size)
+                                .height(cellHeight * theExpenseTable.rowKeysWithTotals.size)
                                 .fillMaxWidth()
                         ) {
-                            items(theExpenseTable.allRowKeys) { rowKey ->
+                            items(theExpenseTable.rowKeysWithTotals) { rowKey ->
                                 Row {
-                                    theExpenseTable.allDates.forEach { date ->
+                                    theExpenseTable.datesWithZeroDate.forEach { date ->
                                         val expenseEntry =
                                             theExpenseTable.getCell(rowKey, date)
                                         ExpenseCell(
@@ -175,11 +175,11 @@ fun ExpenseTable() {
 
 
     val launchedEffectKey =
-        (expenseTable?.allDates?.maxOfOrNull { it.monthKey } ?: 0) +
-                (expenseTable?.allRowKeys?.maxOfOrNull { it.rowKeyInt } ?: 0)
+        (expenseTable?.datesWithZeroDate?.maxOfOrNull { it.monthKey } ?: 0) +
+                (expenseTable?.rowKeysWithTotals?.maxOfOrNull { it.rowKeyInt } ?: 0)
 
     LaunchedEffect(launchedEffectKey) {
-        rowListState.scrollBy(500f * (expenseTable?.allDates?.size ?: 0))
+        rowListState.scrollBy(500f * (expenseTable?.datesWithZeroDate?.size ?: 0))
     }
 }
 

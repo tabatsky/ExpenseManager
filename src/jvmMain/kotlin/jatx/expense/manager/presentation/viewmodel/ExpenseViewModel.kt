@@ -3,16 +3,12 @@ package jatx.expense.manager.presentation.viewmodel
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.util.monthKey
-import jatx.expense.manager.domain.util.utf8toCP1251
-import jatx.expense.manager.res.defaultCommentNegativeAmount
-import jatx.expense.manager.res.defaultCommentPositiveAmount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.util.*
 
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
@@ -91,45 +87,8 @@ class ExpenseViewModel(
     }
 
     fun showStatistics() {
-        expenseTable.value?.let { _table ->
-            val allPayments = _table
-                .allPayments
-                .map {
-                    val comment = it
-                        .comment
-                        .takeIf {
-                            it != defaultCommentPositiveAmount &&
-                                    it != defaultCommentNegativeAmount
-                        } ?: it.category.utf8toCP1251()
-                    it.copy(comment = comment)
-                }
-            val uniqueComments = allPayments
-                .map { it.comment }
-                .distinct()
-            val paymentsForStatistics = arrayListOf<PaymentEntry>()
-            uniqueComments.forEach { _comment ->
-                val amount = allPayments
-                    .filter { it.comment == _comment }
-                    .sumOf { it.amount }
-                val payment = PaymentEntry(
-                    id = -1L,
-                    cardName = "",
-                    category = "",
-                    rowKeyInt = 0,
-                    date = Date(),
-                    amount = amount,
-                    comment = _comment
-                )
-                paymentsForStatistics.add(payment)
-            }
-            val expenseEntryForStatistics = ExpenseEntry(
-                cardName = "",
-                category = "",
-                rowKeyInt = 0,
-                date = Date(),
-                payments = paymentsForStatistics.sortedBy { it.amount }
-            )
-            updateCurrentExpenseEntry(expenseEntryForStatistics)
+        expenseTable.value?.let {
+            updateCurrentExpenseEntry(it.statisticsEntry)
         }
     }
 

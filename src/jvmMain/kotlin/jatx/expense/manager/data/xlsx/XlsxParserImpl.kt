@@ -150,21 +150,21 @@ fun printParsedXlsx(expenseTable: ExpenseTable) {
     val dateLineBuilder = StringBuilder()
     dateLineBuilder.append("$delim$delim")
 
-    expenseTable.allDates.forEach { date ->
+    expenseTable.datesWithZeroDate.forEach { date ->
         dateLineBuilder.append(date.formattedMonthAndYear)
         dateLineBuilder.append(delim)
     }
 
     println(dateLineBuilder.toString())
 
-    expenseTable.allRowKeys.forEach { rowKey ->
+    expenseTable.rowKeysWithTotals.forEach { rowKey ->
         val lineBuilder = StringBuilder()
         lineBuilder.append(rowKey.cardName)
         lineBuilder.append(delim)
         lineBuilder.append(rowKey.category)
         lineBuilder.append(delim)
 
-        expenseTable.allDates.forEach { date ->
+        expenseTable.datesWithZeroDate.forEach { date ->
             val expenseEntry = expenseTable.getCell(rowKey, date)
             lineBuilder.append(expenseEntry.paymentSum)
             lineBuilder.append(delim)

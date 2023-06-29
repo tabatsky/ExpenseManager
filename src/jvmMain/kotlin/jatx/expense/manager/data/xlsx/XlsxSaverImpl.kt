@@ -28,7 +28,7 @@ class XlsxSaverImpl(
         var cardName = totalCardName
         var rowNum = 4
         expenseTable
-            .allRowKeys
+            .rowKeysWithTotals
             .drop(3)
             .forEach {
                 if (it.cardName != cardName) {
@@ -42,7 +42,7 @@ class XlsxSaverImpl(
         allColNums.add(2)
         var colNum = 3
         expenseTable
-            .allDates
+            .datesWithZeroDate
             .drop(1)
             .forEach {
                 allColNums.add(colNum)
@@ -62,7 +62,7 @@ class XlsxSaverImpl(
         firstRowFont.bold = true
         firstRowStyle.setFont(firstRowFont)
         expenseTable
-            .allDates
+            .datesWithZeroDate
             .forEachIndexed { j, date ->
                 val colNum = allColNums[j]
                 val cell = firstRow.createCell(colNum)
@@ -71,7 +71,7 @@ class XlsxSaverImpl(
             }
 
         expenseTable
-            .allRowKeys
+            .rowKeysWithTotals
             .forEachIndexed { i, rowKey ->
                 val composeColor = if (rowKey.category == lohCategory || rowKey.category == totalLohCategory)
                     redColor
@@ -106,7 +106,7 @@ class XlsxSaverImpl(
                 secondStyle.setFont(secondFont)
                 secondCell.cellStyle = secondStyle
                 expenseTable
-                    .allDates
+                    .datesWithZeroDate
                     .forEachIndexed { j, date ->
                         val colNum = allColNums[j]
                         val cell = row.createCell(colNum)
@@ -121,7 +121,7 @@ class XlsxSaverImpl(
                         val cellContent = if (i == 0) {
                             val totalCellNames = arrayListOf<String>()
                             expenseTable
-                                .allRowKeys
+                                .rowKeysWithTotals
                                 .forEachIndexed { k, rowKey ->
                                     if (rowKey.cardName != totalCardName && rowKey.category == totalCategory) {
                                         val totalRowNum = allRowNums[k]
@@ -134,7 +134,7 @@ class XlsxSaverImpl(
                         } else if (i == 1) {
                             val totalCellNames = arrayListOf<String>()
                             expenseTable
-                                .allRowKeys
+                                .rowKeysWithTotals
                                 .forEachIndexed { k, rowKey ->
                                     if (rowKey.cardName != totalCardName && rowKey.cardName != cashCardName && rowKey.category == totalCategory) {
                                         val totalRowNum = allRowNums[k]
@@ -147,7 +147,7 @@ class XlsxSaverImpl(
                         } else if (i == 2) {
                             val totalCellNames = arrayListOf<String>()
                             expenseTable
-                                .allRowKeys
+                                .rowKeysWithTotals
                                 .forEachIndexed { k, rowKey ->
                                     if (rowKey.category == lohCategory) {
                                         val totalRowNum = allRowNums[k]
@@ -159,17 +159,17 @@ class XlsxSaverImpl(
                             makeSummFormula(totalCellNames)
                         } else if (j == 0) {
                             val colLetterStart = getColumnLetter(3)
-                            val colLetterEnd = getColumnLetter(expenseTable.allDates.size + 1)
+                            val colLetterEnd = getColumnLetter(expenseTable.datesWithZeroDate.size + 1)
                             val cellNameStart = "$colLetterStart${rowNum + 1}"
                             val cellNameEnd = "$colLetterEnd${rowNum + 1}"
                             makeSummFormula(cellNameStart, cellNameEnd)
                         } else if (rowKey.category == totalCategory) {
                             val rowNumStartIndex = expenseTable
-                                .allRowKeys
+                                .rowKeysWithTotals
                                 .indexOfFirst { it.cardName == rowKey.cardName } + 1
                             val rowNumStart = allRowNums[rowNumStartIndex]
                             val rowNumEndIndex = expenseTable
-                                .allRowKeys
+                                .rowKeysWithTotals
                                 .indexOfLast { it.cardName == rowKey.cardName }
                             val rowNumEnd = allRowNums[rowNumEndIndex]
                             val cellNameStart = "$colLetter${rowNumStart + 1}"
