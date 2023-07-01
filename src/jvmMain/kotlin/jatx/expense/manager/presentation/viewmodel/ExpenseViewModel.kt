@@ -150,6 +150,7 @@ class ExpenseViewModel(
         loadExpenseTableFromDBUseCase.execute().collectLatest {
             _expenseTable.value = it
             reloadCurrentExpenseEntry()
+            saveXlsx(theDefaultXlsxPath)
         }
     }
 
