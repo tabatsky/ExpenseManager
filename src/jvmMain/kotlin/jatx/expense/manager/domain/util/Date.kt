@@ -1,6 +1,7 @@
 package jatx.expense.manager.domain.util
 
 import jatx.expense.manager.res.totalDate
+import java.time.YearMonth
 import java.util.*
 
 val Date.monthKey: Int
@@ -20,6 +21,23 @@ val Int.dateFromMonthKey: Date
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.YEAR, year)
         calendar.set(Calendar.MONTH, month)
+
+        return calendar.time
+    }
+
+val Int.dateOfMonthLastDayFromMonthKey: Date
+    get() {
+        val month = this % 12
+        val year = this / 12
+
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+
+        val yearMonth = YearMonth.of(year, month + 1)
+        val daysInMonth = yearMonth.lengthOfMonth()
+
+        calendar.set(Calendar.DAY_OF_MONTH, daysInMonth)
 
         return calendar.time
     }

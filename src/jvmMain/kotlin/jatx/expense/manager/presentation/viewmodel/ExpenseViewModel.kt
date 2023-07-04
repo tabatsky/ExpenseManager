@@ -2,6 +2,7 @@ package jatx.expense.manager.presentation.viewmodel
 
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
+import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.util.*
 
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
@@ -114,11 +116,16 @@ class ExpenseViewModel(
             .value
             ?.takeIf { it.cardName.isNotEmpty() && it.category.isNotEmpty() }
             ?.let {
+                val date = if (it.date.monthKey >= Date().monthKey) {
+                    it.date
+                } else {
+                    it.date.monthKey.dateOfMonthLastDayFromMonthKey
+                }
                 _newPaymentEntry.value = PaymentEntry(
                     cardName = it.cardName,
                     category = it.category,
                     rowKeyInt = it.rowKeyInt,
-                    date = it.date,
+                    date = date,
                     amount = 0,
                     comment = ""
                 ).takeIf { show }
