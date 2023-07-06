@@ -45,7 +45,7 @@ class ExpenseViewModel(
 
     fun onAppStart() {
         coroutineScope.launch {
-            loadExpenseTableFromDB()
+            loadExpenseTableFromDBAndSaveToDefaultXlsx()
         }
     }
 
@@ -75,7 +75,7 @@ class ExpenseViewModel(
                 }
                 .collectLatest {
                     saveExpenseTableToDBUseCase.execute(it)
-                    loadExpenseTableFromDB()
+                    loadExpenseTableFromDBAndSaveToDefaultXlsx()
                 }
         }
     }
@@ -132,28 +132,28 @@ class ExpenseViewModel(
             }
     }
 
-    fun updatePaymentEntryToDB(paymentEntry: PaymentEntry) {
+    fun updatePaymentEntryAtDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             updatePaymentUseCase.execute(paymentEntry)
-            loadExpenseTableFromDB()
+            loadExpenseTableFromDBAndSaveToDefaultXlsx()
         }
     }
 
-    fun insertPaymentEntryToDB(paymentEntry: PaymentEntry) {
+    fun insertPaymentEntryIntoDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             insertPaymentUseCase.execute(paymentEntry)
-            loadExpenseTableFromDB()
+            loadExpenseTableFromDBAndSaveToDefaultXlsx()
         }
     }
 
-    fun deletePaymentEntryFromDB(paymentEntry: PaymentEntry) {
+    fun deletePaymentEntryFromDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             deletePaymentUseCase.execute(paymentEntry)
-            loadExpenseTableFromDB()
+            loadExpenseTableFromDBAndSaveToDefaultXlsx()
         }
     }
 
-    private suspend fun loadExpenseTableFromDB() {
+    private suspend fun loadExpenseTableFromDBAndSaveToDefaultXlsx() {
         loadExpenseTableFromDBUseCase.execute().collectLatest {
             _expenseTable.value = it
             reloadCurrentExpenseEntry()
