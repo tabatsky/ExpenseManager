@@ -17,6 +17,8 @@ data class ExpenseTable(
     val dates: List<Date>,
     val rowKeys: List<RowKey>
 ) {
+    val cellCount = allCells.size
+
     val datesWithZeroDate: List<Date> by lazy {
         val result = arrayListOf<Date>()
         result.add(zeroDate)
