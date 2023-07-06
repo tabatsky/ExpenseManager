@@ -51,7 +51,7 @@ fun EditPaymentDialogWrapper() {
                 },
                 confirmButton = {
                     Button(onClick = {
-                        expenseViewModel.deletePaymentEntryFromDB(paymentEntry)
+                        expenseViewModel.deletePaymentEntryFromDBAndReloadExpenseTable(paymentEntry)
                         showConfirmation = false
                     }) {
                         Text(text = buttonYesLabel)
@@ -83,7 +83,7 @@ fun AddPaymentDialogWrapper() {
                 expenseViewModel.showAddPaymentDialog(false)
             },
             onSave = {
-                expenseViewModel.insertPaymentEntryToDB(it)
+                expenseViewModel.insertPaymentEntryIntoDBAndReloadExpenseTable(it)
             }
         )
     }
