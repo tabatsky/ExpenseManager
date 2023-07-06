@@ -30,7 +30,7 @@ fun EditPaymentDialogWrapper() {
                     expenseViewModel.showEditPaymentDialog(paymentEntry, false)
                 },
                 onSave = {
-                    expenseViewModel.updatePaymentEntryToDB(it)
+                    expenseViewModel.updatePaymentEntryAtDBAndReloadExpenseTable(it)
                 },
                 onDelete = {
                     showConfirmation = true
