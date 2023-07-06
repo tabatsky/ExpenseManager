@@ -9,7 +9,9 @@ class SaveXlsxUseCase(
     private val xlsxSaverFactory: XlsxSaverFactory
 ) {
     fun execute(expenseTable: ExpenseTable, xlsxPath: String) {
-        val xlsxSaver = xlsxSaverFactory.newInstance(expenseTable, xlsxPath)
-        xlsxSaver.saveXlsx()
+        if (expenseTable.cellCount > 0) {
+            val xlsxSaver = xlsxSaverFactory.newInstance(expenseTable, xlsxPath)
+            xlsxSaver.saveXlsx()
+        }
     }
 }
