@@ -20,14 +20,15 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import jatx.expense.manager.di.Injector
-import jatx.expense.manager.domain.models.cardNameKey
-import jatx.expense.manager.domain.models.categoryKey
-import jatx.expense.manager.domain.models.lohKey
+import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
+import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
+
+const val fixedRowCount = 1
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -65,6 +66,11 @@ fun ExpenseTable() {
                         text = ""
                     )
                 }
+                theExpenseTable.rowKeysWithTotals.take(fixedRowCount).forEach { rowKey ->
+                    Row {
+                        FirstTwoColumnsRow(rowKey)
+                    }
+                }
                 LazyColumn(
                     state = firstColumnListState,
                     modifier = Modifier
@@ -84,23 +90,8 @@ fun ExpenseTable() {
                         .verticalScroll(firstColumnScrollState)
                         .height(cellHeight * theExpenseTable.rowKeysWithTotals.size)
                 ) {
-                    items(theExpenseTable.rowKeysWithTotals) { rowKey ->
-                        Row {
-                            ExpenseCell(
-                                modifier = Modifier
-                                    .width(firstCellWidth)
-                                    .height(cellHeight)
-                                    .background(colorByKey(rowKey.rowKeyInt)),
-                                text = rowKey.cardName.utf8toCP1251()
-                            )
-                            ExpenseCell(
-                                modifier = Modifier
-                                    .width(secondCellWidth)
-                                    .height(cellHeight)
-                                    .background(colorByKey(rowKey.rowKeyInt)),
-                                text = rowKey.category.utf8toCP1251()
-                            )
-                        }
+                    items(theExpenseTable.rowKeysWithTotals.drop(fixedRowCount)) { rowKey ->
+                        FirstTwoColumnsRow(rowKey)
                     }
                 }
             }
@@ -128,6 +119,12 @@ fun ExpenseTable() {
                             }
                         }
 
+                        theExpenseTable.rowKeysWithTotals.take(fixedRowCount).forEach { rowKey ->
+                            Row {
+                                CommonRow(rowKey, theExpenseTable, expenseViewModel)
+                            }
+                        }
+
                         LazyColumn(
                             state = columnListState,
                             modifier = Modifier
@@ -148,23 +145,8 @@ fun ExpenseTable() {
                                 .height(cellHeight * theExpenseTable.rowKeysWithTotals.size)
                                 .fillMaxWidth()
                         ) {
-                            items(theExpenseTable.rowKeysWithTotals) { rowKey ->
-                                Row {
-                                    theExpenseTable.datesWithZeroDate.forEach { date ->
-                                        val expenseEntry =
-                                            theExpenseTable.getCell(rowKey, date)
-                                        ExpenseCell(
-                                            modifier = Modifier
-                                                .width(cellWidth)
-                                                .height(cellHeight)
-                                                .background(colorByKey(rowKey.rowKeyInt))
-                                                .clickable {
-                                                    expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
-                                                },
-                                            text = expenseEntry.paymentSum.toString()
-                                        )
-                                    }
-                                }
+                            items(theExpenseTable.rowKeysWithTotals.drop(fixedRowCount)) { rowKey ->
+                                CommonRow(rowKey, theExpenseTable, expenseViewModel)
                             }
                         }
                     }
@@ -180,6 +162,50 @@ fun ExpenseTable() {
 
     LaunchedEffect(launchedEffectKey) {
         rowListState.scrollBy(500f * (expenseTable?.datesWithZeroDate?.size ?: 0))
+    }
+}
+
+@Composable
+fun FirstTwoColumnsRow(rowKey: RowKey) {
+    Row {
+        ExpenseCell(
+            modifier = Modifier
+                .width(firstCellWidth)
+                .height(cellHeight)
+                .background(colorByKey(rowKey.rowKeyInt)),
+            text = rowKey.cardName.utf8toCP1251()
+        )
+        ExpenseCell(
+            modifier = Modifier
+                .width(secondCellWidth)
+                .height(cellHeight)
+                .background(colorByKey(rowKey.rowKeyInt)),
+            text = rowKey.category.utf8toCP1251()
+        )
+    }
+}
+
+@Composable
+fun CommonRow(
+    rowKey: RowKey,
+    theExpenseTable: ExpenseTable,
+    expenseViewModel: ExpenseViewModel
+) {
+    Row {
+        theExpenseTable.datesWithZeroDate.forEach { date ->
+            val expenseEntry =
+                theExpenseTable.getCell(rowKey, date)
+            ExpenseCell(
+                modifier = Modifier
+                    .width(cellWidth)
+                    .height(cellHeight)
+                    .background(colorByKey(rowKey.rowKeyInt))
+                    .clickable {
+                        expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
+                    },
+                text = expenseEntry.paymentSum.toString()
+            )
+        }
     }
 }
 
