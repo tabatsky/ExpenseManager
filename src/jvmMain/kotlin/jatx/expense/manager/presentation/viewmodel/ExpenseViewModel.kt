@@ -62,8 +62,17 @@ class ExpenseViewModel(
                             val expenseEntryDb = tableDb.getCell(rowKey, date)
 
                             if (expenseEntryDb.paymentSum == expenseEntryXls.paymentSum) {
+                                val updatedExpenseEntryDb = expenseEntryDb
+                                    .copy(
+                                        rowKeyInt = rowKey.rowKeyInt,
+                                        payments = expenseEntryDb
+                                            .payments
+                                            .map {
+                                                it.copy(rowKeyInt = rowKey.rowKeyInt)
+                                            }
+                                    )
                                 allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
-                                    expenseEntryDb
+                                    updatedExpenseEntryDb
                             } else {
                                 allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
                                     expenseEntryXls
