@@ -16,8 +16,11 @@ fun FrameWindowScope.MainMenuBar(menuCallbacks: MenuCallbacks) = MenuBar {
         }
     }
     Menu(menuFunctionLabel) {
-        Item(menuStatisticsLabel) {
-            menuCallbacks.onShowStatistics?.invoke()
+        Item(menuStatisticsByCommentLabel) {
+            menuCallbacks.onShowStatisticsByComment?.invoke()
+        }
+        Item(menuStatisticsByCategoryLabel) {
+            menuCallbacks.onShowStatisticsByCategory?.invoke()
         }
     }
 }
@@ -25,5 +28,6 @@ fun FrameWindowScope.MainMenuBar(menuCallbacks: MenuCallbacks) = MenuBar {
 class MenuCallbacks {
     var onLoadXlsx: (() -> Unit)? = null
     var onSaveXlsx: (() -> Unit)? = null
-    var onShowStatistics: (() -> Unit)? = null
+    var onShowStatisticsByComment: (() -> Unit)? = null
+    var onShowStatisticsByCategory: (() -> Unit)? = null
 }

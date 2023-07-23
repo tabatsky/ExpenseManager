@@ -43,7 +43,7 @@ data class ExpenseTable(
             .entries
             .flatMap { it.value.payments }
 
-    val statisticsEntry: ExpenseEntry
+    val statisticsEntryByComment: ExpenseEntry
         get() {
             val allPaymentsWithComments = allPayments
                 .map {
@@ -51,19 +51,19 @@ data class ExpenseTable(
                         .comment
                         .takeIf {
                             it != defaultCommentPositiveAmount &&
-                                    it != defaultCommentNegativeAmount
+                                    it != defaultCommentNegativeAmount &&
+                                    it.isNotEmpty()
                         } ?: it.category.utf8toCP1251()
                     it.copy(comment = comment)
                 }
             val uniqueComments = allPaymentsWithComments
                 .map { it.comment }
                 .distinct()
-            val paymentsForStatistics = arrayListOf<PaymentEntry>()
-            uniqueComments.forEach { _comment ->
+            val paymentsForStatistics = uniqueComments.map { _comment ->
                 val amount = allPaymentsWithComments
                     .filter { it.comment == _comment }
                     .sumOf { it.amount }
-                val payment = PaymentEntry(
+                PaymentEntry(
                     id = -1L,
                     cardName = "",
                     category = "",
@@ -72,7 +72,39 @@ data class ExpenseTable(
                     amount = amount,
                     comment = _comment
                 )
-                paymentsForStatistics.add(payment)
+            }
+            return ExpenseEntry(
+                cardName = "",
+                category = "",
+                rowKeyInt = 0,
+                date = Date(),
+                payments = paymentsForStatistics.sortedBy { it.amount }
+            )
+        }
+
+    val statisticsEntryByCategory: ExpenseEntry
+        get() {
+            val allPaymentsWithComments = allPayments
+                .map {
+                    val comment =  it.category.utf8toCP1251()
+                    it.copy(comment = comment)
+                }
+            val uniqueComments = allPaymentsWithComments
+                .map { it.comment }
+                .distinct()
+            val paymentsForStatistics = uniqueComments.map { _comment ->
+                val amount = allPaymentsWithComments
+                    .filter { it.comment == _comment }
+                    .sumOf { it.amount }
+                PaymentEntry(
+                    id = -1L,
+                    cardName = "",
+                    category = "",
+                    rowKeyInt = 0,
+                    date = Date(),
+                    amount = amount,
+                    comment = _comment
+                )
             }
             return ExpenseEntry(
                 cardName = "",

@@ -102,9 +102,15 @@ class ExpenseViewModel(
         }
     }
 
-    fun showStatistics() {
+    fun showStatisticsByComment() {
         expenseTable.value?.let {
-            updateCurrentExpenseEntry(it.statisticsEntry)
+            updateCurrentExpenseEntry(it.statisticsEntryByComment)
+        }
+    }
+
+    fun showStatisticsByCategory() {
+        expenseTable.value?.let {
+            updateCurrentExpenseEntry(it.statisticsEntryByCategory)
         }
     }
 
