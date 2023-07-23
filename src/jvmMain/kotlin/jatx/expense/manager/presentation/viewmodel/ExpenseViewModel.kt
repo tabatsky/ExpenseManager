@@ -35,6 +35,11 @@ class ExpenseViewModel(
     private val _xlsxChooserDialogShowCounter = MutableStateFlow(0)
     val xlsxChooserDialogShowCounter = _xlsxChooserDialogShowCounter.asStateFlow()
 
+    private val _needShowDatePickerDialog = MutableStateFlow(false)
+    val needShowDatePickerDialog = _needShowDatePickerDialog.asStateFlow()
+    private val _datePickerDate = MutableStateFlow(Date())
+    val datePickerDate = _datePickerDate.asStateFlow()
+
     private val _currentPaymentEntry: MutableStateFlow<PaymentEntry?> = MutableStateFlow(null)
     val currentPaymentEntry = _currentPaymentEntry.asStateFlow()
     private val _newPaymentEntry: MutableStateFlow<PaymentEntry?> = MutableStateFlow(null)
@@ -111,6 +116,14 @@ class ExpenseViewModel(
         _isXlsxSaveDialog.value = isSave
         _needShowXlsxChooserDialog.value = show
         _xlsxChooserDialogShowCounter.value += 1
+    }
+
+    fun showDatePickerDialog(show: Boolean) {
+        _needShowDatePickerDialog.value = show
+    }
+
+    fun setDatePickerDate(date: Date) {
+        _datePickerDate.value = date
     }
 
     fun showEditPaymentDialog(paymentEntry: PaymentEntry?, show: Boolean) {

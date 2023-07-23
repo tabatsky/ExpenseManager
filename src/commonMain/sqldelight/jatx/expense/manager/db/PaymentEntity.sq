@@ -22,7 +22,7 @@ VALUES
 
 updatePayment:
 UPDATE paymentEntity SET
-amount=?, comment=?
+amount=?, comment=?, date=?
 WHERE id=?;
 
 deletePayment:

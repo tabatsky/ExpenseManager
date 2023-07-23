@@ -21,8 +21,10 @@ kotlin {
     sourceSets {
         val commonMain by getting
         val jvmMain by getting {
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation("org.jetbrains.compose.material3:material3-desktop:1.5.0-dev1114")
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
                 implementation("org.apache.poi:poi:5.2.3")

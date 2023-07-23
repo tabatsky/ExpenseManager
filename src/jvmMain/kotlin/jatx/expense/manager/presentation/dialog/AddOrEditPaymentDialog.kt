@@ -6,11 +6,13 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogWindow
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.res.*
+import java.text.SimpleDateFormat
 
+val sdf = SimpleDateFormat("dd.MM.yyyy")
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -96,13 +98,21 @@ private fun AddOrEditPaymentDialog(
     onSave: (PaymentEntry) -> Unit,
     onDelete: (() -> Unit)? = null
 ) {
+    val expenseViewModel = Injector.expenseViewModel
+
     var amount by remember { mutableStateOf(paymentEntry.amount) }
     var comment by remember { mutableStateOf(paymentEntry.comment) }
 
     val enabled = amount != 0
     val saveLabel = if (enabled) buttonSaveLabel else buttonSaveZeroLabel
 
-    Dialog(onCloseRequest = { onDismiss() }) {
+    LaunchedEffect(Unit) {
+        expenseViewModel.setDatePickerDate(paymentEntry.date)
+    }
+
+    val date by expenseViewModel.datePickerDate.collectAsState()
+
+    DialogWindow(onCloseRequest = { onDismiss() }) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,9 +141,23 @@ private fun AddOrEditPaymentDialog(
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
+                enabled = true,
+                onClick = {
+                    expenseViewModel.showDatePickerDialog(true)
+                }
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = sdf.format(date)
+                )
+            }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 enabled = enabled,
                 onClick = {
-                    onSave(paymentEntry.copy(amount = amount, comment = comment))
+                    onSave(paymentEntry.copy(amount = amount, comment = comment, date = date))
                     onDismiss()
                 }
             ) {

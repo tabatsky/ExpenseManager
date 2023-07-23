@@ -59,6 +59,7 @@ class PaymentRepositoryImpl(
             .updatePayment(
                 amount = paymentEntity.amount,
                 comment = paymentEntity.comment,
+                date = paymentEntity.date,
                 id = paymentEntity.id
             )
     }
