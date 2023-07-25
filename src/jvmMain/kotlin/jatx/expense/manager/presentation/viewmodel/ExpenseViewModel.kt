@@ -20,6 +20,7 @@ class ExpenseViewModel(
     private val updatePaymentUseCase: UpdatePaymentUseCase,
     private val insertPaymentUseCase: InsertPaymentUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
+    private val renameCategoryUseCase: RenameCategoryUseCase,
     private val coroutineScope: CoroutineScope
 ) {
     private val _expenseTable: MutableStateFlow<ExpenseTable?> = MutableStateFlow(null)
@@ -44,6 +45,9 @@ class ExpenseViewModel(
     val currentPaymentEntry = _currentPaymentEntry.asStateFlow()
     private val _newPaymentEntry: MutableStateFlow<PaymentEntry?> = MutableStateFlow(null)
     val newPaymentEntry = _newPaymentEntry.asStateFlow()
+
+    private val _rowKeyToEdit: MutableStateFlow<RowKey?> = MutableStateFlow(null)
+    val rowKeyToEdit = _rowKeyToEdit.asStateFlow()
 
     private val _showEditPaymentDialog = MutableStateFlow(false)
     val showEditPaymentDialog = _showEditPaymentDialog.asStateFlow()
@@ -132,6 +136,10 @@ class ExpenseViewModel(
         _datePickerDate.value = date
     }
 
+    fun showRenameCategoryDialog(rowKey: RowKey?) {
+        _rowKeyToEdit.value = rowKey
+    }
+
     fun showEditPaymentDialog(paymentEntry: PaymentEntry?, show: Boolean) {
         paymentEntry?.takeIf { it.id >= 0 }?.let {
             _currentPaymentEntry.value = it
@@ -179,6 +187,13 @@ class ExpenseViewModel(
             deletePaymentUseCase.execute(paymentEntry)
             loadExpenseTableFromDBAndSaveToDefaultXlsx()
         }
+    }
+
+    fun renameCategoryAndReloadExpenseTable(newCategory: String, rowKey: RowKey) {
+         coroutineScope.launch {
+             renameCategoryUseCase.execute(newCategory, rowKey)
+             loadExpenseTableFromDBAndSaveToDefaultXlsx()
+         }
     }
 
     private suspend fun loadExpenseTableFromDBAndSaveToDefaultXlsx() {

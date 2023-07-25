@@ -167,6 +167,8 @@ fun ExpenseTable() {
 
 @Composable
 fun FirstTwoColumnsRow(rowKey: RowKey) {
+    val expenseViewModel = Injector.expenseViewModel
+
     Row {
         ExpenseCell(
             modifier = Modifier
@@ -179,7 +181,10 @@ fun FirstTwoColumnsRow(rowKey: RowKey) {
             modifier = Modifier
                 .width(secondCellWidth)
                 .height(cellHeight)
-                .background(colorByKey(rowKey.rowKeyInt)),
+                .background(colorByKey(rowKey.rowKeyInt))
+                .clickable {
+                    expenseViewModel.showRenameCategoryDialog(rowKey)
+                },
             text = rowKey.category.utf8toCP1251()
         )
     }

@@ -10,4 +10,5 @@ interface PaymentRepository {
     suspend fun updatePayment(paymentEntry: PaymentEntry)
     suspend fun deletePayment(paymentEntry: PaymentEntry)
     suspend fun selectAll(): List<PaymentEntry>
+    suspend fun renameCategory(newCategory: String, cardName: String, category: String)
 }

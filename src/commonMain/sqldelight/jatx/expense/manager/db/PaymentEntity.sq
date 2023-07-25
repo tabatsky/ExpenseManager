@@ -27,3 +27,8 @@ WHERE id=?;
 
 deletePayment:
 DELETE FROM paymentEntity WHERE id=?;
+
+renameCategory:
+UPDATE paymentEntity SET
+category=?
+WHERE cardName=? AND category=?;

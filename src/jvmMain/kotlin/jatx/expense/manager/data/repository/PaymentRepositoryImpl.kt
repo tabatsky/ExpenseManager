@@ -79,4 +79,9 @@ class PaymentRepositoryImpl(
             .selectAll()
             .executeAsList()
             .map { it.toModelEntry() }
+
+    override suspend fun renameCategory(newCategory: String, cardName: String, category: String) =
+        appDatabase
+            .paymentEntityQueries
+            .renameCategory(newCategory, cardName, category)
 }
