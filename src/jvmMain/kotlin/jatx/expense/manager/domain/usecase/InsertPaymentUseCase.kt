@@ -10,7 +10,7 @@ class InsertPaymentUseCase(
     suspend fun execute(paymentEntry: PaymentEntry) =
         paymentRepository.insertPayment(
             paymentEntry.let {
-                if (it.comment.isEmpty())
+                if (it.comment.trim().isEmpty())
                     it.copy(comment = makeDefaultComment(it.amount))
                 else
                     it
