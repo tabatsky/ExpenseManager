@@ -1,5 +1,8 @@
 package jatx.expense.manager.domain.models
 
+import jatx.expense.manager.res.defaultCommentNegativeAmount
+import jatx.expense.manager.res.defaultCommentPositiveAmount
+import jatx.expense.manager.res.defaultCommentZeroAmount
 import java.util.*
 
 data class PaymentEntry(
@@ -11,3 +14,11 @@ data class PaymentEntry(
     val amount: Int,
     val comment: String
 )
+
+fun makeDefaultComment(amount: Int) =
+    if (amount > 0)
+        defaultCommentPositiveAmount
+    else if (amount < 0)
+        defaultCommentNegativeAmount
+    else
+        defaultCommentZeroAmount

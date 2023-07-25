@@ -51,8 +51,7 @@ data class ExpenseTable(
                         .comment
                         .takeIf {
                             it != defaultCommentPositiveAmount &&
-                                    it != defaultCommentNegativeAmount &&
-                                    it.isNotEmpty()
+                                    it != defaultCommentNegativeAmount
                         } ?: it.category.utf8toCP1251()
                     it.copy(comment = comment)
                 }

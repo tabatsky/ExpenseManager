@@ -1,9 +1,6 @@
 package jatx.expense.manager.domain.models
 
 import jatx.expense.manager.domain.util.monthKey
-import jatx.expense.manager.res.defaultCommentNegativeAmount
-import jatx.expense.manager.res.defaultCommentPositiveAmount
-import jatx.expense.manager.res.defaultCommentZeroAmount
 import jatx.expense.manager.res.msgWrongNumberFormat
 import java.util.Date
 
@@ -63,11 +60,3 @@ data class ExpenseEntry(
         )
     }
 }
-
-fun makeDefaultComment(amount: Int) =
-    if (amount > 0)
-        defaultCommentPositiveAmount
-    else if (amount < 0)
-        defaultCommentNegativeAmount
-    else
-        defaultCommentZeroAmount
