@@ -19,8 +19,18 @@ val Int.dateFromMonthKey: Date
         val year = this / 12
 
         val calendar = Calendar.getInstance()
+        val lastDayOfThisMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val dayToday = calendar.get(Calendar.DAY_OF_MONTH)
+        val isLastDayOfMonth = dayToday == lastDayOfThisMonth
+        if (isLastDayOfMonth) {
+            calendar.set(Calendar.DAY_OF_MONTH, 1)
+        }
         calendar.set(Calendar.YEAR, year)
         calendar.set(Calendar.MONTH, month)
+        if (isLastDayOfMonth) {
+            val lastDayOfActualMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            calendar.set(Calendar.DAY_OF_MONTH, lastDayOfActualMonth)
+        }
 
         return calendar.time
     }
