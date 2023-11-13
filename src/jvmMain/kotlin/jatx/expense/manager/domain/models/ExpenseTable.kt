@@ -44,7 +44,15 @@ data class ExpenseTable(
         result.add(RowKey(totalCardName, totalWithCashCategory, 0))
         result.add(RowKey(totalCardName, totalCategory, 1))
         result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
-        result.sortedBy { it.rowKeyInt }
+        result.sortedBy {
+            val key = it.rowKeyInt
+            val sortKey = if (key % 1000 < 800) {
+                (key / 1000) * 1000 + ((key % 1000) % 100) + ((key % 1000) / 100) * 0.1
+            } else {
+                key.toDouble()
+            }
+            sortKey
+        }
     }
     val allPayments: List<PaymentEntry>
         get() = allCells
