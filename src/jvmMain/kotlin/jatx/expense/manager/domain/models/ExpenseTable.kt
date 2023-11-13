@@ -33,6 +33,14 @@ data class ExpenseTable(
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalKeys)
+        val totalPlusKeys = rowKeys
+            .distinctBy { it.rowKeyInt.cardNameKey }
+            .map { RowKey(it.cardName, totalPlusCategory, makeTotalPlusRowKey(it.rowKeyInt.cardNameKey)) }
+        result.addAll(totalPlusKeys)
+        val totalMinusKeys = rowKeys
+            .distinctBy { it.rowKeyInt.cardNameKey }
+            .map { RowKey(it.cardName, totalMinusCategory, makeTotalMinusRowKey(it.rowKeyInt.cardNameKey)) }
+        result.addAll(totalMinusKeys)
         result.add(RowKey(totalCardName, totalWithCashCategory, 0))
         result.add(RowKey(totalCardName, totalCategory, 1))
         result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
@@ -187,6 +195,39 @@ data class ExpenseTable(
                 payments
             )
         }
+
+        if (rowKey.category == totalPlusCategory) {
+            val payments = rowKeys
+                .filter { it.cardName == rowKey.cardName }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { it.payments }
+                .filter { it.amount > 0 }
+                .sortedBy { it.id }
+            return ExpenseEntry(
+                rowKey.cardName,
+                totalPlusCategory,
+                makeTotalPlusRowKey(rowKey.rowKeyInt.cardNameKey),
+                date,
+                payments
+            )
+        }
+
+        if (rowKey.category == totalMinusCategory) {
+            val payments = rowKeys
+                .filter { it.cardName == rowKey.cardName }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { it.payments }
+                .filter { it.amount < 0 }
+                .sortedBy { it.id }
+            return ExpenseEntry(
+                rowKey.cardName,
+                totalMinusCategory,
+                makeTotalMinusRowKey(rowKey.rowKeyInt.cardNameKey),
+                date,
+                payments
+            )
+        }
+
 
         val result = allCells[CellKey(
             rowKey.cardName,
