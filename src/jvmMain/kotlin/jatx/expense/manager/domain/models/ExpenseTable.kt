@@ -54,6 +54,27 @@ data class ExpenseTable(
             sortKey
         }
     }
+
+    val rowKeysWithTotalsNoPlusMinus: List<RowKey> by lazy {
+        val result = arrayListOf<RowKey>()
+        result.addAll(rowKeys)
+        val totalKeys = rowKeys
+            .distinctBy { it.rowKeyInt.cardNameKey }
+            .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
+        result.addAll(totalKeys)
+        result.add(RowKey(totalCardName, totalWithCashCategory, 0))
+        result.add(RowKey(totalCardName, totalCategory, 1))
+        result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        result.sortedBy {
+            val key = it.rowKeyInt
+            val sortKey = if (key % 1000 < 800) {
+                (key / 1000) * 1000 + ((key % 1000) % 100) + ((key % 1000) / 100) * 0.1
+            } else {
+                key.toDouble()
+            }
+            sortKey
+        }
+    }
     val allPayments: List<PaymentEntry>
         get() = allCells
             .entries

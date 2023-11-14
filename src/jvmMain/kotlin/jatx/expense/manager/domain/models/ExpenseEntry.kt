@@ -33,7 +33,7 @@ data class ExpenseEntry(
                         comment = makeDefaultComment(it.toInt())
                     )
                 }
-            } catch (e: NumberFormatException) {
+            } catch (e: Exception) {
                 println(msgWrongNumberFormat)
                 listOf()
             }
