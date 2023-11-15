@@ -156,7 +156,7 @@ data class ExpenseTable(
             val payments = dates
                 .map { getCell(rowKey, it) }
                 .flatMap { it.payments }
-                .sortedBy { it.id }
+                .sortedBy { it.date.time }
             return ExpenseEntry(
                 rowKey.cardName,
                 rowKey.category,
@@ -170,7 +170,7 @@ data class ExpenseTable(
             val payments = rowKeys
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
-                .sortedBy { it.id }
+                .sortedBy { it.date.time }
             return ExpenseEntry(
                 totalCardName,
                 totalCategory,
@@ -185,7 +185,7 @@ data class ExpenseTable(
                 .filter { it.cardName != cashCardName }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
-                .sortedBy { it.id }
+                .sortedBy { it.date.time }
             return ExpenseEntry(
                 totalCardName,
                 totalCategory,
@@ -200,7 +200,7 @@ data class ExpenseTable(
                 .filter { it.category == lohCategory }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
-                .sortedBy { it.id }
+                .sortedBy { it.date.time }
             return ExpenseEntry(
                 totalCardName,
                 totalCategory,
@@ -215,7 +215,7 @@ data class ExpenseTable(
                 .filter { it.cardName == rowKey.cardName }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
-                .sortedBy { it.id }
+                .sortedBy { it.date.time }
             return ExpenseEntry(
                 rowKey.cardName,
                 totalCategory,
@@ -231,7 +231,7 @@ data class ExpenseTable(
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount > 0 }
-                .sortedBy { it.id }
+                .sortedBy { it.date.time }
             return ExpenseEntry(
                 rowKey.cardName,
                 totalPlusCategory,
@@ -247,7 +247,7 @@ data class ExpenseTable(
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount < 0 }
-                .sortedBy { it.id }
+                .sortedBy { it.date.time }
             return ExpenseEntry(
                 rowKey.cardName,
                 totalMinusCategory,
