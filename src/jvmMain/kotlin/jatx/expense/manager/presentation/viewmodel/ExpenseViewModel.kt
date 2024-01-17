@@ -74,7 +74,7 @@ class ExpenseViewModel(
                                 val updatedExpenseEntryDb = expenseEntryDb
                                     .copy(
                                         rowKeyInt = rowKey.rowKeyInt,
-                                        payments = expenseEntryDb
+                                        _payments = expenseEntryDb
                                             .payments
                                             .map {
                                                 it.copy(rowKeyInt = rowKey.rowKeyInt)

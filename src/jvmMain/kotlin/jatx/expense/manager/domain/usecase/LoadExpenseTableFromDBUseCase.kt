@@ -40,7 +40,7 @@ class LoadExpenseTableFromDBUseCase(
                     category = rowKey.category,
                     rowKeyInt = rowKey.rowKeyInt,
                     date = monthKey.dateFromMonthKey,
-                    payments = payments
+                    _payments = payments
                 )
                 allCells[CellKey(expenseEntry.cardName, expenseEntry.category, monthKey)] = expenseEntry
             }

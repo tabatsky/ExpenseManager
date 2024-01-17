@@ -114,7 +114,7 @@ data class ExpenseTable(
                 category = "",
                 rowKeyInt = 0,
                 date = Date(),
-                payments = paymentsForStatistics.sortedBy { it.amount }
+                _payments = paymentsForStatistics.sortedBy { it.amount }
             )
         }
 
@@ -147,7 +147,7 @@ data class ExpenseTable(
                 category = "",
                 rowKeyInt = 0,
                 date = Date(),
-                payments = paymentsForStatistics.sortedBy { it.amount }
+                _payments = paymentsForStatistics.sortedBy { it.amount }
             )
         }
 

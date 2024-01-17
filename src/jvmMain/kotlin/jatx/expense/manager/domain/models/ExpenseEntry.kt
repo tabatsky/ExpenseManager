@@ -9,8 +9,11 @@ data class ExpenseEntry(
     val category: String,
     val rowKeyInt: Int,
     val date: Date,
-    val payments: List<PaymentEntry>
+    val _payments: List<PaymentEntry>
 ) {
+    val payments: List<PaymentEntry>
+        get() = _payments.sortedBy { it.date.time }
+
     private val monthKey = date.monthKey
 
     val paymentSum = payments.sumOf { it.amount }
