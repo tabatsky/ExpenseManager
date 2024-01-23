@@ -6,11 +6,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.window.DialogWindow
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.res.*
 import java.text.SimpleDateFormat
+import kotlin.math.absoluteValue
 
 val sdf = SimpleDateFormat("dd.MM.yyyy")
 
@@ -117,22 +120,32 @@ private fun AddOrEditPaymentDialog(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            val commentFocusRequester = remember { FocusRequester() }
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),
                 value = amount.toString(),
                 onValueChange = {
-                    try {
-                        val tmpAmount = it.toInt()
-                        amount = tmpAmount
-                    } catch (e: NumberFormatException) {
-                        println(msgWrongNumberFormat)
+                    val tabCount = it.count { it == '\t' }
+                    if (tabCount > 0) {
+                        commentFocusRequester.requestFocus()
+                    } else {
+                        try {
+                            val minusCount = it.count { it == '-' }
+                            val sign = 1 - 2 * (minusCount % 2)
+                            val filteredString = it.replace("-", "")
+                            val absoluteAmount = filteredString.toInt().absoluteValue
+                            amount = sign * absoluteAmount
+                        } catch (e: NumberFormatException) {
+                            println(msgWrongNumberFormat)
+                        }
                     }
                 }
             )
             TextField(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(commentFocusRequester),
                 value = comment,
                 onValueChange = {
                     comment = it
