@@ -24,6 +24,7 @@ import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
+import jatx.expense.manager.domain.util.zeroDate
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
@@ -65,10 +66,16 @@ fun ExpenseTable() {
                         modifier = Modifier.width(secondCellWidth).height(cellHeight),
                         text = ""
                     )
+                    ExpenseCell(
+                        modifier = Modifier
+                            .width(cellWidth)
+                            .height(cellHeight),
+                        text = zeroDate.formattedMonthAndYear.utf8toCP1251()
+                    )
                 }
                 theExpenseTable.rowKeysWithTotals.take(fixedRowCount).forEach { rowKey ->
                     Row {
-                        FirstTwoColumnsRow(rowKey)
+                        FirstThreeColumnsRow(rowKey, theExpenseTable)
                     }
                 }
                 LazyColumn(
@@ -91,7 +98,7 @@ fun ExpenseTable() {
                         .height(cellHeight * theExpenseTable.rowKeysWithTotals.size)
                 ) {
                     items(theExpenseTable.rowKeysWithTotals.drop(fixedRowCount)) { rowKey ->
-                        FirstTwoColumnsRow(rowKey)
+                        FirstThreeColumnsRow(rowKey, theExpenseTable)
                     }
                 }
             }
@@ -111,7 +118,7 @@ fun ExpenseTable() {
                 item {
                     Column {
                         Row {
-                            theExpenseTable.datesWithZeroDate.forEach { date ->
+                            theExpenseTable.dates.forEach { date ->
                                 ExpenseCell(
                                     modifier = Modifier.width(cellWidth).height(cellHeight),
                                     text = date.formattedMonthAndYear.utf8toCP1251()
@@ -166,7 +173,7 @@ fun ExpenseTable() {
 }
 
 @Composable
-fun FirstTwoColumnsRow(rowKey: RowKey) {
+fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
     val expenseViewModel = Injector.expenseViewModel
 
     Row {
@@ -187,6 +194,21 @@ fun FirstTwoColumnsRow(rowKey: RowKey) {
                 },
             text = rowKey.category.utf8toCP1251()
         )
+
+        zeroDate.let { date ->
+            val expenseEntry =
+                theExpenseTable.getCell(rowKey, date)
+            ExpenseCell(
+                modifier = Modifier
+                    .width(cellWidth)
+                    .height(cellHeight)
+                    .background(colorByKey(rowKey.rowKeyInt))
+                    .clickable {
+                        expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
+                    },
+                text = expenseEntry.paymentSum.toString()
+            )
+        }
     }
 }
 
@@ -197,7 +219,7 @@ fun CommonRow(
     expenseViewModel: ExpenseViewModel
 ) {
     Row {
-        theExpenseTable.datesWithZeroDate.forEach { date ->
+        theExpenseTable.dates.forEach { date ->
             val expenseEntry =
                 theExpenseTable.getCell(rowKey, date)
             ExpenseCell(
