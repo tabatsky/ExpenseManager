@@ -62,7 +62,8 @@ fun PaymentListView() {
                             }
                         }
                         .verticalScroll(columnScrollState)
-                        .height(paymentCellHeight * it.payments.size)
+                        .wrapContentHeight()
+                        .heightIn(min = 0.dp, max = paymentCellHeight * it.payments.size * 2f)
                 ) {
                     items(it.payments.reversed()) { paymentEntry ->
                         PaymentItem(paymentEntry)
@@ -98,7 +99,8 @@ fun PaymentItem(paymentEntry: PaymentEntry) {
             .border(BorderStroke(1.dp, Color.Black))
             .background(yellowColor)
             .fillMaxWidth()
-            .height(paymentCellHeight)
+            .wrapContentHeight()
+            .padding(8.dp)
             .clickable {
                 expenseViewModel.showEditPaymentDialog(paymentEntry, true)
             }
