@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.squareup.sqldelight")
+    kotlin("plugin.serialization") version "1.9.20"
 }
 
 group = "jatx.expense.manager"
@@ -24,12 +25,15 @@ kotlin {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation("org.jetbrains.compose.material3:material3-desktop:1.5.0-dev1114")
+                implementation("org.jetbrains.compose.material3:material3-desktop:1.5.12")
                 implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
                 implementation("org.apache.poi:poi:5.2.3")
                 implementation("org.apache.poi:poi-ooxml:5.2.3")
                 implementation("com.squareup.sqldelight:sqlite-driver:1.5.5")
+                implementation("io.ktor:ktor-client-core:1.6.4")
+                implementation("io.ktor:ktor-client-java:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
             }
         }
         val jvmTest by getting

@@ -15,7 +15,8 @@ data class CellKey(
 data class ExpenseTable(
     private val allCells: Map<CellKey, ExpenseEntry>,
     val dates: List<Date>,
-    val rowKeys: List<RowKey>
+    val rowKeys: List<RowKey>,
+    val currencyRates: Map<String, Float> = mapOf()
 ) {
     val cellCount = allCells.size
 
@@ -114,7 +115,8 @@ data class ExpenseTable(
                 category = "",
                 rowKeyInt = 0,
                 date = Date(),
-                _payments = paymentsForStatistics.sortedBy { it.amount }
+                _payments = paymentsForStatistics.sortedBy { it.amount },
+                currencyRates = currencyRates
             )
         }
 
@@ -147,7 +149,8 @@ data class ExpenseTable(
                 category = "",
                 rowKeyInt = 0,
                 date = Date(),
-                _payments = paymentsForStatistics.sortedBy { it.amount }
+                _payments = paymentsForStatistics.sortedBy { it.amount },
+                currencyRates = currencyRates
             )
         }
 
@@ -162,7 +165,8 @@ data class ExpenseTable(
                 rowKey.category,
                 rowKey.rowKeyInt,
                 zeroDate,
-                payments
+                payments,
+                currencyRates
             )
         }
 
@@ -176,7 +180,8 @@ data class ExpenseTable(
                 totalCategory,
                 0,
                 date,
-                payments
+                payments,
+                currencyRates
             )
         }
 
@@ -191,7 +196,8 @@ data class ExpenseTable(
                 totalCategory,
                 0,
                 date,
-                payments
+                payments,
+                currencyRates
             )
         }
 
@@ -206,7 +212,8 @@ data class ExpenseTable(
                 totalCategory,
                 0,
                 date,
-                payments
+                payments,
+                currencyRates
             )
         }
 
@@ -221,7 +228,8 @@ data class ExpenseTable(
                 totalCategory,
                 makeTotalRowKey(rowKey.rowKeyInt.cardNameKey),
                 date,
-                payments
+                payments,
+                currencyRates
             )
         }
 
@@ -237,7 +245,8 @@ data class ExpenseTable(
                 totalPlusCategory,
                 makeTotalPlusRowKey(rowKey.rowKeyInt.cardNameKey),
                 date,
-                payments
+                payments,
+                currencyRates
             )
         }
 
@@ -253,7 +262,8 @@ data class ExpenseTable(
                 totalMinusCategory,
                 makeTotalMinusRowKey(rowKey.rowKeyInt.cardNameKey),
                 date,
-                payments
+                payments,
+                currencyRates
             )
         }
 
@@ -261,7 +271,7 @@ data class ExpenseTable(
             rowKey.cardName,
             rowKey.category,
             date.monthKey
-        )]
+        )]?.copy(currencyRates = currencyRates)
 
         if (result != null) return result
         return ExpenseEntry.makeFromDouble(

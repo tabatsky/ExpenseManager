@@ -5,10 +5,9 @@ import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -21,10 +20,18 @@ class ExpenseViewModel(
     private val insertPaymentUseCase: InsertPaymentUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
     private val renameCategoryUseCase: RenameCategoryUseCase,
+    private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
     private val coroutineScope: CoroutineScope
 ) {
+    private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
+
     private val _expenseTable: MutableStateFlow<ExpenseTable?> = MutableStateFlow(null)
-    val expenseTable = _expenseTable.asStateFlow()
+    @OptIn(DelicateCoroutinesApi::class)
+    val expenseTable = _expenseTable
+        .combine(_currencyRates) { table, rates ->
+            table?.copy(currencyRates = rates)
+        }
+        .stateIn(GlobalScope, SharingStarted.Eagerly, null)
 
     private val _currentExpenseEntry: MutableStateFlow<ExpenseEntry?> = MutableStateFlow(null)
     val currentExpenseEntry = _currentExpenseEntry.asStateFlow()
@@ -55,6 +62,9 @@ class ExpenseViewModel(
     fun onAppStart() {
         coroutineScope.launch {
             loadExpenseTableFromDBAndSaveToDefaultXlsx()
+            _currencyRates.update {
+                getCurrencyRateUseCase.execute()
+            }
         }
     }
 

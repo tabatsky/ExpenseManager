@@ -9,14 +9,17 @@ data class ExpenseEntry(
     val category: String,
     val rowKeyInt: Int,
     val date: Date,
-    val _payments: List<PaymentEntry>
+    private val _payments: List<PaymentEntry>,
+    val currencyRates: Map<String, Float> = mapOf()
 ) {
     val payments: List<PaymentEntry>
-        get() = _payments.sortedBy { it.date.time }
+        get() = _payments
+            .sortedBy { it.date.time }
+            .map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
 
     private val monthKey = date.monthKey
 
-    val paymentSum = payments.sumOf { it.amount }
+    val paymentSum = payments.sumOf { it.rurAmount }
     override fun toString() = "$cardName, $category, $monthKey: $payments"
 
     companion object {

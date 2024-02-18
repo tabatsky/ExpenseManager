@@ -181,14 +181,14 @@ fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
             modifier = Modifier
                 .width(firstCellWidth)
                 .height(cellHeight)
-                .background(colorByKey(rowKey.rowKeyInt)),
+                .background(colorByRowKey(rowKey)),
             text = rowKey.cardName.utf8toCP1251()
         )
         ExpenseCell(
             modifier = Modifier
                 .width(secondCellWidth)
                 .height(cellHeight)
-                .background(colorByKey(rowKey.rowKeyInt))
+                .background(colorByRowKey(rowKey))
                 .clickable {
                     expenseViewModel.showRenameCategoryDialog(rowKey)
                 },
@@ -202,7 +202,7 @@ fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
                 modifier = Modifier
                     .width(cellWidth)
                     .height(cellHeight)
-                    .background(colorByKey(rowKey.rowKeyInt))
+                    .background(colorByRowKey(rowKey))
                     .clickable {
                         expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
                     },
@@ -226,7 +226,7 @@ fun CommonRow(
                 modifier = Modifier
                     .width(cellWidth)
                     .height(cellHeight)
-                    .background(colorByKey(rowKey.rowKeyInt))
+                    .background(colorByRowKey(rowKey))
                     .clickable {
                         expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
                     },
@@ -257,9 +257,20 @@ val cellColors = listOf(
     greenColor
 )
 
-fun colorByKey(key: Int): Color {
+fun colorByRowKey(rowKey: RowKey): Color {
+    val key = rowKey.rowKeyInt
     val categoryKey = key.categoryKey
     if (categoryKey == lohKey) return redColor
     val cardNameKey = key.cardNameKey
-    return cellColors.getOrNull(cardNameKey - 1) ?: whiteColor
+    val alpha = if (rowKey.category in listOf(usdCategory, cnyCategory)) {
+        0.5f
+    } else {
+        1.0f
+    }
+    return cellColors.getOrNull(cardNameKey - 1)?.let {
+        val red = it.red
+        val green = it.green
+        val blue = it.blue
+        Color(red, green, blue, alpha)
+    } ?: whiteColor
 }

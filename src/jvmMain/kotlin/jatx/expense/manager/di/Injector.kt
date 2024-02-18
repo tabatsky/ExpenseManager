@@ -1,5 +1,6 @@
 package jatx.expense.manager.di
 
+import jatx.expense.manager.data.cbr.CurrencyRatesGetterImpl
 import jatx.expense.manager.data.db.DatabaseDriverFactory
 import jatx.expense.manager.data.repository.PaymentRepositoryImpl
 import jatx.expense.manager.data.xlsx.XlsxParserFactoryImpl
@@ -25,6 +26,8 @@ class Injector(
         XlsxParserFactoryImpl()
     private val xlsxSaverFactory: XlsxSaverFactory =
         XlsxSaverFactoryImpl()
+    private val currencyRatesGetter = CurrencyRatesGetterImpl()
+
     private val saveExpenseTableToDBUseCase =
         SaveExpenseTableToDBUseCase(paymentRepository)
     private val loadExpenseTableFromDBUseCase =
@@ -41,6 +44,8 @@ class Injector(
         DeletePaymentUseCase(paymentRepository)
     private val renameCategoryUseCase =
         RenameCategoryUseCase(paymentRepository)
+    private val getCurrencyRateUseCase =
+        GetCurrencyRateUseCase(currencyRatesGetter)
     private val expenseViewModel =
         ExpenseViewModel(
             saveExpenseTableToDBUseCase,
@@ -51,6 +56,7 @@ class Injector(
             insertPaymentUseCase,
             deletePaymentUseCase,
             renameCategoryUseCase,
+            getCurrencyRateUseCase,
             coroutineScope
         )
     private val menuCallbacks = MenuCallbacks()
