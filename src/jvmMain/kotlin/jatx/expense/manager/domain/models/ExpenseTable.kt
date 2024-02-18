@@ -257,7 +257,6 @@ data class ExpenseTable(
             )
         }
 
-
         val result = allCells[CellKey(
             rowKey.cardName,
             rowKey.category,

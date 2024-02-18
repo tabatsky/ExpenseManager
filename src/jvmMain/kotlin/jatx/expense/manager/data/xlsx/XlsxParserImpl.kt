@@ -47,9 +47,11 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
 
         for (cellNum in 3 until lastCellNum) {
             val cell = firstRow.getCell(cellNum)
-            if (cell.cellType != CellType.STRING)
+            val date = if (cell.cellType == CellType.STRING) {
+                cell.stringCellValue.dateParsedFromMonthAndYear
+            } else {
                 throw IllegalStateException("Date cell is not numeric")
-            val date = cell.stringCellValue.dateParsedFromMonthAndYear
+            }
             result.add(date)
         }
 

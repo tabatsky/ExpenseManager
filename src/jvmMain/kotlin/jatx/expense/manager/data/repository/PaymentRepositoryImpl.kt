@@ -80,8 +80,6 @@ class PaymentRepositoryImpl(
             .executeAsList()
             .map {
                 it.toModelEntry()
-            }.also {
-                println(it.first().currency)
             }
 
     override suspend fun renameCategory(newCategory: String, cardName: String, category: String) =

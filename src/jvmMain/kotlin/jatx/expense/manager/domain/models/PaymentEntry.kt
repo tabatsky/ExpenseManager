@@ -1,5 +1,6 @@
 package jatx.expense.manager.domain.models
 
+import jatx.expense.manager.res.currencyForCategory
 import jatx.expense.manager.res.defaultCommentNegativeAmount
 import jatx.expense.manager.res.defaultCommentPositiveAmount
 import jatx.expense.manager.res.defaultCommentZeroAmount
@@ -12,9 +13,11 @@ data class PaymentEntry(
     val rowKeyInt: Int,
     val date: Date,
     val amount: Int,
-    val comment: String,
-    val currency: String = ""
-)
+    val comment: String
+) {
+    val currency: String = category.currencyForCategory
+    val amountStr = "$amount $currency"
+}
 
 fun makeDefaultComment(amount: Int) =
     if (amount > 0)

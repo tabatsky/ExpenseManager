@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.util.formattedForPaymentList
+import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
 
@@ -92,6 +93,8 @@ fun PaymentListView() {
 
 @Composable
 fun PaymentItem(paymentEntry: PaymentEntry) {
+    println("payment: ${paymentEntry.amountStr} ${paymentEntry.category}".utf8toCP1251())
+
     val expenseViewModel = Injector.expenseViewModel
 
     Column(
