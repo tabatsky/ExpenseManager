@@ -12,7 +12,8 @@ data class PaymentEntry(
     val rowKeyInt: Int,
     val date: Date,
     val amount: Int,
-    val comment: String
+    val comment: String,
+    val currency: String = ""
 )
 
 fun makeDefaultComment(amount: Int) =

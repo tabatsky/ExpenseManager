@@ -9,7 +9,9 @@ category TEXT NOT NULL,
 rowKeyInt INTEGER NOT NULL,
 date INTEGER NOT NULL,
 amount INTEGER NOT NULL,
-comment TEXT NOT NULL);
+comment TEXT NOT NULL,
+currency TEXT NOT NULL DEFAULT 'RUR'
+);
 
 selectAll:
 SELECT * FROM paymentEntity;

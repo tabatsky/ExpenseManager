@@ -12,7 +12,8 @@ fun PaymentEntry.toDBEntity() = PaymentEntity(
     rowKeyInt = rowKeyInt.toLong(),
     date = date.asDbPresentation,
     amount = amount.toLong(),
-    comment = comment
+    comment = comment,
+    currency = currency
 )
 
 fun PaymentEntity.toModelEntry() = PaymentEntry(
@@ -22,5 +23,6 @@ fun PaymentEntity.toModelEntry() = PaymentEntry(
     rowKeyInt = rowKeyInt.toInt(),
     date = date.fromDbPresentation,
     amount = amount.toInt(),
-    comment = comment
+    comment = comment,
+    currency = currency
 )

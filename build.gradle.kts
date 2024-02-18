@@ -55,5 +55,10 @@ tasks.withType<Jar> {
 sqldelight {
     database("AppDatabase") {
         packageName = "jatx.expense.manager.db"
+        dialect = "sqlite:3.18"
+        schemaOutputDirectory = file("jatx.expense.manager.db")
+        migrationOutputDirectory = file("migrations")
+        deriveSchemaFromMigrations = true
+        verifyMigrations = true
     }
 }
