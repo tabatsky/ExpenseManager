@@ -18,7 +18,7 @@ data class PaymentEntry(
     val currencyRate: Float = 1f
 ) {
     val currency: String = category.currencyForCategory
-    val amountStr = "$amount $currency $currencyRate"
+    val amountStr = "$amount $currency"
     val rurAmount = (amount * currencyRate).roundToInt()
 }
 

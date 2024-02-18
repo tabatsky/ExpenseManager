@@ -10,12 +10,15 @@ data class ExpenseEntry(
     val rowKeyInt: Int,
     val date: Date,
     private val _payments: List<PaymentEntry>,
-    val currencyRates: Map<String, Float> = mapOf()
+    val currencyRates: Map<String, Float> = mapOf(),
+    val needSortByDate: Boolean = true
 ) {
     val payments: List<PaymentEntry>
-        get() = _payments
-            .sortedBy { it.date.time }
-            .map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
+        get() = (if (needSortByDate) {
+            _payments.sortedBy { it.date.time }
+        } else {
+            _payments
+        }).map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
 
     private val monthKey = date.monthKey
 

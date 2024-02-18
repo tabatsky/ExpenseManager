@@ -1,5 +1,6 @@
 package jatx.expense.manager.domain.models
 
+import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.domain.util.zeroDate
@@ -86,7 +87,7 @@ data class ExpenseTable(
             val allPaymentsWithComments = allPayments
                 .map {
                     val comment = it
-                        .comment
+                    .comment.split(" - ").first()
                         .takeIf {
                             it != defaultCommentPositiveAmount &&
                                     it != defaultCommentNegativeAmount
@@ -103,20 +104,23 @@ data class ExpenseTable(
                 PaymentEntry(
                     id = -1L,
                     cardName = "",
-                    category = "",
+                    category = _comment.cp1251toUTF8(),
                     rowKeyInt = 0,
                     date = Date(),
                     amount = amount,
                     comment = _comment
-                )
+                ).let {
+                    it.copy(currencyRate = currencyRates[it.currency] ?: 1f)
+                }
             }
             return ExpenseEntry(
                 cardName = "",
                 category = "",
                 rowKeyInt = 0,
                 date = Date(),
-                _payments = paymentsForStatistics.sortedBy { it.amount },
-                currencyRates = currencyRates
+                _payments = paymentsForStatistics.sortedBy { it.rurAmount },
+                currencyRates = currencyRates,
+                needSortByDate = false
             )
         }
 
@@ -137,20 +141,23 @@ data class ExpenseTable(
                 PaymentEntry(
                     id = -1L,
                     cardName = "",
-                    category = "",
+                    category = _comment.cp1251toUTF8(),
                     rowKeyInt = 0,
                     date = Date(),
                     amount = amount,
                     comment = _comment
-                )
+                ).let {
+                    it.copy(currencyRate = currencyRates[it.currency] ?: 1f)
+                }
             }
             return ExpenseEntry(
                 cardName = "",
                 category = "",
                 rowKeyInt = 0,
                 date = Date(),
-                _payments = paymentsForStatistics.sortedBy { it.amount },
-                currencyRates = currencyRates
+                _payments = paymentsForStatistics.sortedBy { it.rurAmount },
+                currencyRates = currencyRates,
+                needSortByDate = false
             )
         }
 

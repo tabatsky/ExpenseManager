@@ -108,7 +108,7 @@ fun PaymentItem(paymentEntry: PaymentEntry) {
                 expenseViewModel.showEditPaymentDialog(paymentEntry, true)
             }
     ) {
-        Text(text = paymentEntry.amount.toString())
+        Text(text = paymentEntry.amountStr)
         Text(text = paymentEntry.comment)
         Text(text = paymentEntry.date.formattedForPaymentList)
     }
