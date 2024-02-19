@@ -3,7 +3,9 @@ package jatx.expense.manager.presentation.viewmodel
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
+import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
+import jatx.expense.manager.domain.util.utf8toCP1251
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -129,6 +131,9 @@ class ExpenseViewModel(
     }
 
     fun updateCurrentExpenseEntry(expenseEntry: ExpenseEntry) {
+        with (expenseEntry) {
+            println("$cardName $category $rowKeyInt ${date.formattedMonthAndYear}".utf8toCP1251())
+        }
         _currentExpenseEntry.value = expenseEntry
     }
 

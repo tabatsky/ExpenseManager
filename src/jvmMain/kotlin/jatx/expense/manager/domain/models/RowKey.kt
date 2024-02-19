@@ -1,9 +1,9 @@
 package jatx.expense.manager.domain.models
 
-import jatx.expense.manager.res.lohCategory
-import jatx.expense.manager.res.totalCardName
-import jatx.expense.manager.res.totalCategory
+import jatx.expense.manager.res.*
 
+const val cnyKey = 800
+const val usdKey = 810
 const val lohKey = 900
 
 data class RowKey(
@@ -28,16 +28,19 @@ data class RowKey(
                 makeTotalRowKey(cardNameKey)
             } else run {
                 val categories = allCategories[cardNameKey - 1]
-                val categoryKey = if (category == lohCategory)
-                    lohKey
-                else
-                    (categories
+                val categoryKey = when (category) {
+                    lohCategory -> lohKey
+                    usdCategory -> usdKey
+                    cnyCategory -> cnyKey
+                    else -> (categories
                         .indexOf(category)
                         .takeIf { it >= 0 }
                         ?: run {
                             categories.add(category)
                             categories.size - 1
                         }) + 1
+                }
+
                 makeRowKey(cardNameKey, categoryKey)
             }
         }

@@ -48,7 +48,7 @@ data class ExpenseTable(
         result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
         result.sortedBy {
             val key = it.rowKeyInt
-            val sortKey = if (key % 1000 < 800) {
+            val sortKey = if (key % 1000 <= 600) {
                 (key / 1000) * 1000 + ((key % 1000) % 100) + ((key % 1000) / 100) * 0.1
             } else {
                 key.toDouble()
