@@ -13,6 +13,22 @@ data class ExpenseEntry(
     val currencyRates: Map<String, Float> = mapOf(),
     val needSortByDate: Boolean = true
 ) {
+    override fun equals(other: Any?) = other is ExpenseEntry &&
+            other.cardName == this.cardName &&
+            other.category == this.category &&
+            other.rowKeyInt == this.rowKeyInt &&
+            other.date.monthKey == this.date.monthKey &&
+            other._payments.size == this._payments.size &&
+            other._payments.sumOf { it.amount } == this._payments.sumOf { it.amount }
+
+    override fun hashCode() = cardName.hashCode() +
+            10000 * category.hashCode() +
+            1000 * rowKeyInt +
+            100 * date.monthKey +
+            10 * _payments.size +
+            _payments.sumOf { it.amount }
+
+
     val payments: List<PaymentEntry>
         get() = (if (needSortByDate) {
             _payments.sortedBy { it.date.time }

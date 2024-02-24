@@ -7,16 +7,12 @@ import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import java.util.*
 
 class LoadExpenseTableFromDBUseCase(
     private val paymentRepository: PaymentRepository
 ) {
-    fun execute(): Flow<ExpenseTable> = flow {
+    suspend fun execute(): ExpenseTable = run {
         val allPayments = paymentRepository.selectAll()
         val allRowKeys = allPayments
             .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
@@ -50,6 +46,6 @@ class LoadExpenseTableFromDBUseCase(
             allMonthKeys.map { it.dateFromMonthKey },
             allRowKeys
         )
-        emit(expenseTable)
-    }.flowOn(Dispatchers.IO)
+        expenseTable
+    }
 }

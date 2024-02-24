@@ -74,7 +74,8 @@ class ExpenseViewModel(
         coroutineScope.launch {
             loadXlsxUseCase
                 .execute(xlsxPath)
-                .combine(loadExpenseTableFromDBUseCase.execute()) { tableXls, tableDb ->
+                .let { tableXls ->
+                    val tableDb = loadExpenseTableFromDBUseCase.execute()
                     val allCells = hashMapOf<CellKey, ExpenseEntry>()
 
                     tableXls.dates.forEach { date ->
@@ -103,7 +104,7 @@ class ExpenseViewModel(
 
                     ExpenseTable(allCells, tableXls.dates, tableXls.rowKeys)
                 }
-                .collectLatest {
+                .let {
                     saveExpenseTableToDBUseCase.execute(it)
                     loadExpenseTableFromDBAndSaveToDefaultXlsx()
                 }
@@ -112,7 +113,7 @@ class ExpenseViewModel(
 
     fun saveXlsx(xlsxPath: String) {
         coroutineScope.launch {
-            expenseTable.value?.let {
+            _expenseTable.value?.let {
                 saveXlsxUseCase.execute(it, xlsxPath)
             }
         }
@@ -212,7 +213,7 @@ class ExpenseViewModel(
     }
 
     private suspend fun loadExpenseTableFromDBAndSaveToDefaultXlsx() {
-        loadExpenseTableFromDBUseCase.execute().collectLatest {
+        loadExpenseTableFromDBUseCase.execute().let {
             _expenseTable.value = it
             reloadCurrentExpenseEntry()
             saveXlsx(theDefaultXlsxPath)
@@ -223,7 +224,9 @@ class ExpenseViewModel(
         currentExpenseEntry.value?.let {
             val rowKey = RowKey(it.cardName, it.category, it.rowKeyInt)
             val date = it.date
-            val updatedExpenseEntry = expenseTable.value?.getCell(rowKey, date)
+            val updatedExpenseEntry = _expenseTable.value
+                ?.getCell(rowKey, date)
+                ?.copy(currencyRates = _currencyRates.value)
             _currentExpenseEntry.value = updatedExpenseEntry
         }
     }
