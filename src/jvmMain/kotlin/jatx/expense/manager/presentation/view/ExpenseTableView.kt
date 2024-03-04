@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.util.formattedMonthAndYear
@@ -50,7 +51,8 @@ fun ExpenseTable() {
         var scrollY by remember { mutableStateOf(0) }
 
         suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) {
-            scrollY += if (isMouse) minusDelta.toInt() * 20 else minusDelta.toInt()
+            scrollY += if (isMouse) minusDelta.toInt() * 80 else minusDelta.toInt()
+            println("sync scroll to: $scrollY")
             firstColumnScrollState.scrollTo(scrollY)
             columnScrollState.scrollTo(scrollY)
         }
@@ -81,6 +83,7 @@ fun ExpenseTable() {
                 LazyColumn(
                     state = firstColumnListState,
                     modifier = Modifier
+                        .verticalScroll(firstColumnScrollState)
                         .draggable(
                             orientation = Orientation.Vertical,
                             state = rememberDraggableState { delta ->
@@ -90,12 +93,15 @@ fun ExpenseTable() {
                             }
                         )
                         .onPointerEvent(PointerEventType.Scroll) {
+                            it.changes.forEach { it.consume() }
                             coroutineScope.launch {
-                                syncScroll(it.changes.first().scrollDelta.y, true)
+                                it.changes.forEach {
+                                    syncScroll(it.scrollDelta.y, true)
+                                }
                             }
                         }
-                        .verticalScroll(firstColumnScrollState)
-                        .height(cellHeight * theExpenseTable.rowKeysWithTotals.size)
+                        .wrapContentHeight()
+                        .heightIn(min = 0.dp, max = cellHeight * theExpenseTable.rowKeysWithTotals.size * 2)
                 ) {
                     items(theExpenseTable.rowKeysWithTotals.drop(fixedRowCount)) { rowKey ->
                         FirstThreeColumnsRow(rowKey, theExpenseTable)
@@ -135,6 +141,7 @@ fun ExpenseTable() {
                         LazyColumn(
                             state = columnListState,
                             modifier = Modifier
+                                .verticalScroll(columnScrollState)
                                 .draggable(
                                     orientation = Orientation.Vertical,
                                     state = rememberDraggableState { delta ->
@@ -144,12 +151,15 @@ fun ExpenseTable() {
                                     }
                                 )
                                 .onPointerEvent(PointerEventType.Scroll) {
+                                    it.changes.forEach { it.consume() }
                                     coroutineScope.launch {
-                                        syncScroll(it.changes.first().scrollDelta.y, true)
+                                        it.changes.forEach {
+                                            syncScroll(it.scrollDelta.y, true)
+                                        }
                                     }
                                 }
-                                .verticalScroll(columnScrollState)
-                                .height(cellHeight * theExpenseTable.rowKeysWithTotals.size)
+                                .wrapContentHeight()
+                                .heightIn(min = 0.dp, max = cellHeight * theExpenseTable.rowKeysWithTotals.size * 2)
                                 .fillMaxWidth()
                         ) {
                             items(theExpenseTable.rowKeysWithTotals.drop(fixedRowCount)) { rowKey ->
