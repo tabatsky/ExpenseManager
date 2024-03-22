@@ -243,6 +243,7 @@ data class ExpenseTable(
         if (rowKey.category == totalPlusCategory) {
             val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
+                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount > 0 }
@@ -260,6 +261,7 @@ data class ExpenseTable(
         if (rowKey.category == totalMinusCategory) {
             val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
+                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount < 0 }
