@@ -1,5 +1,6 @@
 package jatx.expense.manager.domain.models
 
+import jatx.expense.manager.data.skipset.ReduceSet
 import jatx.expense.manager.data.skipset.SkipSet
 import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.monthKey
@@ -37,14 +38,17 @@ data class ExpenseTable(
             .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalKeys)
         val totalPlusKeys = rowKeys
+            .filter { !ReduceSet.containsKey(it.cardName) }
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalPlusCategory, makeTotalPlusRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalPlusKeys)
         val totalPlus2Keys = rowKeys
+            .filter { !ReduceSet.containsKey(it.cardName) }
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalPlus2Category, makeTotalPlus2RowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalPlus2Keys)
         val totalMinusKeys = rowKeys
+            .filter { !ReduceSet.containsKey(it.cardName) }
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalMinusCategory, makeTotalMinusRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalMinusKeys)
