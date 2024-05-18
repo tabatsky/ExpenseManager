@@ -68,6 +68,9 @@ fun makeTotalRowKey(cardNameKey: Int) =
     1000 * cardNameKey
 
 fun makeTotalPlusRowKey(cardNameKey: Int) =
+    1000 * cardNameKey + 400
+
+fun makeTotalPlus2RowKey(cardNameKey: Int) =
     1000 * cardNameKey + 500
 
 fun makeTotalMinusRowKey(cardNameKey: Int) =

@@ -40,6 +40,10 @@ data class ExpenseTable(
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalPlusCategory, makeTotalPlusRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalPlusKeys)
+        val totalPlus2Keys = rowKeys
+            .distinctBy { it.rowKeyInt.cardNameKey }
+            .map { RowKey(it.cardName, totalPlus2Category, makeTotalPlus2RowKey(it.rowKeyInt.cardNameKey)) }
+        result.addAll(totalPlus2Keys)
         val totalMinusKeys = rowKeys
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalMinusCategory, makeTotalMinusRowKey(it.rowKeyInt.cardNameKey)) }
@@ -254,6 +258,24 @@ data class ExpenseTable(
                 rowKey.cardName,
                 totalPlusCategory,
                 makeTotalPlusRowKey(rowKey.rowKeyInt.cardNameKey),
+                date,
+                payments,
+                currencyRates
+            )
+        }
+
+        if (rowKey.category == totalPlus2Category) {
+            val payments = rowKeys
+                .filter { it.cardName == rowKey.cardName }
+                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { it.payments }
+                .filter { it.amount > 0 }
+                .sortedBy { it.date.time }
+            return ExpenseEntry(
+                rowKey.cardName,
+                totalPlus2Category,
+                makeTotalPlus2RowKey(rowKey.rowKeyInt.cardNameKey),
                 date,
                 payments,
                 currencyRates
