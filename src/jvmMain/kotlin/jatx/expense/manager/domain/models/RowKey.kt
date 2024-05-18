@@ -13,6 +13,8 @@ data class RowKey(
     val category: String,
     val rowKeyInt: Int = 0
 ) {
+    val label = "$cardName|$category"
+
     fun withIntKey(allCardNames: ArrayList<String>, allCategories: ArrayList<ArrayList<String>>): RowKey {
         val key = if (cardName == totalCardName && category == totalCategory) {
             0

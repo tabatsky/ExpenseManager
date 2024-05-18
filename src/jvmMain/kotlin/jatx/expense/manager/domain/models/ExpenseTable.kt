@@ -1,5 +1,6 @@
 package jatx.expense.manager.domain.models
 
+import jatx.expense.manager.data.skipset.SkipSet
 import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
@@ -244,6 +245,7 @@ data class ExpenseTable(
             val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
                 .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                .filter { !SkipSet.containsLabel(it.label) }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount > 0 }
@@ -262,6 +264,7 @@ data class ExpenseTable(
             val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
                 .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                .filter { !SkipSet.containsLabel(it.label) }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount < 0 }
