@@ -87,6 +87,9 @@ class Injector(
             menuCallbacks.onShowStatisticsByCategory = {
                 expenseViewModel.showStatisticsByCategory()
             }
+            menuCallbacks.onShowPieChart = {
+                expenseViewModel.showPieChart()
+            }
         }
     }
 }

@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import jatx.expense.manager.presentation.dialog.AddPaymentDialogWrapper
-import jatx.expense.manager.presentation.dialog.DatePickerDialogWrapper
-import jatx.expense.manager.presentation.dialog.EditPaymentDialogWrapper
-import jatx.expense.manager.presentation.dialog.RenameCategoryDialogWrapper
+import jatx.expense.manager.presentation.dialog.*
 
 @Composable
 fun MainScreen() {
@@ -16,6 +13,7 @@ fun MainScreen() {
         AddPaymentDialogWrapper()
         DatePickerDialogWrapper()
         RenameCategoryDialogWrapper()
+        PieChartDialogWrapper()
 
         Row {
             Box(modifier = Modifier

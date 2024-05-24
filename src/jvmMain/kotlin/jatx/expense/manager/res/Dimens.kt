@@ -12,6 +12,11 @@ val paymentCellHeight = 72.dp
 val datePickerDialogWidth = 400.dp
 val datePickerDialogHeight = 600.dp
 
+val pieChartDialogWidth = 1200.dp
+val pieChartDialogHeight = 600.dp
+val pieChartSize = 600.dp
+
+
 val buttonHeight = 36.dp
 
 val borderWidth = 1.dp

@@ -35,6 +35,9 @@ class ExpenseViewModel(
         }
         .stateIn(GlobalScope, SharingStarted.Eagerly, null)
 
+    val pieChartData: List<Pair<String, Int>>
+        get() = expenseTable.value?.pieChartData ?: listOf()
+
     private val _currentExpenseEntry: MutableStateFlow<ExpenseEntry?> = MutableStateFlow(null)
     val currentExpenseEntry = _currentExpenseEntry.asStateFlow()
 
@@ -60,6 +63,9 @@ class ExpenseViewModel(
 
     private val _showEditPaymentDialog = MutableStateFlow(false)
     val showEditPaymentDialog = _showEditPaymentDialog.asStateFlow()
+
+    private val _needShowPieChartDialog = MutableStateFlow(false)
+    val needShowPieChartDialog = _needShowPieChartDialog.asStateFlow()
 
     fun onAppStart() {
         coroutineScope.launch {
@@ -161,6 +167,14 @@ class ExpenseViewModel(
             _currentPaymentEntry.value = it
             _showEditPaymentDialog.value = show
         }
+    }
+
+    fun showPieChart() {
+        showPieChartDialog(true)
+    }
+
+    fun showPieChartDialog(show: Boolean) {
+        _needShowPieChartDialog.value = show
     }
 
     fun showAddPaymentDialog(show: Boolean) {

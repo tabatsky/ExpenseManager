@@ -23,6 +23,20 @@ data class ExpenseTable(
 ) {
     val cellCount = allCells.size
 
+    val pieChartData = rowKeys
+        .filter { !ReduceSet.containsKey(it.cardName) }
+        .filter { !SkipSet.containsLabel(it.label) }
+        .map {
+            val amount = getCell(it, Date())
+                .payments
+                .sumOf { it.amount }
+            val label = "${it.cardName} - ${it.category}"
+            label to amount
+        }
+        .filter {
+            it.second > 0
+        }
+
     val datesWithZeroDate: List<Date> by lazy {
         val result = arrayListOf<Date>()
         result.add(zeroDate)
