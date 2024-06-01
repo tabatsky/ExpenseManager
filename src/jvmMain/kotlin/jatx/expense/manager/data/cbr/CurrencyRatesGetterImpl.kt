@@ -9,20 +9,29 @@ import kotlinx.serialization.json.JsonObject
 
 class CurrencyRatesGetterImpl: CurrencyRatesGetter {
     override suspend fun getCurrencyRates(): Map<String, Float> {
-        val httpClient = HttpClient(Java)
-        val response = httpClient.get<String> {
-            url("https://www.cbr-xml-daily.ru/latest.js")
+        return try {
+            val httpClient = HttpClient(Java)
+            val response = httpClient.get<String> {
+                url("https://www.cbr-xml-daily.ru/latest.js")
+            }
+
+            val jsonObj = Json.decodeFromString<JsonObject>(response)
+            val rates = jsonObj["rates"] as JsonObject
+            val usdRate = 1f / rates["USD"].toString().toFloat()
+            val cnyRate = 1f / rates["CNY"].toString().toFloat()
+
+            mapOf(
+                "RUR" to 1f,
+                "USD" to usdRate,
+                "CNY" to cnyRate
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            mapOf(
+                "RUR" to 1f,
+                "USD" to 1f,
+                "CNY" to 1f
+            )
         }
-
-        val jsonObj = Json.decodeFromString<JsonObject>(response)
-        val rates = jsonObj["rates"] as JsonObject
-        val usdRate = 1f / rates["USD"].toString().toFloat()
-        val cnyRate = 1f / rates["CNY"].toString().toFloat()
-
-        return mapOf(
-            "RUR" to 1f,
-            "USD" to usdRate,
-            "CNY" to cnyRate
-        )
     }
 }
