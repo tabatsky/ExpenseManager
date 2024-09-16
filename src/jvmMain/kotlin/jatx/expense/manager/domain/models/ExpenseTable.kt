@@ -114,7 +114,7 @@ data class ExpenseTable(
             val allPaymentsWithComments = allPayments
                 .map {
                     val comment = it
-                    .comment.split(" - ").first()
+                    .comment.split("-").first().trim()
                         .takeIf {
                             it != defaultCommentPositiveAmount &&
                                     it != defaultCommentNegativeAmount
