@@ -21,6 +21,7 @@ import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
+import jatx.expense.manager.res.labelOverallTime
 import jatx.expense.manager.res.pieChartDialogHeight
 import jatx.expense.manager.res.pieChartDialogWidth
 import jatx.expense.manager.res.pieChartSize
@@ -41,6 +42,11 @@ fun PieChartDialogWrapper() {
         dialogState.size = DpSize(pieChartDialogWidth, pieChartDialogHeight)
 
         val monthKey by expenseViewModel.pieChartMonthKey.collectAsState()
+
+        val labelMonthKey = if (monthKey <= Date().monthKey)
+            monthKey.dateFromMonthKey.formattedMonthAndYear
+        else
+            labelOverallTime
 
         val pieChartData = if (monthKey <= Date().monthKey)
             expenseViewModel.pieChartData(monthKey.dateFromMonthKey)
@@ -74,7 +80,7 @@ fun PieChartDialogWrapper() {
                             Text("<")
                         }
                         Text(
-                            text = monthKey.dateFromMonthKey.formattedMonthAndYear,
+                            text = labelMonthKey,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .wrapContentHeight()
@@ -93,7 +99,11 @@ fun PieChartDialogWrapper() {
                             .weight(1.0f)
                             .fillMaxHeight()
                     ) {
+                        val total = pieChartData.sumOf { it.second }
                         items(pieChartData.indices.toList()) {
+                            val amount = pieChartData[it].second
+                            val percent = 100.0f * amount / total
+                            val percentStr = "%.2f".format(percent) + " %"
                             Row {
                                 Text(
                                     text = pieChartData[it].first.utf8toCP1251(),
@@ -102,7 +112,13 @@ fun PieChartDialogWrapper() {
                                     color = colors[it]
                                 )
                                 Text(
-                                    text = pieChartData[it].second.toString(),
+                                    text = amount.toString(),
+                                    modifier = Modifier
+                                        .weight(1.0f),
+                                    color = Color.Black
+                                )
+                                Text(
+                                    text = percentStr,
                                     modifier = Modifier
                                         .weight(1.0f),
                                     color = Color.Black

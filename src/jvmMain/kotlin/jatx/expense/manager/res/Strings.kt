@@ -55,3 +55,5 @@ const val dialogFileChooserXLSXDescription = "Таблица Excel"
 const val dialogFileChooserXLSXExtension = "xlsx"
 
 const val msgWrongNumberFormat = "Wrong number format"
+
+const val labelOverallTime = "За всё время"
