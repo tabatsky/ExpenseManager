@@ -23,6 +23,22 @@ data class ExpenseTable(
 ) {
     val cellCount = allCells.size
 
+    fun overallPieChartData() = rowKeys
+        .map { "${it.cardName} - ${it.category}" }
+        .map { label ->
+            val amount = dates
+                .sumOf {
+                    pieChartData(it)
+                        .find { it.first == label }
+                        ?.second ?: 0
+                }
+            label to amount
+        }
+        .filter {
+            it.second > 0
+        }
+        .sortedBy { -it.second }
+
     fun pieChartData(date: Date) = rowKeys
         .asSequence()
         .filter { !ReduceSet.containsKey(it.cardName) }

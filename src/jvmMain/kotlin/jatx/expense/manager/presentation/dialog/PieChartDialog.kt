@@ -19,10 +19,12 @@ import com.github.tehras.charts.piechart.PieChartData
 import jatx.expense.manager.di.Injector
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
+import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.res.pieChartDialogHeight
 import jatx.expense.manager.res.pieChartDialogWidth
 import jatx.expense.manager.res.pieChartSize
+import java.util.*
 
 @Composable
 fun PieChartDialogWrapper() {
@@ -40,7 +42,11 @@ fun PieChartDialogWrapper() {
 
         val monthKey by expenseViewModel.pieChartMonthKey.collectAsState()
 
-        val pieChartData = expenseViewModel.pieChartData(monthKey.dateFromMonthKey)
+        val pieChartData = if (monthKey <= Date().monthKey)
+            expenseViewModel.pieChartData(monthKey.dateFromMonthKey)
+        else
+            expenseViewModel.overallPieChartData()
+
         val count = pieChartData.size
         val colors = pieChartData.indices.map {
             Color.hsv(360.0f * it / count, 0.7f, 1.0f)

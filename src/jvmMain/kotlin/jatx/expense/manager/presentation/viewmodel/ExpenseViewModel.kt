@@ -36,6 +36,7 @@ class ExpenseViewModel(
         .stateIn(GlobalScope, SharingStarted.Eagerly, null)
 
     fun pieChartData(date: Date) = expenseTable.value?.pieChartData(date) ?: listOf()
+    fun overallPieChartData() = expenseTable.value?.overallPieChartData() ?: listOf()
 
     private val _currentExpenseEntry: MutableStateFlow<ExpenseEntry?> = MutableStateFlow(null)
     val currentExpenseEntry = _currentExpenseEntry.asStateFlow()
