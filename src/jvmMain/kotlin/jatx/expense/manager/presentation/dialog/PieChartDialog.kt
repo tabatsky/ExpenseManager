@@ -21,10 +21,7 @@ import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
-import jatx.expense.manager.res.labelOverallTime
-import jatx.expense.manager.res.pieChartDialogHeight
-import jatx.expense.manager.res.pieChartDialogWidth
-import jatx.expense.manager.res.pieChartSize
+import jatx.expense.manager.res.*
 import java.util.*
 
 @Composable
@@ -61,6 +58,8 @@ fun PieChartDialogWrapper() {
             PieChartData.Slice(pieChartData[it].second.toFloat(), colors[it])
         }
 
+        val total = pieChartData.sumOf { it.second }
+
         DialogWindow(
             onCloseRequest = { close() },
             state = dialogState
@@ -94,12 +93,31 @@ fun PieChartDialogWrapper() {
                             Text(">")
                         }
                     }
+                    Row {
+                        Text(
+                            text = labelOverallCategory,
+                            modifier = Modifier
+                                .weight(3.0f),
+                            color = Color.Black
+                        )
+                        Text(
+                            text = total.toString(),
+                            modifier = Modifier
+                                .weight(1.0f),
+                            color = Color.Black
+                        )
+                        Text(
+                            text =  "%.2f".format(100.0f) + " %",
+                            modifier = Modifier
+                                .weight(1.0f),
+                            color = Color.Black
+                        )
+                    }
                     LazyColumn(
                         modifier = Modifier
                             .weight(1.0f)
                             .fillMaxHeight()
                     ) {
-                        val total = pieChartData.sumOf { it.second }
                         items(pieChartData.indices.toList()) {
                             val amount = pieChartData[it].second
                             val percent = 100.0f * amount / total
