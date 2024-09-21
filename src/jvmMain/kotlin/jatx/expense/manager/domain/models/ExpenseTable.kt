@@ -23,12 +23,12 @@ data class ExpenseTable(
 ) {
     val cellCount = allCells.size
 
-    fun overallPieChartData() = rowKeys
+    fun overallPieChartData(showSkipped: Boolean) = rowKeys
         .map { "${it.cardName} - ${it.category}" }
         .map { label ->
             val amount = dates
                 .sumOf {
-                    pieChartData(it)
+                    pieChartData(it, showSkipped)
                         .find { it.first == label }
                         ?.second ?: 0
                 }
@@ -39,11 +39,11 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
 
-    fun pieChartData(date: Date) = rowKeys
+    fun pieChartData(date: Date, showSkipped: Boolean) = rowKeys
         .asSequence()
         .filter { !ReduceSet.containsKey(it.cardName) }
         .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
-        .filter { !SkipSet.containsLabel(it.label) }
+        .filter { showSkipped || !SkipSet.containsLabel(it.label) }
         .map {
             val amount = getCell(it, date)
                 .payments

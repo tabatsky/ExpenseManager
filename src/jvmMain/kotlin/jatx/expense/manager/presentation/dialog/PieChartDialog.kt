@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +40,8 @@ fun PieChartDialogWrapper() {
         val dialogState = rememberDialogState()
         dialogState.size = DpSize(pieChartDialogWidth, pieChartDialogHeight)
 
+        val showSkipped by expenseViewModel.pieChartShowSkipped.collectAsState()
+
         val monthKey by expenseViewModel.pieChartMonthKey.collectAsState()
 
         val labelMonthKey = if (monthKey <= Date().monthKey)
@@ -46,9 +50,9 @@ fun PieChartDialogWrapper() {
             labelOverallTime
 
         val pieChartData = if (monthKey <= Date().monthKey)
-            expenseViewModel.pieChartData(monthKey.dateFromMonthKey)
+            expenseViewModel.pieChartData(monthKey.dateFromMonthKey, showSkipped)
         else
-            expenseViewModel.overallPieChartData()
+            expenseViewModel.overallPieChartData(showSkipped)
 
         val count = pieChartData.size
         val colors = pieChartData.indices.map {
@@ -70,7 +74,9 @@ fun PieChartDialogWrapper() {
                     modifier = Modifier.size(pieChartSize)
                 )
                 Column {
-                    Row {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartPrevMonth()
@@ -92,6 +98,15 @@ fun PieChartDialogWrapper() {
                         ) {
                             Text(">")
                         }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = showSkipped,
+                            onCheckedChange = { expenseViewModel.updatePieChartShowSkipped(it) }
+                        )
+                        Text(labelShowSkipped)
                     }
                     Row {
                         Text(

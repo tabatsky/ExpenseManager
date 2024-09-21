@@ -35,9 +35,6 @@ class ExpenseViewModel(
         }
         .stateIn(GlobalScope, SharingStarted.Eagerly, null)
 
-    fun pieChartData(date: Date) = expenseTable.value?.pieChartData(date) ?: listOf()
-    fun overallPieChartData() = expenseTable.value?.overallPieChartData() ?: listOf()
-
     private val _currentExpenseEntry: MutableStateFlow<ExpenseEntry?> = MutableStateFlow(null)
     val currentExpenseEntry = _currentExpenseEntry.asStateFlow()
 
@@ -68,6 +65,11 @@ class ExpenseViewModel(
     val needShowPieChartDialog = _needShowPieChartDialog.asStateFlow()
     private val _pieChartMonthKey = MutableStateFlow(Date().monthKey)
     val pieChartMonthKey = _pieChartMonthKey.asStateFlow()
+    private val _pieChartShowSkipped = MutableStateFlow(false)
+    val pieChartShowSkipped = _pieChartShowSkipped.asStateFlow()
+
+    fun pieChartData(date: Date, showSkipped: Boolean) = expenseTable.value?.pieChartData(date, showSkipped) ?: listOf()
+    fun overallPieChartData(showSkipped: Boolean) = expenseTable.value?.overallPieChartData(showSkipped) ?: listOf()
 
     fun onAppStart() {
         coroutineScope.launch {
@@ -177,6 +179,10 @@ class ExpenseViewModel(
 
     fun showPieChartDialog(show: Boolean) {
         _needShowPieChartDialog.value = show
+    }
+
+    fun updatePieChartShowSkipped(show: Boolean) {
+        _pieChartShowSkipped.value = show
     }
 
     fun pieChartNextMonth() {
