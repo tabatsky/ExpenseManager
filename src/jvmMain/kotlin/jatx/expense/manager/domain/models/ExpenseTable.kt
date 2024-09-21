@@ -28,7 +28,7 @@ data class ExpenseTable(
         .map { label ->
             val amount = dates
                 .sumOf {
-                    pieChartData(it, showSkipped)
+                    pieChartDataNotFiltered(it, showSkipped)
                         .find { it.first == label }
                         ?.second ?: 0
                 }
@@ -39,7 +39,13 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
 
-    fun pieChartData(date: Date, showSkipped: Boolean) = rowKeys
+    fun pieChartData(date: Date, showSkipped: Boolean) =
+        pieChartDataNotFiltered(date, showSkipped)
+            .filter {
+                it.second > 0
+            }
+
+    private fun pieChartDataNotFiltered(date: Date, showSkipped: Boolean) = rowKeys
         .asSequence()
         .filter { !ReduceSet.containsKey(it.cardName) }
         .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
@@ -50,9 +56,6 @@ data class ExpenseTable(
                 .sumOf { it.rurAmount }
             val label = "${it.cardName} - ${it.category}"
             label to amount
-        }
-        .filter {
-            it.second > 0
         }
         .sortedBy { -it.second }
         .toList()
