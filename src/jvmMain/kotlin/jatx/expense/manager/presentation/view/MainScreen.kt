@@ -14,6 +14,7 @@ fun MainScreen() {
         DatePickerDialogWrapper()
         RenameCategoryDialogWrapper()
         PieChartDialogWrapper()
+        ByMonthChartDialogWrapper()
 
         Row {
             Box(modifier = Modifier

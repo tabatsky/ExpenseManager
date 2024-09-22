@@ -90,6 +90,9 @@ class Injector(
             menuCallbacks.onShowPieChart = {
                 expenseViewModel.showPieChart()
             }
+            menuCallbacks.onShowByMonthChart = {
+                expenseViewModel.showByMonthChart()
+            }
         }
     }
 }
