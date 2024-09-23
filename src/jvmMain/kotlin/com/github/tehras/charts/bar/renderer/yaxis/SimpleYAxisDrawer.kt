@@ -75,10 +75,19 @@ class SimpleYAxisDrawer(
 //    }
     val minLabelHeight = 100f
     val totalHeight = drawableArea.height
-    val labelCount = max((drawableArea.height / minLabelHeight).roundToInt(), 2)
+
+    val step = 10000f
+    val labelCount = ((maxValue - minValue) / step).toInt() + 1
+
+    val actualMax = (labelCount - 1) * step + minValue
+    val actualTotalHeight = (labelCount - 1) * step / (maxValue - minValue) * totalHeight
+
+    println(minValue)
+    println(maxValue)
+    println(actualMax)
 
     for (i in 0..labelCount) {
-      val value = minValue + (i * ((maxValue - minValue) / labelCount))
+      val value = minValue + (i * step)
 
       val label = labelValueFormatter(value)
       val x = drawableArea.right - axisLineThickness.toPx() - 50f
@@ -86,7 +95,7 @@ class SimpleYAxisDrawer(
 //      labelPaint.getTextBounds(label, 0, label.length, textBounds)
 
       val y =
-        drawableArea.bottom - (i * (totalHeight / labelCount))// + (textBounds.height() / 2f)
+        drawableArea.bottom - (i * (actualTotalHeight / labelCount))// + (textBounds.height() / 2f)
 
       canvas.nativeCanvas.drawTextLine(
         TextLine.Companion.make(label, Font()),
