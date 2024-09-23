@@ -1,13 +1,14 @@
 package jatx.expense.manager.domain.models
 
+import androidx.compose.ui.graphics.Color
+import com.github.tehras.charts.bar.BarChartData
+import jatx.expense.manager.data.skipset.IncomingSet
 import jatx.expense.manager.data.skipset.ReduceSet
 import jatx.expense.manager.data.skipset.SkipSet
-import jatx.expense.manager.domain.util.cp1251toUTF8
-import jatx.expense.manager.domain.util.monthKey
-import jatx.expense.manager.domain.util.utf8toCP1251
-import jatx.expense.manager.domain.util.zeroDate
+import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.res.*
 import java.util.*
+import kotlin.math.abs
 
 data class CellKey(
     val cardName: String,
@@ -59,6 +60,50 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
         .toList()
+
+    fun byMonthData() = let { table ->
+            table.dates.drop(1).flatMap { date ->
+                val plusAmount = table
+                    .rowKeys
+                    .filter { !ReduceSet.containsKey(it.cardName) }
+                    .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                    .filter { !SkipSet.containsLabel(it.label) }
+                    .flatMap { table.getCell(it, date).payments }
+                    .filter { it.rurAmount > 0 }
+                    .sumOf { it.rurAmount }
+                val minusAmount = table
+                    .rowKeys
+                    .filter { !ReduceSet.containsKey(it.cardName) }
+                    .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                    .filter { !SkipSet.containsLabel(it.label) }
+                    .flatMap {  rowKey ->
+                        table
+                            .getCell(rowKey, date)
+                            .payments
+                            .filter {
+                                rowKey.category != incomingCategory || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
+                            }
+                    }
+                    .filter { it.rurAmount < 0 }
+                    .sumOf { it.rurAmount }
+                val plusBar = BarChartData.Bar(
+                    plusAmount.toFloat(),
+                    Color.Blue,
+                    "${date.formattedMonthAndYear} $plusAmount"
+                )
+                val minusBar = BarChartData.Bar(
+                    abs(minusAmount.toFloat()),
+                    Color.Red,
+                    "${date.formattedMonthAndYear} $minusAmount"
+                )
+                val emptyBar = BarChartData.Bar(
+                    0f,
+                    Color.White,
+                    ""
+                )
+                listOf(plusBar, minusBar, emptyBar)
+            }
+        }
 
     val datesWithZeroDate: List<Date> by lazy {
         val result = arrayListOf<Date>()

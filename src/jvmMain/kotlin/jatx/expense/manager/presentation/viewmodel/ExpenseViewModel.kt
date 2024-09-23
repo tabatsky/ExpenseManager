@@ -1,22 +1,17 @@
 package jatx.expense.manager.presentation.viewmodel
 
-import androidx.compose.ui.graphics.Color
-import com.github.tehras.charts.bar.BarChartData
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
-import jatx.expense.manager.res.totalMinusCategory
-import jatx.expense.manager.res.totalPlusCategory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.math.abs
 
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
@@ -79,36 +74,7 @@ class ExpenseViewModel(
     private val _needShowByMonthChartDialog = MutableStateFlow(false)
     val needShowByMonthChartDialog = _needShowByMonthChartDialog.asStateFlow()
 
-    fun byMonthData() = expenseTable.value?.let { table ->
-        table.dates.drop(1).flatMap { date ->
-            val plusAmount = table
-                .rowKeys
-                .flatMap { table.getCell(it, date).payments }
-                .filter { it.rurAmount > 0 }
-                .sumOf { it.rurAmount }
-            val minusAmount = table
-                .rowKeys
-                .flatMap { table.getCell(it, date).payments }
-                .filter { it.rurAmount < 0 }
-                .sumOf { it.rurAmount }
-            val plusBar = BarChartData.Bar(
-                plusAmount.toFloat(),
-                Color.Blue,
-                date.formattedMonthAndYear
-            )
-            val minusBar = BarChartData.Bar(
-                abs(minusAmount.toFloat()),
-                Color.Red,
-                date.formattedMonthAndYear
-            )
-            val emptyBar = BarChartData.Bar(
-                0f,
-                Color.White,
-                ""
-            )
-            listOf(plusBar, minusBar, emptyBar)
-        }
-    } ?: listOf()
+    fun byMonthData() = expenseTable.value?.byMonthData() ?: listOf()
 
     fun onAppStart() {
         coroutineScope.launch {

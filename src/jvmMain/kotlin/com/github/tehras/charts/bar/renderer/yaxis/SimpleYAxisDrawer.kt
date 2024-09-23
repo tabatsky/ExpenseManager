@@ -73,7 +73,7 @@ class SimpleYAxisDrawer(
 //      textSize = labelTextSize.toPx()
 //      textAlign = android.graphics.Paint.Align.RIGHT
 //    }
-    val minLabelHeight = (labelTextSize.toPx() * labelRatio.toFloat())
+    val minLabelHeight = 100f
     val totalHeight = drawableArea.height
     val labelCount = max((drawableArea.height / minLabelHeight).roundToInt(), 2)
 
