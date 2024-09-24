@@ -8,6 +8,7 @@ val totalCategory = "Всего".cp1251toUTF8()
 val totalPlusCategory = "Потрачено".cp1251toUTF8()
 val totalPlus2Category = "Потрачено 2".cp1251toUTF8()
 val totalMinusCategory = "Получено".cp1251toUTF8()
+val totalMinus2Category = "Получено 2".cp1251toUTF8()
 val totalWithCashCategory = "Всего с наличными".cp1251toUTF8()
 val totalDate = "Всего".cp1251toUTF8()
 val lohCategory = "Лоханулся".cp1251toUTF8()
@@ -17,6 +18,8 @@ val usdCategory = "Доллары".cp1251toUTF8()
 val cnyCategory = "Юани".cp1251toUTF8()
 val investCategory = "инвестиции".cp1251toUTF8()
 val incomingCategory = "Поступления".cp1251toUTF8()
+
+val salaryComment = "Заработал".cp1251toUTF8()
 
 val String.currencyForCategory: String
     get() = when (this) {
