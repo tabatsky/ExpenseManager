@@ -59,7 +59,7 @@ class SimpleValueDrawer(
 
     rotate(-90f, barArea.topCenter) {
       canvas.nativeCanvas.drawTextLine(
-        TextLine.Companion.make(label, Font()),
+        TextLine.Companion.make(label, Font(null, 18f)),
         xCenter,
         yCenter,
         Paint()
