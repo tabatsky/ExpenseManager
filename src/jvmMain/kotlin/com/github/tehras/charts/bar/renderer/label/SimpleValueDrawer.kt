@@ -1,9 +1,12 @@
 package com.github.tehras.charts.bar.renderer.label
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
@@ -44,7 +47,7 @@ class SimpleValueDrawer(
     barArea: Rect,
     xAxisArea: Rect
   ) = with(drawScope) {
-    val xCenter = barArea.left + (barArea.width / 2)
+    val xCenter = barArea.left + 10f
 
 //    val yCenter = when (drawLocation) {
 //      Inside -> (barArea.top + barArea.bottom) / 2
@@ -52,14 +55,16 @@ class SimpleValueDrawer(
 //      XAxis -> barArea.bottom + labelTextHeight(drawScope)
 //    }
 
-    val yCenter = (barArea.top) - labelTextSize.toPx() / 2
+    val yCenter = barArea.top + (barArea.width / 2)
 
-    canvas.nativeCanvas.drawTextLine(
-      TextLine.Companion.make(label, Font()),
-      xCenter,
-      yCenter,
-      Paint()
-    )
+    rotate(-90f, barArea.topCenter) {
+      canvas.nativeCanvas.drawTextLine(
+        TextLine.Companion.make(label, Font()),
+        xCenter,
+        yCenter,
+        Paint()
+      )
+    }
 
     Unit
 //    canvas.nativeCanvas.drawText(label, xCenter, yCenter, paint(drawScope))

@@ -89,12 +89,12 @@ data class ExpenseTable(
                 val plusBar = BarChartData.Bar(
                     plusAmount.toFloat(),
                     Color.Blue,
-                    "${date.formattedMonthAndYear} $plusAmount"
+                    "${date.formattedMonthAndYear}    $plusAmount"
                 )
                 val minusBar = BarChartData.Bar(
                     abs(minusAmount.toFloat()),
                     Color.Red,
-                    "${date.formattedMonthAndYear} $minusAmount"
+                    "${date.formattedMonthAndYear}    $minusAmount"
                 )
                 val emptyBar = BarChartData.Bar(
                     0f,
