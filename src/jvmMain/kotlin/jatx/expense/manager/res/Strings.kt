@@ -2,7 +2,7 @@ package jatx.expense.manager.res
 
 import jatx.expense.manager.domain.util.cp1251toUTF8
 
-val totalCardName = "-".cp1251toUTF8()
+val overallCardName = "-".cp1251toUTF8()
 val cashCardName = "Наличные".cp1251toUTF8()
 val totalCategory = "Всего".cp1251toUTF8()
 val totalPlusCategory = "Потрачено".cp1251toUTF8()

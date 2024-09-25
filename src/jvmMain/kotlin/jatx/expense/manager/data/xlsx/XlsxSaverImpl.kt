@@ -25,7 +25,7 @@ class XlsxSaverImpl(
         allRowNums.add(1)
         allRowNums.add(2)
         allRowNums.add(3)
-        var cardName = totalCardName
+        var cardName = overallCardName
         var rowNum = 4
         expenseTable
             .rowKeysWithTotalsNoPlusMinus
@@ -123,7 +123,7 @@ class XlsxSaverImpl(
                             expenseTable
                                 .rowKeysWithTotalsNoPlusMinus
                                 .forEachIndexed { k, rowKey ->
-                                    if (rowKey.cardName != totalCardName && rowKey.category == totalCategory) {
+                                    if (rowKey.cardName != overallCardName && rowKey.category == totalCategory) {
                                         val totalRowNum = allRowNums[k]
                                         val totalCellName = "$colLetter${totalRowNum + 1}"
                                         totalCellNames.add(totalCellName)
@@ -136,7 +136,7 @@ class XlsxSaverImpl(
                             expenseTable
                                 .rowKeysWithTotalsNoPlusMinus
                                 .forEachIndexed { k, rowKey ->
-                                    if (rowKey.cardName != totalCardName && rowKey.cardName != cashCardName && rowKey.category == totalCategory) {
+                                    if (rowKey.cardName != overallCardName && rowKey.cardName != cashCardName && rowKey.category == totalCategory) {
                                         val totalRowNum = allRowNums[k]
                                         val totalCellName = "$colLetter${totalRowNum + 1}"
                                         totalCellNames.add(totalCellName)

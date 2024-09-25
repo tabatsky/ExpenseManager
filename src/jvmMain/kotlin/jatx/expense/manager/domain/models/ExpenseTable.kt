@@ -46,54 +46,45 @@ data class ExpenseTable(
                 it.second > 0
             }
 
-    private fun pieChartDataNotFiltered(date: Date, showSkipped: Boolean) = rowKeys
-        .asSequence()
-        .filter { !ReduceSet.containsKey(it.cardName) }
-        .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
-        .filter { showSkipped || !SkipSet.containsLabel(it.label) }
-        .map {
-            val amount = getCell(it, date)
-                .payments
-                .sumOf { it.rurAmount }
-            val label = "${it.cardName} - ${it.category}"
-            label to amount
+    private fun pieChartDataNotFiltered(date: Date, showSkipped: Boolean) =
+        if (showSkipped) {
+            rowKeys
+                .asSequence()
+                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                .map {
+                    val amount = getCell(it, date)
+                        .payments
+                        .sumOf { it.rurAmount }
+                    val label = "${it.cardName} - ${it.category}"
+                    label to amount
+                }
+                .sortedBy { -it.second }
+                .toList()
+        } else {
+            rowKeys
+                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                .filter { !SkipSet.containsLabel(it.label) }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .map { expenseEntry ->
+                    val amount = expenseEntry
+                        .payments
+                        .filter {
+                            !ReduceSet.containsKey(expenseEntry.cardName)
+                                    || it.comment.cp1251toUTF8().startsWith(writeOffComment)
+                        }
+                        .filter { it.rurAmount > 0 }
+                        .sumOf { it.rurAmount }
+                    val label = "${expenseEntry.cardName} - ${expenseEntry.category}"
+                    label to amount
+                }
+                .sortedBy { -it.second }
         }
-        .sortedBy { -it.second }
-        .toList()
 
     fun byMonthData() = let { table ->
             table.dates.drop(1).flatMap { date ->
-                val plusAmount = table
-                    .rowKeys
-                    .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
-                    .filter { !SkipSet.containsLabel(it.label) }
-                    .flatMap { rowKey ->
-                        table
-                            .getCell(rowKey, date)
-                            .payments
-                            .filter {
-                                !ReduceSet.containsKey(rowKey.cardName)
-                                        || it.comment.cp1251toUTF8().startsWith(writeOffComment)
-                            }
-                    }
-                    .filter { it.rurAmount > 0 }
+                val plusAmount = overallTotalPlusPayments(date)
                     .sumOf { it.rurAmount }
-                val minusAmount = table
-                    .rowKeys
-                    .filter { !SkipSet.containsLabel(it.label) }
-                    .flatMap {  rowKey ->
-                        table
-                            .getCell(rowKey, date)
-                            .payments
-                            .filter {
-                                rowKey.category != incomingCategory
-                                        && !ReduceSet.containsKey(rowKey.cardName)
-                                        && rowKey.category !in setOf(investCategory, usdCategory, cnyCategory)
-                                        || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
-                                        || it.comment.cp1251toUTF8().startsWith(salaryComment)
-                            }
-                    }
-                    .filter { it.rurAmount < 0 }
+                val minusAmount = overallTotalMinusPayments(date)
                     .sumOf { it.rurAmount }
                 val plusBar = BarChartData.Bar(
                     plusAmount.toFloat(),
@@ -113,6 +104,37 @@ data class ExpenseTable(
                 listOf(plusBar, minusBar, emptyBar)
             }
         }
+
+    private fun overallTotalPlusPayments(date: Date) = rowKeys
+        .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+        .filter { !SkipSet.containsLabel(it.label) }
+        .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+        .flatMap { expenseEntry ->
+            expenseEntry
+                .payments
+                .filter {
+                    !ReduceSet.containsKey(expenseEntry.cardName)
+                            || it.comment.cp1251toUTF8().startsWith(writeOffComment)
+                }
+        }
+        .filter { it.amount > 0 }
+        .sortedBy { it.date.time }
+
+    private fun overallTotalMinusPayments(date: Date) = rowKeys
+        .filter { !SkipSet.containsLabel(it.label) }
+        .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+        .flatMap { expenseEntry ->
+            expenseEntry.payments
+                .filter {
+                    expenseEntry.category != incomingCategory
+                            && !ReduceSet.containsKey(expenseEntry.cardName)
+                            && expenseEntry.category !in setOf(investCategory, usdCategory, cnyCategory)
+                            || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
+                            || it.comment.cp1251toUTF8().startsWith(salaryComment)
+                }
+        }
+        .filter { it.amount < 0 }
+        .sortedBy { it.date.time }
 
     val datesWithZeroDate: List<Date> by lazy {
         val result = arrayListOf<Date>()
@@ -148,10 +170,10 @@ data class ExpenseTable(
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalMinus2Category, makeTotalMinus2RowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalMinus2Keys)
-        result.add(RowKey(totalCardName, totalCategory, 0))
-        result.add(RowKey(totalCardName, totalPlusCategory, makeTotalPlusRowKey(0)))
-        result.add(RowKey(totalCardName, totalMinusCategory, makeTotalPlusRowKey(0)))
-        result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        result.add(RowKey(overallCardName, totalCategory, 0))
+        result.add(RowKey(overallCardName, totalPlusCategory, makeTotalPlusRowKey(0)))
+        result.add(RowKey(overallCardName, totalMinusCategory, makeTotalPlusRowKey(0)))
+        result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
         result.sortedBy {
             val key = it.rowKeyInt
             val sortKey = if (key % 1000 <= 600) {
@@ -170,8 +192,8 @@ data class ExpenseTable(
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalKeys)
-        result.add(RowKey(totalCardName, totalCategory, 0))
-        result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        result.add(RowKey(overallCardName, totalCategory, 0))
+        result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
         result.sortedBy {
             val key = it.rowKeyInt
             val sortKey = if (key % 1000 < 800) {
@@ -282,13 +304,13 @@ data class ExpenseTable(
             )
         }
 
-        if (rowKey.cardName == totalCardName && rowKey.category == totalCategory) {
+        if (rowKey.cardName == overallCardName && rowKey.category == totalCategory) {
             val payments = rowKeys
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .sortedBy { it.date.time }
             return ExpenseEntry(
-                totalCardName,
+                overallCardName,
                 totalCategory,
                 0,
                 date,
@@ -297,21 +319,8 @@ data class ExpenseTable(
             )
         }
 
-        if (rowKey.cardName == totalCardName && rowKey.category == totalPlusCategory) {
-            val payments = rowKeys
-                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
-                .filter { !SkipSet.containsLabel(it.label) }
-                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
-                .flatMap { expenseEntry ->
-                    expenseEntry
-                        .payments
-                        .filter {
-                            !ReduceSet.containsKey(expenseEntry.cardName)
-                                    || it.comment.cp1251toUTF8().startsWith(writeOffComment)
-                        }
-                }
-                .filter { it.amount > 0 }
-                .sortedBy { it.date.time }
+        if (rowKey.cardName == overallCardName && rowKey.category == totalPlusCategory) {
+            val payments = overallTotalPlusPayments(date)
             return ExpenseEntry(
                 rowKey.cardName,
                 totalPlusCategory,
@@ -322,22 +331,8 @@ data class ExpenseTable(
             )
         }
 
-        if (rowKey.cardName == totalCardName && rowKey.category == totalMinusCategory) {
-            val payments = rowKeys
-                .filter { !SkipSet.containsLabel(it.label) }
-                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
-                .flatMap { expenseEntry ->
-                    expenseEntry.payments
-                        .filter {
-                            expenseEntry.category != incomingCategory
-                                    && !ReduceSet.containsKey(expenseEntry.cardName)
-                                    && expenseEntry.category !in setOf(investCategory, usdCategory, cnyCategory)
-                                    || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
-                                    || it.comment.cp1251toUTF8().startsWith(salaryComment)
-                        }
-                }
-                .filter { it.amount < 0 }
-                .sortedBy { it.date.time }
+        if (rowKey.cardName == overallCardName && rowKey.category == totalMinusCategory) {
+            val payments = overallTotalMinusPayments(date)
             return ExpenseEntry(
                 rowKey.cardName,
                 totalMinusCategory,
@@ -348,14 +343,14 @@ data class ExpenseTable(
             )
         }
 
-        if (rowKey.cardName == totalCardName && rowKey.category == totalLohCategory) {
+        if (rowKey.cardName == overallCardName && rowKey.category == totalLohCategory) {
             val payments = rowKeys
                 .filter { it.category == lohCategory }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .sortedBy { it.date.time }
             return ExpenseEntry(
-                totalCardName,
+                overallCardName,
                 totalCategory,
                 0,
                 date,
