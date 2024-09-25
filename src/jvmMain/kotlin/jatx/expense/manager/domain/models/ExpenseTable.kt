@@ -141,8 +141,9 @@ data class ExpenseTable(
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalMinus2Category, makeTotalMinus2RowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalMinus2Keys)
-        result.add(RowKey(totalCardName, totalWithCashCategory, 0))
-        result.add(RowKey(totalCardName, totalCategory, 1))
+        result.add(RowKey(totalCardName, totalCategory, 0))
+        result.add(RowKey(totalCardName, totalPlusCategory, makeTotalPlusRowKey(0)))
+        result.add(RowKey(totalCardName, totalMinusCategory, makeTotalPlusRowKey(0)))
         result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
         result.sortedBy {
             val key = it.rowKeyInt
@@ -162,8 +163,7 @@ data class ExpenseTable(
             .distinctBy { it.rowKeyInt.cardNameKey }
             .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalKeys)
-        result.add(RowKey(totalCardName, totalWithCashCategory, 0))
-        result.add(RowKey(totalCardName, totalCategory, 1))
+        result.add(RowKey(totalCardName, totalCategory, 0))
         result.add(RowKey(totalCardName, totalLohCategory, makeRowKey(0, lohKey)))
         result.sortedBy {
             val key = it.rowKeyInt
@@ -275,7 +275,7 @@ data class ExpenseTable(
             )
         }
 
-        if (rowKey.cardName == totalCardName && rowKey.category == totalWithCashCategory) {
+        if (rowKey.cardName == totalCardName && rowKey.category == totalCategory) {
             val payments = rowKeys
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
@@ -290,16 +290,45 @@ data class ExpenseTable(
             )
         }
 
-        if (rowKey.cardName == totalCardName && rowKey.category == totalCategory) {
+        if (rowKey.cardName == totalCardName && rowKey.category == totalPlusCategory) {
             val payments = rowKeys
-                .filter { it.cardName != cashCardName }
+                .filter { !ReduceSet.containsKey(it.cardName) }
+                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                .filter { !SkipSet.containsLabel(it.label) }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
+                .filter { it.amount > 0 }
                 .sortedBy { it.date.time }
             return ExpenseEntry(
-                totalCardName,
-                totalCategory,
-                0,
+                rowKey.cardName,
+                totalPlusCategory,
+                makeTotalPlusRowKey(rowKey.rowKeyInt.cardNameKey),
+                date,
+                payments,
+                currencyRates
+            )
+        }
+
+        if (rowKey.cardName == totalCardName && rowKey.category == totalMinusCategory) {
+            val payments = rowKeys
+                .filter { !ReduceSet.containsKey(it.cardName) }
+                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+                .filter { !SkipSet.containsLabel(it.label) }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { expenseEntry ->
+                    expenseEntry.payments
+                        .filter {
+                            expenseEntry.category != incomingCategory
+                                    || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
+                                    || it.comment.cp1251toUTF8().startsWith(salaryComment)
+                        }
+                }
+                .filter { it.amount < 0 }
+                .sortedBy { it.date.time }
+            return ExpenseEntry(
+                rowKey.cardName,
+                totalMinusCategory,
+                makeTotalMinusRowKey(rowKey.rowKeyInt.cardNameKey),
                 date,
                 payments,
                 currencyRates

@@ -30,7 +30,7 @@ import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
 
-const val fixedRowCount = 1
+const val fixedRowCount = 4
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
