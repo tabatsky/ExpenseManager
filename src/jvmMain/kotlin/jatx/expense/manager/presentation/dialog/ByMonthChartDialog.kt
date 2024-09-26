@@ -39,7 +39,7 @@ fun ByMonthChartDialogWrapper() {
                     BarChartData(byMonthData),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(40.dp)
+                        .padding(start = 40.dp, top = 120.dp, end = 40.dp, bottom = 40.dp)
                 )
             }
         }

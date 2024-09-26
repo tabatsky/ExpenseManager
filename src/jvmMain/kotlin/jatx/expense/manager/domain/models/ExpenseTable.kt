@@ -81,7 +81,7 @@ data class ExpenseTable(
         }
 
     fun byMonthData() = let { table ->
-            table.dates.drop(1).flatMap { date ->
+            table.dates.flatMap { date ->
                 val plusAmount = overallTotalPlusPayments(date)
                     .sumOf { it.rurAmount }
                 val minusAmount = overallTotalMinusPayments(date)
