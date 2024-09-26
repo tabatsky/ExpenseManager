@@ -56,7 +56,7 @@ fun PieChartDialogWrapper() {
 
         val count = pieChartData.size
         val colors = pieChartData.indices.map {
-            Color.hsv(360.0f * it / count, 0.7f, 1.0f)
+            Color.hsv(360.0f * it / count, 0.7f, 0.7f)
         }
         val slices = pieChartData.indices.map {
             PieChartData.Slice(pieChartData[it].second.toFloat(), colors[it])
