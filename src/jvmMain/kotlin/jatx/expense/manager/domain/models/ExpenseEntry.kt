@@ -13,6 +13,8 @@ data class ExpenseEntry(
     val currencyRates: Map<String, Float> = mapOf(),
     val needSortByDate: Boolean = true
 ) {
+    val label = "$cardName|$category"
+
     override fun equals(other: Any?) = other is ExpenseEntry &&
             other.cardName == this.cardName &&
             other.category == this.category &&
