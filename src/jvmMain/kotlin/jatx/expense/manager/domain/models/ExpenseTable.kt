@@ -9,6 +9,7 @@ import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.res.*
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 data class CellKey(
     val cardName: String,
@@ -81,20 +82,32 @@ data class ExpenseTable(
         }
 
     fun byMonthData() = let { table ->
-            table.dates.flatMap { date ->
+            table.dates.map { date ->
                 val plusAmount = overallTotalPlusPayments(date)
                     .sumOf { it.rurAmount }
                 val minusAmount = overallTotalMinusPayments(date)
                     .sumOf { it.rurAmount }
+                val plus = plusAmount to "${date.formattedMonthAndYear}    $plusAmount"
+                val minus = minusAmount to "${date.formattedMonthAndYear}    $minusAmount"
+                plus to minus
+            }.let { list ->
+                val plusMean = list.map { it.first.first }.average().roundToInt()
+                val minusMean = list.map { it.second.first }.average().roundToInt()
+                val plus = plusMean to "среднее   $plusMean"
+                val minus = minusMean to "среднее   $minusMean"
+                list + (plus to minus)
+            }.flatMap {
+                val plus = it.first
+                val minus = it.second
                 val plusBar = BarChartData.Bar(
-                    plusAmount.toFloat(),
+                    plus.first.toFloat(),
                     Color.Blue,
-                    "${date.formattedMonthAndYear}    $plusAmount"
+                    plus.second
                 )
                 val minusBar = BarChartData.Bar(
-                    abs(minusAmount.toFloat()),
+                    abs(minus.first.toFloat()),
                     Color.Red,
-                    "${date.formattedMonthAndYear}    $minusAmount"
+                    minus.second
                 )
                 val emptyBar = BarChartData.Bar(
                     0f,
