@@ -5,6 +5,7 @@ import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.domain.xlsx.XlsxParser
 import jatx.expense.manager.domain.xlsx.XlsxParserFactory
 import jatx.expense.manager.res.totalCategory
+import org.apache.poi.openxml4j.util.ZipSecureFile
 import org.apache.poi.ss.usermodel.*
 import java.io.File
 import java.lang.IllegalStateException
@@ -20,6 +21,8 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     private val expenseHashMap = hashMapOf<CellKey, ExpenseEntry>()
 
     override fun parseXlsx(): ExpenseTable {
+        ZipSecureFile.setMinInflateRatio(0.0)
+
         val inputStream = File(xlsxPath).inputStream()
         val workbook = WorkbookFactory.create(inputStream)
 

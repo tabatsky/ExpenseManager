@@ -24,12 +24,11 @@ class XlsxSaverImpl(
     init {
         allRowNums.add(1)
         allRowNums.add(2)
-        allRowNums.add(3)
         var cardName = overallCardName
-        var rowNum = 4
+        var rowNum = 3
         expenseTable
             .rowKeysWithTotalsNoPlusMinus
-            .drop(3)
+            .drop(2)
             .forEach {
                 if (it.cardName != cardName) {
                     cardName = it.cardName
@@ -131,20 +130,20 @@ class XlsxSaverImpl(
                                 }
 
                             makeSummFormula(totalCellNames)
+//                        } else if (i == 1) {
+//                            val totalCellNames = arrayListOf<String>()
+//                            expenseTable
+//                                .rowKeysWithTotalsNoPlusMinus
+//                                .forEachIndexed { k, rowKey ->
+//                                    if (rowKey.cardName != overallCardName && rowKey.cardName != cashCardName && rowKey.category == totalCategory) {
+//                                        val totalRowNum = allRowNums[k]
+//                                        val totalCellName = "$colLetter${totalRowNum + 1}"
+//                                        totalCellNames.add(totalCellName)
+//                                    }
+//                                }
+//
+//                            makeSummFormula(totalCellNames)
                         } else if (i == 1) {
-                            val totalCellNames = arrayListOf<String>()
-                            expenseTable
-                                .rowKeysWithTotalsNoPlusMinus
-                                .forEachIndexed { k, rowKey ->
-                                    if (rowKey.cardName != overallCardName && rowKey.cardName != cashCardName && rowKey.category == totalCategory) {
-                                        val totalRowNum = allRowNums[k]
-                                        val totalCellName = "$colLetter${totalRowNum + 1}"
-                                        totalCellNames.add(totalCellName)
-                                    }
-                                }
-
-                            makeSummFormula(totalCellNames)
-                        } else if (i == 2) {
                             val totalCellNames = arrayListOf<String>()
                             expenseTable
                                 .rowKeysWithTotalsNoPlusMinus
