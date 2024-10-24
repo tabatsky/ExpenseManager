@@ -21,6 +21,7 @@ val incomingCategory = "Поступления".cp1251toUTF8()
 
 val salaryComment = "Заработал".cp1251toUTF8()
 val writeOffComment = "Списал".cp1251toUTF8()
+val giftComment = "Подарил".cp1251toUTF8()
 
 val String.currencyForCategory: String
     get() = when (this) {

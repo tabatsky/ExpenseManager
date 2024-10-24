@@ -31,6 +31,7 @@ class ExpenseViewModel(
     @OptIn(DelicateCoroutinesApi::class)
     val expenseTable = _expenseTable
         .combine(_currencyRates) { table, rates ->
+            println(rates)
             table?.copy(currencyRates = rates)
         }
         .stateIn(GlobalScope, SharingStarted.Eagerly, null)
