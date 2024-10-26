@@ -38,6 +38,9 @@ fun ExpenseTable() {
     val expenseViewModel = Injector.expenseViewModel
 
     val expenseTable by expenseViewModel.expenseTable.collectAsState()
+    LaunchedEffect(expenseTable) {
+        println(expenseTable?.currencyRates)
+    }
 
     val rowListState = rememberLazyListState()
 

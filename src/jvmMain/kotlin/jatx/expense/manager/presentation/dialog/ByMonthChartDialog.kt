@@ -28,7 +28,7 @@ fun ByMonthChartDialogWrapper() {
         val dialogState = rememberDialogState()
         dialogState.size = DpSize(pieChartDialogWidth, pieChartDialogHeight)
 
-        val byMonthData = expenseViewModel.byMonthData()
+        val byMonthData by expenseViewModel.byMonthData().collectAsState(listOf())
 
         DialogWindow(
             onCloseRequest = { close() },

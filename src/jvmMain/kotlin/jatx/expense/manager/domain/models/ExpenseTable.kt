@@ -21,7 +21,8 @@ data class ExpenseTable(
     private val allCells: Map<CellKey, ExpenseEntry>,
     val dates: List<Date>,
     val rowKeys: List<RowKey>,
-    val currencyRates: Map<String, Float> = mapOf()
+    val currencyRates: Map<String, Float> = mapOf(),
+    val version: Int = 0
 ) {
     val cellCount = allCells.size
 
@@ -81,8 +82,10 @@ data class ExpenseTable(
     fun byMonthData() = let { table ->
             table.dates.map { date ->
                 val plusAmount = overallTotalPlusPayments(date)
+                    .map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
                     .sumOf { it.rurAmount }
                 val minusAmount = overallTotalMinusPayments(date)
+                    .map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
                     .sumOf { it.rurAmount }
                 val plus = plusAmount to "${date.formattedMonthAndYear}    $plusAmount"
                 val minus = minusAmount to "${date.formattedMonthAndYear}    $minusAmount"

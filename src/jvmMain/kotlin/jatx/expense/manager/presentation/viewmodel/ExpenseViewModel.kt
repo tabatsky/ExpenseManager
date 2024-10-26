@@ -31,10 +31,10 @@ class ExpenseViewModel(
     @OptIn(DelicateCoroutinesApi::class)
     val expenseTable = _expenseTable
         .combine(_currencyRates) { table, rates ->
-            println(rates)
-            table?.copy(currencyRates = rates)
+            //println(rates)
+            table?.copy(currencyRates = rates, version = table.version.plus(1))
         }
-        .stateIn(GlobalScope, SharingStarted.Eagerly, null)
+        .stateIn(GlobalScope, SharingStarted.WhileSubscribed(), null)
 
     private val _currentExpenseEntry: MutableStateFlow<ExpenseEntry?> = MutableStateFlow(null)
     val currentExpenseEntry = _currentExpenseEntry.asStateFlow()
@@ -75,7 +75,10 @@ class ExpenseViewModel(
     private val _needShowByMonthChartDialog = MutableStateFlow(false)
     val needShowByMonthChartDialog = _needShowByMonthChartDialog.asStateFlow()
 
-    fun byMonthData() = expenseTable.value?.byMonthData() ?: listOf()
+    fun byMonthData() = expenseTable
+        .map {
+            it?.byMonthData() ?: listOf()
+        }
 
     fun onAppStart() {
         coroutineScope.launch {
