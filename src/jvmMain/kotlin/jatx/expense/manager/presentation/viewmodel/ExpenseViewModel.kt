@@ -64,6 +64,8 @@ class ExpenseViewModel(
 
     private val _needShowPieChartDialog = MutableStateFlow(false)
     val needShowPieChartDialog = _needShowPieChartDialog.asStateFlow()
+    private val _needShowPieChartByCommentDialog = MutableStateFlow(false)
+    val needShowPieChartByCommentDialog = _needShowPieChartByCommentDialog.asStateFlow()
     private val _pieChartMonthKey = MutableStateFlow(Date().monthKey)
     val pieChartMonthKey = _pieChartMonthKey.asStateFlow()
     private val _pieChartShowSkipped = MutableStateFlow(false)
@@ -71,6 +73,10 @@ class ExpenseViewModel(
 
     fun pieChartData(date: Date, showSkipped: Boolean) = expenseTable.value?.pieChartData(date, showSkipped) ?: listOf()
     fun overallPieChartData(showSkipped: Boolean) = expenseTable.value?.overallPieChartData(showSkipped) ?: listOf()
+
+    fun pieChartDataByComment(date: Date) = expenseTable.value?.pieChartDataByComment(date) ?: listOf()
+    fun overallPieChartDataByComment() = expenseTable.value?.overallPieChartDataByComment() ?: listOf()
+
 
     private val _needShowByMonthChartDialog = MutableStateFlow(false)
     val needShowByMonthChartDialog = _needShowByMonthChartDialog.asStateFlow()
@@ -188,6 +194,14 @@ class ExpenseViewModel(
 
     fun showPieChartDialog(show: Boolean) {
         _needShowPieChartDialog.value = show
+    }
+
+    fun showPieChartByComment() {
+        showPieChartByCommentDialog(true)
+    }
+
+    fun showPieChartByCommentDialog(show: Boolean) {
+        _needShowPieChartByCommentDialog.value = show
     }
 
     fun updatePieChartShowSkipped(show: Boolean) {

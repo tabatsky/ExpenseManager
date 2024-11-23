@@ -79,6 +79,53 @@ data class ExpenseTable(
                 .toList()
         }
 
+    fun overallPieChartDataByComment() = dates
+        .flatMap {
+            pieChartDataByCommentNotFiltered(it)
+                .filter {
+                    it.second > 0
+                }
+        }
+        .groupBy {
+            it.first
+        }
+        .map {
+            it.key to it.value.sumOf { it.second }
+        }
+        .sortedBy { -it.second }
+
+    fun pieChartDataByComment(date: Date) =
+        pieChartDataByCommentNotFiltered(date)
+            .filter {
+                it.second > 0
+            }
+
+    private fun pieChartDataByCommentNotFiltered(date: Date) =
+        rowKeys
+            .asSequence()
+            .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+            .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+            .flatMap { expenseEntry ->
+                val amounts = expenseEntry
+                    .filterTotalPlus()
+                    .filter { it.rurAmount > 0 }
+                    .groupBy {
+                        it
+                            .comment.split("-").first().trim()
+                            .takeIf {
+                                it != defaultCommentPositiveAmount &&
+                                        it != defaultCommentNegativeAmount
+                            } ?: it.category.utf8toCP1251()
+                    }
+                    .map {
+                        it.key.cp1251toUTF8() to it.value.sumOf { it.rurAmount }
+                    }
+                amounts
+            }
+            .sortedBy { -it.second }
+            .toList()
+
+
     fun byMonthData() = let { table ->
             table.dates.map { date ->
                 val plusAmount = overallTotalPlusPayments(date)

@@ -53,6 +53,7 @@ const val menuFunctionLabel = "Функция"
 const val menuStatisticsByCommentLabel = "Статистика по метке"
 const val menuStatisticsByCategoryLabel = "Статистика по категориям"
 const val menuPieChart = "Диаграмма расходов"
+const val menuPieChartByComment = "Диаграмма расходов по метке"
 const val menuByMonthChart = "График по месяцам"
 
 const val dialogFileChooserOpenTitle = "Загрузить XLSX"
