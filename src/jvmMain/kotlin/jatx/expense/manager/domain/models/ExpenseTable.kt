@@ -193,6 +193,8 @@ data class ExpenseTable(
                         || it.comment.cp1251toUTF8().startsWith(writeOffComment)
                         || it.comment.cp1251toUTF8().startsWith(salaryComment)
                         || it.comment.cp1251toUTF8().startsWith(giftComment)
+                        || it.comment.cp1251toUTF8().startsWith(gift2Comment)
+                        || it.comment.cp1251toUTF8().startsWith(payComment)
             }
     }
 
