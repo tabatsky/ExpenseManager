@@ -5,6 +5,7 @@ import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.domain.xlsx.XlsxParser
 import jatx.expense.manager.domain.xlsx.XlsxParserFactory
 import jatx.expense.manager.res.totalCategory
+import me.tatarka.inject.annotations.Inject
 import org.apache.poi.openxml4j.util.ZipSecureFile
 import org.apache.poi.ss.usermodel.*
 import java.io.File
@@ -13,6 +14,7 @@ import java.util.*
 
 const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
 
+@Inject
 class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     private val allRowKeys = arrayListOf<RowKey>()
     private val allCardNames = arrayListOf<String>()
@@ -114,6 +116,7 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     }
 }
 
+@Inject
 class XlsxParserFactoryImpl: XlsxParserFactory {
     override fun newInstance(xlsxPath: String) = XlsxParserImpl(xlsxPath)
 

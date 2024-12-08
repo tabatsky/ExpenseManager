@@ -17,7 +17,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import jatx.expense.manager.di.Injector
+import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.util.formattedForPaymentList
 import jatx.expense.manager.domain.util.utf8toCP1251
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PaymentListView() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val expenseEntry by expenseViewModel.currentExpenseEntry.collectAsState()
 
@@ -95,7 +95,7 @@ fun PaymentListView() {
 fun PaymentItem(paymentEntry: PaymentEntry) {
     println("payment: ${paymentEntry.amountStr} ${paymentEntry.category}".utf8toCP1251())
 
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     Column(
         modifier = Modifier

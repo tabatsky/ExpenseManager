@@ -7,12 +7,12 @@ import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 import java.util.*
 
+@Inject
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,
     private val loadExpenseTableFromDBUseCase: LoadExpenseTableFromDBUseCase,
@@ -28,13 +28,13 @@ class ExpenseViewModel(
     private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
 
     private val _expenseTable: MutableStateFlow<ExpenseTable?> = MutableStateFlow(null)
-    @OptIn(DelicateCoroutinesApi::class)
     val expenseTable = _expenseTable
         .combine(_currencyRates) { table, rates ->
-            //println(rates)
+            println(rates)
+            println(table?.version ?: 0)
             table?.copy(currencyRates = rates, version = table.version.plus(1))
         }
-        .stateIn(GlobalScope, SharingStarted.WhileSubscribed(), null)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, null)
 
     private val _currentExpenseEntry: MutableStateFlow<ExpenseEntry?> = MutableStateFlow(null)
     val currentExpenseEntry = _currentExpenseEntry.asStateFlow()

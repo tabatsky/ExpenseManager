@@ -7,8 +7,10 @@ import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
+import me.tatarka.inject.annotations.Inject
 import java.util.*
 
+@Inject
 class LoadExpenseTableFromDBUseCase(
     private val paymentRepository: PaymentRepository
 ) {

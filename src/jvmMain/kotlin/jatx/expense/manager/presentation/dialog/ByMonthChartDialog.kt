@@ -11,12 +11,12 @@ import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.github.tehras.charts.bar.BarChart
 import com.github.tehras.charts.bar.BarChartData
-import jatx.expense.manager.di.Injector
+import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.res.*
 
 @Composable
 fun ByMonthChartDialogWrapper() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val show by expenseViewModel.needShowByMonthChartDialog.collectAsState()
 

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.window.DialogWindow
-import jatx.expense.manager.di.Injector
+import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.res.*
 import java.text.SimpleDateFormat
@@ -20,7 +20,7 @@ val sdf = SimpleDateFormat("dd.MM.yyyy")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EditPaymentDialogWrapper() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val currentPaymentEntry by expenseViewModel.currentPaymentEntry.collectAsState()
     val showEditPaymentDialog by expenseViewModel.showEditPaymentDialog.collectAsState()
@@ -76,7 +76,7 @@ fun EditPaymentDialogWrapper() {
 
 @Composable
 fun AddPaymentDialogWrapper() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val newPaymentEntry
             by expenseViewModel.newPaymentEntry.collectAsState()
@@ -101,7 +101,7 @@ private fun AddOrEditPaymentDialog(
     onSave: (PaymentEntry) -> Unit,
     onDelete: (() -> Unit)? = null
 ) {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     var amount by remember { mutableStateOf(paymentEntry.amount) }
     var comment by remember { mutableStateOf(paymentEntry.comment) }

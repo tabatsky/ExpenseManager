@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
-import jatx.expense.manager.di.Injector
+import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.res.buttonCancelLabel
 import jatx.expense.manager.res.buttonChooseLabel
 import jatx.expense.manager.res.datePickerDialogHeight
@@ -28,7 +28,7 @@ val offset = timeZone.rawOffset
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerDialogWrapper() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val show by expenseViewModel.needShowDatePickerDialog.collectAsState()
     val date by expenseViewModel.datePickerDate.collectAsState()

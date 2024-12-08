@@ -17,7 +17,7 @@ import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import com.github.tehras.charts.piechart.PieChart
 import com.github.tehras.charts.piechart.PieChartData
-import jatx.expense.manager.di.Injector
+import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
@@ -27,7 +27,7 @@ import java.util.*
 
 @Composable
 fun PieChartByCommentDialogWrapper() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val show by expenseViewModel.needShowPieChartByCommentDialog.collectAsState()
 

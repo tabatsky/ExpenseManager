@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.compose")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization") version "1.9.20"
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
 group = "jatx.expense.manager"
@@ -20,7 +21,10 @@ kotlin {
         withJava()
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+            }
+        }
         val jvmMain by getting {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             dependencies {
@@ -34,10 +38,15 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:1.6.4")
                 implementation("io.ktor:ktor-client-java:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+                implementation("me.tatarka.inject:kotlin-inject-runtime-kmp:0.7.2")
             }
         }
         val jvmTest by getting
     }
+}
+
+dependencies {
+    add("kspJvm", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
 }
 
 compose.desktop {

@@ -10,7 +10,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogWindow
-import jatx.expense.manager.di.Injector
+import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.utf8toCP1251
@@ -19,7 +19,7 @@ import jatx.expense.manager.res.buttonSaveLabel
 
 @Composable
 fun RenameCategoryDialogWrapper() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val rowKeyToEdit by expenseViewModel.rowKeyToEdit.collectAsState()
 

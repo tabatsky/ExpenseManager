@@ -6,7 +6,9 @@ import io.ktor.client.request.*
 import jatx.expense.manager.domain.cbr.CurrencyRatesGetter
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class CurrencyRatesGetterImpl: CurrencyRatesGetter {
     override suspend fun getCurrencyRates(): Map<String, Float> {
         return try {

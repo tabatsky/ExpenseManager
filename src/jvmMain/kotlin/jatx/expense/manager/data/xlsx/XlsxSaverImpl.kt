@@ -9,11 +9,13 @@ import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.domain.xlsx.XlsxSaver
 import jatx.expense.manager.domain.xlsx.XlsxSaverFactory
 import jatx.expense.manager.res.*
+import me.tatarka.inject.annotations.Inject
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.awt.Color
 import java.io.File
 
+@Inject
 class XlsxSaverImpl(
     private val expenseTable: ExpenseTable,
     private val xlsxPath: String
@@ -197,6 +199,7 @@ class XlsxSaverImpl(
     }
 }
 
+@Inject
 class XlsxSaverFactoryImpl: XlsxSaverFactory {
     override fun newInstance(expenseTable: ExpenseTable, xlsxPath: String) =
         XlsxSaverImpl(expenseTable, xlsxPath)

@@ -20,7 +20,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import jatx.expense.manager.di.Injector
+import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
@@ -35,11 +35,11 @@ const val fixedRowCount = 4
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExpenseTable() {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     val expenseTable by expenseViewModel.expenseTable.collectAsState()
     LaunchedEffect(expenseTable) {
-        println(expenseTable?.currencyRates)
+        println("currency rates: ${expenseTable?.currencyRates}")
     }
 
     val rowListState = rememberLazyListState()
@@ -187,7 +187,7 @@ fun ExpenseTable() {
 
 @Composable
 fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
-    val expenseViewModel = Injector.expenseViewModel
+    val expenseViewModel = appComponent.expenseViewModel
 
     Row {
         ExpenseCell(
