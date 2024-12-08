@@ -1,5 +1,6 @@
 package jatx.expense.manager.presentation.viewmodel
 
+import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
 import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
+@AppScope
 @Inject
 class ExpenseViewModel(
     private val saveExpenseTableToDBUseCase: SaveExpenseTableToDBUseCase,

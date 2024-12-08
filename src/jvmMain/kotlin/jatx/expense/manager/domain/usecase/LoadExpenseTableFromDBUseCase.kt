@@ -1,5 +1,6 @@
 package jatx.expense.manager.domain.usecase
 
+import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.CellKey
 import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.models.ExpenseTable
@@ -10,6 +11,7 @@ import jatx.expense.manager.domain.util.monthKey
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
+@AppScope
 @Inject
 class LoadExpenseTableFromDBUseCase(
     private val paymentRepository: PaymentRepository

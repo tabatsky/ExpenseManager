@@ -16,22 +16,21 @@ import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import kotlinx.coroutines.CoroutineScope
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
+import me.tatarka.inject.annotations.Scope
 import kotlin.properties.Delegates
+
+@Scope
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+annotation class AppScope
 
 var appComponent by Delegates.notNull<AppComponent>()
 
+@AppScope
 @Component
 abstract class AppComponent(
     @get: Provides protected val coroutineScope: CoroutineScope
 ) {
-    private val driverFactory: DatabaseDriverFactory = DatabaseDriverFactory()
-
-    private val driver: SqlDriver = driverFactory.createDriver()
-
-    private val appDatabase: AppDatabase = AppDatabase.invoke(driver)
-
-    abstract val _expenseViewModel: ExpenseViewModel
-    val expenseViewModel = _expenseViewModel
+    abstract val expenseViewModel: ExpenseViewModel
 
     val menuCallbacks = MenuCallbacks().apply {
         onLoadXlsx = {
@@ -57,11 +56,18 @@ abstract class AppComponent(
         }
     }
 
-    //@Provides
-    //protected fun driverFactory(): DatabaseDriverFactory = DatabaseDriverFactory()
-
+    @AppScope
     @Provides
-    protected fun provideAppDatabase(): AppDatabase = appDatabase
+    protected fun provideDriverFactory(): DatabaseDriverFactory = DatabaseDriverFactory()
+
+    @AppScope
+    @Provides
+    protected fun provideDriver(driverFactory: DatabaseDriverFactory): SqlDriver =
+        driverFactory.createDriver()
+
+    @AppScope
+    @Provides
+    protected fun provideAppDatabase(driver: SqlDriver): AppDatabase = AppDatabase.invoke(driver)
 
     protected val PaymentRepositoryImpl.bind: PaymentRepository
         @Provides get() = this
