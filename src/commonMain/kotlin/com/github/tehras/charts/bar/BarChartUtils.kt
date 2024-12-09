@@ -9,10 +9,10 @@ import com.github.tehras.charts.bar.renderer.xaxis.XAxisDrawer
 
 internal object BarChartUtils {
   fun axisAreas(
-    drawScope: DrawScope,
-    totalSize: Size,
-    xAxisDrawer: XAxisDrawer,
-    labelDrawer: LabelDrawer
+      drawScope: DrawScope,
+      totalSize: Size,
+      xAxisDrawer: XAxisDrawer,
+      labelDrawer: LabelDrawer
   ): Pair<Rect, Rect> = with(drawScope) {
     // yAxis
     val yAxisTop = labelDrawer.requiredAboveBarHeight(drawScope)
@@ -42,11 +42,11 @@ internal object BarChartUtils {
   }
 
   fun BarChartData.forEachWithArea(
-    drawScope: DrawScope,
-    barDrawableArea: Rect,
-    progress: Float,
-    labelDrawer: LabelDrawer,
-    block: (barArea: Rect, bar: BarChartData.Bar) -> Unit
+      drawScope: DrawScope,
+      barDrawableArea: Rect,
+      progress: Float,
+      labelDrawer: LabelDrawer,
+      block: (barArea: Rect, bar: BarChartData.Bar) -> Unit
   ) {
     val totalBars = bars.size
     val widthOfBarArea = barDrawableArea.width / totalBars

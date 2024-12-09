@@ -7,8 +7,8 @@ import java.io.File
 
 const val dbFile = "ExpenseManager.db"
 
-class DatabaseDriverFactory {
-    fun createDriver(): SqlDriver {
+class DatabaseDriverFactoryImpl: DatabaseDriverFactory {
+    override fun createDriver(): SqlDriver {
         val driver = JdbcSqliteDriver("jdbc:sqlite:$dbFile")
         if (!File(dbFile).exists()) {
             AppDatabase.Schema.create(driver)

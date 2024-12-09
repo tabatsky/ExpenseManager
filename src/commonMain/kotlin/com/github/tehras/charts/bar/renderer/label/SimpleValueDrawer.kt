@@ -1,11 +1,9 @@
 package com.github.tehras.charts.bar.renderer.label
 
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.TextUnit
@@ -18,9 +16,9 @@ import org.jetbrains.skia.Paint
 import org.jetbrains.skia.TextLine
 
 class SimpleValueDrawer(
-  private val drawLocation: DrawLocation = Inside,
-  private val labelTextSize: TextUnit = 12.sp,
-  private val labelTextColor: Color = Color.Black
+    private val drawLocation: DrawLocation = Inside,
+    private val labelTextSize: TextUnit = 12.sp,
+    private val labelTextColor: Color = Color.Black
 ) : LabelDrawer {
   private val _labelTextArea: Float? = null
 //  private val paint = android.graphics.Paint().apply {

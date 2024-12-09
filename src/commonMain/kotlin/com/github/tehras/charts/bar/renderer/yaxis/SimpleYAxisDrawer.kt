@@ -12,21 +12,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.tehras.charts.piechart.utils.toLegacyInt
 import org.jetbrains.skia.Font
 import org.jetbrains.skia.TextLine
-import kotlin.math.max
-import kotlin.math.roundToInt
 
 typealias LabelFormatter = (value: Float) -> String
 
 class SimpleYAxisDrawer(
-  private val labelTextSize: TextUnit = 12.sp,
-  private val labelTextColor: Color = Color.Black,
-  private val labelRatio: Int = 3,
-  private val labelValueFormatter: LabelFormatter = { value -> "%.1f".format(value) },
-  private val axisLineThickness: Dp = 1.dp,
-  private val axisLineColor: Color = Color.Black
+    private val labelTextSize: TextUnit = 12.sp,
+    private val labelTextColor: Color = Color.Black,
+    private val labelRatio: Int = 3,
+    private val labelValueFormatter: LabelFormatter = { value -> "%.1f".format(value) },
+    private val axisLineThickness: Dp = 1.dp,
+    private val axisLineColor: Color = Color.Black
 ) : YAxisDrawer {
   private val axisLinePaint = Paint().apply {
     isAntiAlias = true
