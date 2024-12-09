@@ -28,7 +28,6 @@ var appComponent by Delegates.notNull<AppComponent>()
 @AppScope
 @Component
 abstract class AppComponent(
-    @get: Provides protected val databaseDriverFactory: DatabaseDriverFactory,
     @get: Provides protected val coroutineScope: CoroutineScope
 ) {
     abstract val expenseViewModel: ExpenseViewModel
@@ -56,6 +55,10 @@ abstract class AppComponent(
             expenseViewModel.showByMonthChart()
         }
     }
+
+    @AppScope
+    @Provides
+    protected fun provideDriverFactory(): DatabaseDriverFactory = DatabaseDriverFactory()
 
     @AppScope
     @Provides

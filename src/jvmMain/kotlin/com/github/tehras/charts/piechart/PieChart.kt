@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import com.github.tehras.charts.piechart.PieChartUtils.calculateAngle
 import com.github.tehras.charts.piechart.animation.simpleChartAnimation
@@ -16,10 +17,10 @@ import com.github.tehras.charts.piechart.renderer.SliceDrawer
 
 @Composable
 fun PieChart(
-    pieChartData: PieChartData,
-    modifier: Modifier = Modifier,
-    animation: AnimationSpec<Float> = simpleChartAnimation(),
-    sliceDrawer: SliceDrawer = SimpleSliceDrawer()
+  pieChartData: PieChartData,
+  modifier: Modifier = Modifier,
+  animation: AnimationSpec<Float> = simpleChartAnimation(),
+  sliceDrawer: SliceDrawer = SimpleSliceDrawer()
 ) {
   val transitionProgress = remember(pieChartData.slices) { Animatable(initialValue = 0f) }
 
@@ -38,10 +39,10 @@ fun PieChart(
 
 @Composable
 private fun DrawChart(
-    pieChartData: PieChartData,
-    modifier: Modifier,
-    progress: Float,
-    sliceDrawer: SliceDrawer
+  pieChartData: PieChartData,
+  modifier: Modifier,
+  progress: Float,
+  sliceDrawer: SliceDrawer
 ) {
   val slices = pieChartData.slices
 

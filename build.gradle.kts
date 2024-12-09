@@ -22,21 +22,23 @@ kotlin {
     }
     sourceSets {
         val commonMain by getting {
+            dependencies {
+            }
+        }
+        val jvmMain by getting {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation(compose.material3)
+                implementation("org.jetbrains.compose.material3:material3-desktop:1.5.12")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.1")
                 implementation("org.apache.poi:poi:5.2.3")
                 implementation("org.apache.poi:poi-ooxml:5.2.3")
+                implementation("com.squareup.sqldelight:sqlite-driver:1.5.5")
                 implementation("io.ktor:ktor-client-core:1.6.4")
                 implementation("io.ktor:ktor-client-java:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
                 implementation("me.tatarka.inject:kotlin-inject-runtime-kmp:0.7.2")
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                implementation("com.squareup.sqldelight:sqlite-driver:1.5.5")
             }
         }
         val jvmTest by getting

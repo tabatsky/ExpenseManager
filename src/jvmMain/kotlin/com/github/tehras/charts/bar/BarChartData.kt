@@ -3,9 +3,9 @@ package com.github.tehras.charts.bar
 import androidx.compose.ui.graphics.Color
 
 data class BarChartData(
-    val bars: List<Bar>,
-    val padBy: Float = 10f,
-    val startAtZero: Boolean = true
+  val bars: List<Bar>,
+  val padBy: Float = 10f,
+  val startAtZero: Boolean = true
 ) {
   init {
     require(padBy in 0f..100f)

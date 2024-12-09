@@ -25,13 +25,13 @@ import com.github.tehras.charts.piechart.animation.simpleChartAnimation
 
 @Composable
 fun BarChart(
-    barChartData: BarChartData,
-    modifier: Modifier = Modifier,
-    animation: AnimationSpec<Float> = simpleChartAnimation(),
-    barDrawer: BarDrawer = SimpleBarDrawer(),
-    xAxisDrawer: XAxisDrawer = SimpleXAxisDrawer(),
-    yAxisDrawer: YAxisDrawer = SimpleYAxisDrawer(),
-    labelDrawer: LabelDrawer = SimpleValueDrawer()
+  barChartData: BarChartData,
+  modifier: Modifier = Modifier,
+  animation: AnimationSpec<Float> = simpleChartAnimation(),
+  barDrawer: BarDrawer = SimpleBarDrawer(),
+  xAxisDrawer: XAxisDrawer = SimpleXAxisDrawer(),
+  yAxisDrawer: YAxisDrawer = SimpleYAxisDrawer(),
+  labelDrawer: LabelDrawer = SimpleValueDrawer()
 ) {
   val transitionAnimation = remember(barChartData.bars) { Animatable(initialValue = 0f) }
 
