@@ -1,5 +1,6 @@
 package jatx.expense.manager.data.xlsx
 
+import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.models.cardNameKey
@@ -15,7 +16,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.awt.Color
 import java.io.File
 
+@AppScope
 @Inject
+class XlsxSaverFactoryImpl: XlsxSaverFactory {
+    override fun newInstance(expenseTable: ExpenseTable, xlsxPath: String) =
+        XlsxSaverImpl(expenseTable, xlsxPath)
+
+}
+
 class XlsxSaverImpl(
     private val expenseTable: ExpenseTable,
     private val xlsxPath: String
@@ -197,13 +205,6 @@ class XlsxSaverImpl(
 
         println("save xlsx success: $xlsxPath".cp1251toUTF8())
     }
-}
-
-@Inject
-class XlsxSaverFactoryImpl: XlsxSaverFactory {
-    override fun newInstance(expenseTable: ExpenseTable, xlsxPath: String) =
-        XlsxSaverImpl(expenseTable, xlsxPath)
-
 }
 
 private fun joinPaymentsToFormula(payments: List<PaymentEntry>): String {

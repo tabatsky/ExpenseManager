@@ -3,11 +3,13 @@ package jatx.expense.manager.data.cbr
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.request.*
+import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.cbr.CurrencyRatesGetter
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import me.tatarka.inject.annotations.Inject
 
+@AppScope
 @Inject
 class CurrencyRatesGetterImpl: CurrencyRatesGetter {
     override suspend fun getCurrencyRates(): Map<String, Float> {

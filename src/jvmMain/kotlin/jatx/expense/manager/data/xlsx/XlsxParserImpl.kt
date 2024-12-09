@@ -1,5 +1,6 @@
 package jatx.expense.manager.data.xlsx
 
+import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.domain.xlsx.XlsxParser
@@ -14,7 +15,13 @@ import java.util.*
 
 const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
 
+@AppScope
 @Inject
+class XlsxParserFactoryImpl: XlsxParserFactory {
+    override fun newInstance(xlsxPath: String) = XlsxParserImpl(xlsxPath)
+
+}
+
 class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     private val allRowKeys = arrayListOf<RowKey>()
     private val allCardNames = arrayListOf<String>()
@@ -114,12 +121,6 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
 
         return result
     }
-}
-
-@Inject
-class XlsxParserFactoryImpl: XlsxParserFactory {
-    override fun newInstance(xlsxPath: String) = XlsxParserImpl(xlsxPath)
-
 }
 
 private fun parseFormula(formula: String): List<String> {

@@ -3,10 +3,12 @@ package jatx.expense.manager.data.repository
 import jatx.expense.manager.data.converters.toDBEntity
 import jatx.expense.manager.data.converters.toModelEntry
 import jatx.expense.manager.db.AppDatabase
+import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.repository.PaymentRepository
 import me.tatarka.inject.annotations.Inject
 
+@AppScope
 @Inject
 class PaymentRepositoryImpl(
     private val appDatabase: AppDatabase
