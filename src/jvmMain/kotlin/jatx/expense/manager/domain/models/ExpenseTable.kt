@@ -31,7 +31,7 @@ data class ExpenseTable(
         .map { label ->
             val amount = dates
                 .sumOf {
-                    pieChartDataNotFiltered(it, showSkipped)
+                    pieChartDataNotFiltered(it, null, showSkipped)
                         .find { it.first == label }
                         ?.second ?: 0
                 }
@@ -42,22 +42,32 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
 
-    fun pieChartData(date: Date, showSkipped: Boolean) =
-        pieChartDataNotFiltered(date, showSkipped)
+    fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean) =
+        pieChartDataNotFiltered(date, date2, showSkipped)
             .filter {
                 it.second > 0
             }
 
-    private fun pieChartDataNotFiltered(date: Date, showSkipped: Boolean) =
+    private fun pieChartDataNotFiltered(date: Date, date2: Date? = null, showSkipped: Boolean) =
         if (showSkipped) {
             rowKeys
                 .asSequence()
                 .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
-                .map {
-                    val amount = getCell(it, date)
-                        .payments
-                        .sumOf { it.rurAmount }
-                    val label = "${it.cardName} - ${it.category}"
+                .map { rowKey ->
+                    val amount = if (date2 == null) {
+                         getCell(rowKey, date)
+                            .payments
+                            .sumOf { it.rurAmount }
+                    } else {
+                        dates
+                            .filter {
+                                it.monthKey >= date.monthKey && it.monthKey <= date2.monthKey
+                            }
+                            .map { getCell(rowKey, it) }
+                            .flatMap { it.payments }
+                            .sumOf { it.rurAmount }
+                    }
+                    val label = "${rowKey.cardName} - ${rowKey.category}"
                     label to amount
                 }
                 .sortedBy { -it.second }
@@ -66,7 +76,19 @@ data class ExpenseTable(
             rowKeys
                 .asSequence()
                 .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
-                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { rowKey ->
+                    if (date2 == null) {
+                        listOfNotNull(allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)])
+                    } else {
+                        dates
+                            .filter {
+                                it.monthKey >= date.monthKey && it.monthKey <= date2.monthKey
+                            }
+                            .mapNotNull {
+                                allCells[CellKey(rowKey.cardName, rowKey.category, it.monthKey)]
+                            }
+                    }
+                }
                 .map { expenseEntry ->
                     val amount = expenseEntry
                         .filterTotalPlus()
@@ -75,6 +97,8 @@ data class ExpenseTable(
                     val label = "${expenseEntry.cardName} - ${expenseEntry.category}"
                     label to amount
                 }
+                .groupBy { it.first }
+                .map { it.key to it.value.sumOf { it.second } }
                 .sortedBy { -it.second }
                 .toList()
         }

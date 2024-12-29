@@ -66,6 +66,7 @@ const val dialogFileChooserXLSXExtension = "xlsx"
 const val msgWrongNumberFormat = "Wrong number format"
 
 const val labelOverallTime = "За всё время"
+const val labelNotSet = "Не задано"
 const val labelOverallCategory = "Всего"
 
 const val labelShowSkipped = "Отображать пропущенные"

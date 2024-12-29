@@ -43,14 +43,17 @@ fun PieChartDialogWrapper() {
         val showSkipped by expenseViewModel.pieChartShowSkipped.collectAsState()
 
         val monthKey by expenseViewModel.pieChartMonthKey.collectAsState()
+        val monthKey2 by expenseViewModel.pieChartMonthKey2.collectAsState()
 
         val labelMonthKey = if (monthKey <= Date().monthKey)
             monthKey.dateFromMonthKey.formattedMonthAndYear
         else
             labelOverallTime
 
+        val labelMonthKey2 = monthKey2?.dateFromMonthKey?.formattedMonthAndYear ?: labelNotSet
+
         val pieChartData = if (monthKey <= Date().monthKey)
-            expenseViewModel.pieChartData(monthKey.dateFromMonthKey, showSkipped)
+            expenseViewModel.pieChartData(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey, showSkipped)
         else
             expenseViewModel.overallPieChartData(showSkipped)
 
@@ -94,6 +97,31 @@ fun PieChartDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartNextMonth()
+                            }
+                        ) {
+                            Text(">")
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(0.2f)
+                        )
+                        Button(
+                            onClick = {
+                                expenseViewModel.pieChartPrevMonth2()
+                            }
+                        ) {
+                            Text("<")
+                        }
+                        Text(
+                            text = labelMonthKey2,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(1.0f)
+                        )
+                        Button(
+                            onClick = {
+                                expenseViewModel.pieChartNextMonth2()
                             }
                         ) {
                             Text(">")
