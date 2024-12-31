@@ -51,6 +51,9 @@ abstract class AppComponent(
         onShowPieChartByComment = {
             expenseViewModel.showPieChartByComment()
         }
+        onShowPieChartByCommentMinus = {
+            expenseViewModel.showPieChartByCommentMinus()
+        }
         onShowByMonthChart = {
             expenseViewModel.showByMonthChart()
         }

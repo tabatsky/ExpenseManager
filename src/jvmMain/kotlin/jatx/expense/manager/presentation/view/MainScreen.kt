@@ -15,6 +15,7 @@ fun MainScreen() {
         RenameCategoryDialogWrapper()
         PieChartDialogWrapper()
         PieChartByCommentDialogWrapper()
+        PieChartByCommentMinusDialogWrapper()
         ByMonthChartDialogWrapper()
 
         Row {

@@ -149,6 +149,65 @@ data class ExpenseTable(
             .sortedBy { -it.second }
             .toList()
 
+    fun overallPieChartDataByCommentMinus() = dates
+        .flatMap {
+            pieChartDataByCommentMinusNotFiltered(it)
+                .filter {
+                    it.second > 0
+                }
+        }
+        .groupBy {
+            it.first
+        }
+        .map {
+            it.key to it.value.sumOf { it.second }
+        }
+        .sortedBy { -it.second }
+
+    fun pieChartDataByCommentMinus(date: Date, date2: Date? = null) =
+        pieChartDataByCommentMinusNotFiltered(date, date2)
+            .filter {
+                it.second > 0
+            }
+
+    private fun pieChartDataByCommentMinusNotFiltered(date: Date, date2: Date? = null) =
+        rowKeys
+            .asSequence()
+            .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
+            .flatMap { rowKey ->
+                if (date2 == null) {
+                    listOfNotNull(allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)])
+                } else {
+                    dates
+                        .filter {
+                            it.monthKey >= date.monthKey && it.monthKey <= date2.monthKey
+                        }
+                        .mapNotNull {
+                            allCells[CellKey(rowKey.cardName, rowKey.category, it.monthKey)]
+                        }
+                }
+            }
+            .flatMap { expenseEntry ->
+                val amounts = expenseEntry
+                    .filterTotalMinus()
+                    .filter { it.rurAmount < 0 }
+                    .groupBy {
+                        it
+                            .comment.split("-").first().trim()
+                            .takeIf {
+                                it != defaultCommentPositiveAmount &&
+                                        it != defaultCommentNegativeAmount
+                            } ?: it.category.utf8toCP1251()
+                    }
+                    .map {
+                        it.key.cp1251toUTF8() to it.value.sumOf { it.rurAmount }
+                    }
+                amounts
+            }
+            .groupBy { it.first }
+            .map { it.key to it.value.sumOf { -it.second } }
+            .sortedBy { -it.second }
+            .toList()
 
     fun byMonthData() = let { table ->
             table.dates.map { date ->

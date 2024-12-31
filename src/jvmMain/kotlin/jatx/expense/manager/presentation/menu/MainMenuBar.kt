@@ -28,6 +28,9 @@ fun FrameWindowScope.MainMenuBar(menuCallbacks: MenuCallbacks) = MenuBar {
         Item(menuPieChartByComment) {
             menuCallbacks.onShowPieChartByComment?.invoke()
         }
+        Item(menuPieChartByCommentMinus) {
+            menuCallbacks.onShowPieChartByCommentMinus?.invoke()
+        }
         Item(menuByMonthChart) {
             menuCallbacks.onShowByMonthChart?.invoke()
         }
@@ -41,5 +44,6 @@ class MenuCallbacks {
     var onShowStatisticsByCategory: (() -> Unit)? = null
     var onShowPieChart: (() -> Unit)? = null
     var onShowPieChartByComment: (() -> Unit)? = null
+    var onShowPieChartByCommentMinus: (() -> Unit)? = null
     var onShowByMonthChart: (() -> Unit)? = null
 }
