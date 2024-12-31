@@ -173,7 +173,6 @@ data class ExpenseTable(
     private fun pieChartDataByCommentMinusNotFiltered(date: Date, date2: Date? = null) =
         rowKeys
             .asSequence()
-            .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
             .flatMap { rowKey ->
                 if (date2 == null) {
                     listOfNotNull(allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)])
@@ -190,6 +189,7 @@ data class ExpenseTable(
             .flatMap { expenseEntry ->
                 val amounts = expenseEntry
                     .filterTotalMinus()
+                    .map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
                     .filter { it.rurAmount < 0 }
                     .groupBy {
                         it
