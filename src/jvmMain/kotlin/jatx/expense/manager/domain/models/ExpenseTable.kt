@@ -308,6 +308,7 @@ data class ExpenseTable(
                         && expenseEntry.category !in setOf(investCategory, usdCategory, cnyCategory)
                         || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
                         || it.comment.cp1251toUTF8().startsWith(salaryComment)
+                        || it.comment.cp1251toUTF8().startsWith(returnComment)
             }
     }
 

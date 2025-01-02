@@ -25,6 +25,8 @@ val giftComment = "Подарил".cp1251toUTF8()
 val gift2Comment = "Дал".cp1251toUTF8()
 val payComment = "Заплатил".cp1251toUTF8()
 
+val returnComment = "Вернул".cp1251toUTF8()
+
 val String.currencyForCategory: String
     get() = when (this) {
         usdCategory -> "USD"
