@@ -2,9 +2,7 @@ package jatx.expense.manager.domain.models
 
 import androidx.compose.ui.graphics.Color
 import com.github.tehras.charts.bar.BarChartData
-import jatx.expense.manager.data.skipset.IncomingSet
-import jatx.expense.manager.data.skipset.ReduceSet
-import jatx.expense.manager.data.skipset.SkipSet
+import jatx.expense.manager.data.skipset.*
 import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.res.*
 import java.util.*
@@ -287,11 +285,7 @@ data class ExpenseTable(
             .filter {
                 !SkipSet.containsLabel(expenseEntry.label)
                         && !ReduceSet.containsKey(expenseEntry.cardName)
-                        || it.comment.cp1251toUTF8().startsWith(writeOffComment)
-                        || it.comment.cp1251toUTF8().startsWith(salaryComment)
-                        || it.comment.cp1251toUTF8().startsWith(giftComment)
-                        || it.comment.cp1251toUTF8().startsWith(gift2Comment)
-                        || it.comment.cp1251toUTF8().startsWith(payComment)
+                        || ExpenseCommentSet.labelMatching(it.comment.cp1251toUTF8())
             }
     }
 
@@ -321,8 +315,7 @@ data class ExpenseTable(
                         && !ReduceSet.containsKey(expenseEntry.cardName)
                         && expenseEntry.category !in setOf(investCategory, usdCategory, cnyCategory)
                         || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
-                        || it.comment.cp1251toUTF8().startsWith(salaryComment)
-                        || it.comment.cp1251toUTF8().startsWith(returnComment)
+                        || IncomingCommentSet.labelMatching(it.comment.cp1251toUTF8())
             }
     }
 

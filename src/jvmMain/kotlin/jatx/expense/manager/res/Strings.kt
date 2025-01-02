@@ -19,14 +19,6 @@ val cnyCategory = "Юани".cp1251toUTF8()
 val investCategory = "инвестиции".cp1251toUTF8()
 val incomingCategory = "Поступления".cp1251toUTF8()
 
-val salaryComment = "Заработал".cp1251toUTF8()
-val writeOffComment = "Списал".cp1251toUTF8()
-val giftComment = "Подарил".cp1251toUTF8()
-val gift2Comment = "Дал".cp1251toUTF8()
-val payComment = "Заплатил".cp1251toUTF8()
-
-val returnComment = "Вернул".cp1251toUTF8()
-
 val String.currencyForCategory: String
     get() = when (this) {
         usdCategory -> "USD"
