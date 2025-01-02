@@ -80,7 +80,7 @@ class ExpenseViewModel(
     fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean) = expenseTable.value?.pieChartData(date, date2, showSkipped) ?: listOf()
     fun overallPieChartData(showSkipped: Boolean) = expenseTable.value?.overallPieChartData(showSkipped) ?: listOf()
 
-    fun pieChartDataByComment(date: Date) = expenseTable.value?.pieChartDataByComment(date) ?: listOf()
+    fun pieChartDataByComment(date: Date, date2: Date? = null) = expenseTable.value?.pieChartDataByComment(date, date2) ?: listOf()
     fun overallPieChartDataByComment() = expenseTable.value?.overallPieChartDataByComment() ?: listOf()
 
     fun pieChartDataByCommentMinus(date: Date, date2: Date? = null) = expenseTable.value?.pieChartDataByCommentMinus(date, date2) ?: listOf()

@@ -118,17 +118,29 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
 
-    fun pieChartDataByComment(date: Date) =
-        pieChartDataByCommentNotFiltered(date)
+    fun pieChartDataByComment(date: Date, date2: Date? = null) =
+        pieChartDataByCommentNotFiltered(date, date2)
             .filter {
                 it.second > 0
             }
 
-    private fun pieChartDataByCommentNotFiltered(date: Date) =
+    private fun pieChartDataByCommentNotFiltered(date: Date, date2: Date? = null) =
         rowKeys
             .asSequence()
             .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
-            .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+            .flatMap { rowKey ->
+                if (date2 == null) {
+                    listOfNotNull(allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)])
+                } else {
+                    dates
+                        .filter {
+                            it.monthKey >= date.monthKey && it.monthKey <= date2.monthKey
+                        }
+                        .mapNotNull {
+                            allCells[CellKey(rowKey.cardName, rowKey.category, it.monthKey)]
+                        }
+                }
+            }
             .flatMap { expenseEntry ->
                 val amounts = expenseEntry
                     .filterTotalPlus()
@@ -146,6 +158,8 @@ data class ExpenseTable(
                     }
                 amounts
             }
+            .groupBy { it.first }
+            .map { it.key to it.value.sumOf { it.second } }
             .sortedBy { -it.second }
             .toList()
 
