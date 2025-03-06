@@ -145,7 +145,13 @@ data class ExpenseTable(
                     .filter { it.rurAmount > 0 }
                     .groupBy {
                         it
-                            .comment.split("-").first().trim()
+                            .comment.let {
+                                if (ExpenseCommentSet.labelMatching(it.cp1251toUTF8())) {
+                                    it.split("-").last().trim()
+                                } else {
+                                    it.split("-").first().trim()
+                                }
+                            }
                             .takeIf {
                                 it != defaultCommentPositiveAmount &&
                                         it != defaultCommentNegativeAmount
