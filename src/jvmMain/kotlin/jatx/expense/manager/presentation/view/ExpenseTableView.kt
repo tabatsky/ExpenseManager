@@ -188,19 +188,20 @@ fun ExpenseTable() {
 @Composable
 fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
     val expenseViewModel = appComponent.expenseViewModel
+    val cellHeightCoeff = if (rowKey.category in listOf(usdCategory, cnyCategory)) 2 else 1
 
     Row {
         ExpenseCell(
             modifier = Modifier
                 .width(firstCellWidth)
-                .height(cellHeight)
+                .height(cellHeight * cellHeightCoeff)
                 .background(colorByRowKey(rowKey)),
             text = rowKey.cardName.utf8toCP1251()
         )
         ExpenseCell(
             modifier = Modifier
                 .width(secondCellWidth)
-                .height(cellHeight)
+                .height(cellHeight * cellHeightCoeff)
                 .background(colorByRowKey(rowKey))
                 .clickable {
                     expenseViewModel.showRenameCategoryDialog(rowKey)
@@ -211,15 +212,22 @@ fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
         zeroDate.let { date ->
             val expenseEntry =
                 theExpenseTable.getCell(rowKey, date)
+            val cellText = if (expenseEntry.category in listOf(usdCategory, cnyCategory)) {
+                val sum1 = expenseEntry.paymentSum
+                val sum2 = expenseEntry.currentPaymentSum
+                "$sum1\n$sum2"
+            } else {
+                expenseEntry.paymentSum.toString()
+            }
             ExpenseCell(
                 modifier = Modifier
                     .width(cellWidth)
-                    .height(cellHeight)
+                    .height(cellHeight * cellHeightCoeff)
                     .background(colorByRowKey(rowKey))
                     .clickable {
                         expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
                     },
-                text = expenseEntry.paymentSum.toString()
+                text = cellText
             )
         }
     }
@@ -235,15 +243,22 @@ fun CommonRow(
         theExpenseTable.dates.forEach { date ->
             val expenseEntry =
                 theExpenseTable.getCell(rowKey, date)
+            val (cellText, cellHeightCoeff) = if (expenseEntry.category in listOf(usdCategory, cnyCategory)) {
+                val sum1 = expenseEntry.paymentSum
+                val sum2 = expenseEntry.currentPaymentSum
+                "$sum1\n$sum2" to 2
+            } else {
+                expenseEntry.paymentSum.toString() to 1
+            }
             ExpenseCell(
                 modifier = Modifier
                     .width(cellWidth)
-                    .height(cellHeight)
+                    .height(cellHeight * cellHeightCoeff)
                     .background(colorByRowKey(rowKey))
                     .clickable {
                         expenseViewModel.updateCurrentExpenseEntry(expenseEntry)
                     },
-                text = expenseEntry.paymentSum.toString()
+                text = cellText
             )
         }
     }

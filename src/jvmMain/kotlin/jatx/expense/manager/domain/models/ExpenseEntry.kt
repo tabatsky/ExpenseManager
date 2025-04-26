@@ -41,6 +41,7 @@ data class ExpenseEntry(
     private val monthKey = date.monthKey
 
     val paymentSum = payments.sumOf { it.rurAmount }
+    val currentPaymentSum = payments.sumOf { it.amount }
     override fun toString() = "$cardName, $category, $monthKey: $payments"
 
     companion object {
