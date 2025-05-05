@@ -1,13 +1,9 @@
 package jatx.expense.manager.domain.models
 
-import androidx.compose.ui.graphics.Color
-import com.github.tehras.charts.bar.BarChartData
 import jatx.expense.manager.data.skipset.*
 import jatx.expense.manager.domain.util.*
 import jatx.expense.manager.res.*
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.roundToInt
 
 data class CellKey(
     val cardName: String,
@@ -227,46 +223,9 @@ data class ExpenseTable(
             .sortedBy { -it.second }
             .toList()
 
-    fun byMonthData() = let { table ->
-            table.dates.map { date ->
-                val plusAmount = overallTotalPlusPayments(date)
-                    .map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
-                    .sumOf { it.rurAmount }
-                val minusAmount = overallTotalMinusPayments(date)
-                    .map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
-                    .sumOf { it.rurAmount }
-                val plus = plusAmount to "${date.formattedMonthAndYear}    $plusAmount"
-                val minus = minusAmount to "${date.formattedMonthAndYear}    $minusAmount"
-                plus to minus
-            }.let { list ->
-                val plusMean = list.map { it.first.first }.average().roundToInt()
-                val minusMean = list.map { it.second.first }.average().roundToInt()
-                val plus = plusMean to "среднее   $plusMean"
-                val minus = minusMean to "среднее   $minusMean"
-                list + (plus to minus)
-            }.flatMap {
-                val plus = it.first
-                val minus = it.second
-                val plusBar = BarChartData.Bar(
-                    plus.first.toFloat(),
-                    Color.Blue,
-                    plus.second
-                )
-                val minusBar = BarChartData.Bar(
-                    abs(minus.first.toFloat()),
-                    Color.Red,
-                    minus.second
-                )
-                val emptyBar = BarChartData.Bar(
-                    0f,
-                    Color.White,
-                    ""
-                )
-                listOf(plusBar, minusBar, emptyBar)
-            }
-        }
 
-    private fun overallTotalPlusPayments(date: Date) = rowKeys
+
+    fun overallTotalPlusPayments(date: Date) = rowKeys
         .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory) }
         .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
         .flatMap { expenseEntry ->
@@ -295,7 +254,7 @@ data class ExpenseTable(
             }
     }
 
-    private fun overallTotalMinusPayments(date: Date) = rowKeys
+    fun overallTotalMinusPayments(date: Date) = rowKeys
         .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
         .flatMap { expenseEntry ->
             expenseEntry.filterTotalMinus()

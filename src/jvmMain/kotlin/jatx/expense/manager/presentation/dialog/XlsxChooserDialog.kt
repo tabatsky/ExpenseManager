@@ -65,7 +65,8 @@ private fun WindowScope.XlsxChooserDialog(
             listOf(
                 FileNameExtensionFilter(
                     dialogFileChooserXLSXDescription,
-                    dialogFileChooserXLSXExtension)
+                    dialogFileChooserXLSXExtension
+                )
             ).forEach {
                 fileChooser.addChoosableFileFilter(it)
             }
