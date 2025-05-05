@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("com.squareup.sqldelight")
+    id("androidx.room")
     kotlin("plugin.serialization") version "1.9.20"
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
@@ -21,7 +21,13 @@ kotlin {
         withJava()
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation("androidx.room:room-runtime:2.7.0-alpha01")
+                implementation("androidx.sqlite:sqlite-bundled:2.5.0-alpha01")
+                implementation("androidx.sqlite:sqlite:2.5.0-alpha01")
+            }
+        }
         val jvmMain by getting {
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             dependencies {
@@ -29,7 +35,6 @@ kotlin {
                 implementation("org.jetbrains.compose.material3:material3-desktop:1.5.12")
                 implementation("org.apache.poi:poi:5.2.3")
                 implementation("org.apache.poi:poi-ooxml:5.2.3")
-                implementation("com.squareup.sqldelight:sqlite-driver:1.5.5")
                 implementation("io.ktor:ktor-client-core:1.6.4")
                 implementation("io.ktor:ktor-client-java:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
@@ -42,6 +47,7 @@ kotlin {
 
 dependencies {
     add("kspJvm", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
+    add("kspJvm", "androidx.room:room-compiler:2.7.0-alpha01")
 }
 
 compose.desktop {
@@ -60,13 +66,6 @@ tasks.withType<Jar> {
     }
 }
 
-sqldelight {
-    database("AppDatabase") {
-        packageName = "jatx.expense.manager.db"
-        dialect = "sqlite:3.18"
-        schemaOutputDirectory = file("jatx.expense.manager.db")
-        migrationOutputDirectory = file("migrations")
-        deriveSchemaFromMigrations = true
-        verifyMigrations = true
-    }
+room {
+    schemaDirectory("$projectDir/schemas")
 }

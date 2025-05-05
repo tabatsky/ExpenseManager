@@ -1,27 +1,27 @@
 package jatx.expense.manager.data.converters
 
-import jatx.expense.manager.db.PaymentEntity
+import jatx.expense.manager.data.db.entity.PaymentEntity
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.util.asDbPresentation
 import jatx.expense.manager.domain.util.fromDbPresentation
 
 fun PaymentEntry.toDBEntity() = PaymentEntity(
-    id = id,
+    id = id.takeIf { it > 0L },
     cardName = cardName,
     category = category,
-    rowKeyInt = rowKeyInt.toLong(),
+    rowKeyInt = rowKeyInt,
     date = date.asDbPresentation,
-    amount = amount.toLong(),
+    amount = amount,
     comment = comment,
     currency = currency
 )
 
 fun PaymentEntity.toModelEntry() = PaymentEntry(
-    id = id,
+    id = id ?: 0L,
     cardName = cardName,
     category = category,
-    rowKeyInt = rowKeyInt.toInt(),
+    rowKeyInt = rowKeyInt,
     date = date.fromDbPresentation,
-    amount = amount.toInt(),
+    amount = amount,
     comment = comment
 )

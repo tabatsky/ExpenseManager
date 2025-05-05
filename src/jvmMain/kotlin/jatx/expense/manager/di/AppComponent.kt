@@ -1,12 +1,12 @@
 package jatx.expense.manager.di
 
-import com.squareup.sqldelight.db.SqlDriver
 import jatx.expense.manager.data.cbr.CurrencyRatesGetterImpl
-import jatx.expense.manager.data.db.DatabaseDriverFactory
+import jatx.expense.manager.data.db.AppDatabase
+import jatx.expense.manager.data.db.getDatabaseBuilder
+import jatx.expense.manager.data.db.getRoomDatabase
 import jatx.expense.manager.data.repository.PaymentRepositoryImpl
 import jatx.expense.manager.data.xlsx.XlsxParserFactoryImpl
 import jatx.expense.manager.data.xlsx.XlsxSaverFactoryImpl
-import jatx.expense.manager.db.AppDatabase
 import jatx.expense.manager.domain.cbr.CurrencyRatesGetter
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.xlsx.XlsxParserFactory
@@ -61,16 +61,7 @@ abstract class AppComponent(
 
     @AppScope
     @Provides
-    protected fun provideDriverFactory(): DatabaseDriverFactory = DatabaseDriverFactory()
-
-    @AppScope
-    @Provides
-    protected fun provideDriver(driverFactory: DatabaseDriverFactory): SqlDriver =
-        driverFactory.createDriver()
-
-    @AppScope
-    @Provides
-    protected fun provideAppDatabase(driver: SqlDriver): AppDatabase = AppDatabase.invoke(driver)
+    protected fun provideAppDatabase(): AppDatabase = getRoomDatabase(getDatabaseBuilder())
 
     protected val PaymentRepositoryImpl.bind: PaymentRepository
         @Provides get() = this

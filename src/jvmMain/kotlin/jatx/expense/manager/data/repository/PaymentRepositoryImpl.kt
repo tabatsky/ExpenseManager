@@ -1,8 +1,10 @@
 package jatx.expense.manager.data.repository
 
+import androidx.room.execSQL
+import androidx.room.useWriterConnection
 import jatx.expense.manager.data.converters.toDBEntity
 import jatx.expense.manager.data.converters.toModelEntry
-import jatx.expense.manager.db.AppDatabase
+import jatx.expense.manager.data.db.AppDatabase
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.repository.PaymentRepository
@@ -15,79 +17,64 @@ class PaymentRepositoryImpl(
 ): PaymentRepository {
     override suspend fun dropTableIfExists() {
         appDatabase
-            .paymentEntityQueries
-            .dropTableIfExists()
+            .useWriterConnection {
+                it.execSQL("DROP TABLE IF EXISTS paymentEntity")
+            }
     }
+
     override suspend fun createTableIfNotExists() {
         appDatabase
-            .paymentEntityQueries
-            .createTableIfNotExists()
-    }
-
-    override suspend fun insertPayments(paymentEntries: List<PaymentEntry>) {
-        val paymentEntityQueries = appDatabase.paymentEntityQueries
-        paymentEntityQueries.transaction {
-            paymentEntries
-                .map { it.toDBEntity() }
-                .forEach {
-                    paymentEntityQueries.insertPayment(
-                        cardName = it.cardName,
-                        category = it.category,
-                        rowKeyInt = it.rowKeyInt,
-                        date = it.date,
-                        amount = it.amount,
-                        comment = it.comment
+            .useWriterConnection {
+                it.execSQL("""
+                    CREATE TABLE IF NOT EXISTS paymentEntity
+                    (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    cardName TEXT NOT NULL,
+                    category TEXT NOT NULL,
+                    rowKeyInt INTEGER NOT NULL,
+                    date INTEGER NOT NULL,
+                    amount INTEGER NOT NULL,
+                    comment TEXT NOT NULL,
+                    currency TEXT NOT NULL DEFAULT 'RUR'
                     )
-                }
-        }
+                """.trimIndent())
+            }
     }
 
-    override suspend fun insertPayment(paymentEntry: PaymentEntry) {
-        val paymentEntity = paymentEntry.toDBEntity()
-        appDatabase
-            .paymentEntityQueries
-            .insertPayment(
-                cardName = paymentEntity.cardName,
-                category = paymentEntity.category,
-                rowKeyInt = paymentEntity.rowKeyInt,
-                date = paymentEntity.date,
-                amount = paymentEntity.amount,
-                comment = paymentEntity.comment
-            )
-    }
+    override suspend fun insertPayments(paymentEntries: List<PaymentEntry>) =
+        appDatabase.getDao().insertPayments(paymentEntries.map { it.toDBEntity() })
+
+    override suspend fun insertPayment(paymentEntry: PaymentEntry) =
+        appDatabase.getDao().insertPayment(paymentEntry.toDBEntity())
 
     override suspend fun updatePayment(paymentEntry: PaymentEntry) {
         val paymentEntity = paymentEntry.toDBEntity()
         appDatabase
-            .paymentEntityQueries
+            .getDao()
             .updatePayment(
                 amount = paymentEntity.amount,
                 comment = paymentEntity.comment,
                 date = paymentEntity.date,
-                id = paymentEntity.id
+                id = paymentEntity.id ?: 0L
             )
     }
 
     override suspend fun deletePayment(paymentEntry: PaymentEntry) {
         val paymentEntity = paymentEntry.toDBEntity()
         appDatabase
-            .paymentEntityQueries
+            .getDao()
             .deletePayment(
-                id = paymentEntity.id
+                id = paymentEntity.id ?: 0L
             )
     }
 
     override suspend fun selectAll(): List<PaymentEntry> =
         appDatabase
-            .paymentEntityQueries
+            .getDao()
             .selectAll()
-            .executeAsList()
-            .map {
-                it.toModelEntry()
-            }
+            .map { it.toModelEntry() }
 
     override suspend fun renameCategory(newCategory: String, cardName: String, category: String) =
         appDatabase
-            .paymentEntityQueries
+            .getDao()
             .renameCategory(newCategory, cardName, category)
 }

@@ -2,6 +2,7 @@
 build
 .idea
 ExpenseManager.db
+ExpenseManager.db*
 *.txt
 
 
