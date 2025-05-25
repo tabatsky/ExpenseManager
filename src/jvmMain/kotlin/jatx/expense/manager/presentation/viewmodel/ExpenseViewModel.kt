@@ -1,5 +1,6 @@
 package jatx.expense.manager.presentation.viewmodel
 
+import jatx.expense.manager.data.db.AppDatabase
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
@@ -25,6 +26,7 @@ class ExpenseViewModel(
     private val deletePaymentUseCase: DeletePaymentUseCase,
     private val renameCategoryUseCase: RenameCategoryUseCase,
     private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
+    private val appDatabase: AppDatabase,
     private val coroutineScope: CoroutineScope
 ) {
     private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
@@ -318,5 +320,9 @@ class ExpenseViewModel(
                 ?.copy(currencyRates = _currencyRates.value)
             _currentExpenseEntry.value = updatedExpenseEntry
         }
+    }
+
+    fun onAppExit() {
+        appDatabase.close()
     }
 }

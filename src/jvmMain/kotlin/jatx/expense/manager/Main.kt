@@ -24,7 +24,10 @@ fun main() {
         val windowState = rememberWindowState(placement = WindowPlacement.Maximized)
 
         Window(
-            onCloseRequest = ::exitApplication,
+            onCloseRequest = {
+                appComponent.expenseViewModel.onAppExit()
+                exitApplication()
+            },
             state = windowState
         ) {
             XlsxChooserDialogWrapper()
