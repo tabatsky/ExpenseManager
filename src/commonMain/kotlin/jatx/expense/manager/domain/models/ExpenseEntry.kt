@@ -21,7 +21,9 @@ data class ExpenseEntry(
             other.rowKeyInt == this.rowKeyInt &&
             other.date.monthKey == this.date.monthKey &&
             other._payments.size == this._payments.size &&
-            other._payments.sumOf { it.amount } == this._payments.sumOf { it.amount }
+            other._payments.sumOf { it.amount } == this._payments.sumOf { it.amount } &&
+            other._payments.map { it.comment }.joinToString("|") ==
+                this._payments.map { it.comment }.joinToString("|")
 
     override fun hashCode() = cardName.hashCode() +
             10000 * category.hashCode() +

@@ -575,8 +575,8 @@ data class ExpenseTable(
                 .sortedBy { it.date.time }
             return ExpenseEntry(
                 rowKey.cardName,
-                totalMinusCategory,
-                makeTotalMinusRowKey(rowKey.rowKeyInt.cardNameKey),
+                totalMinus2Category,
+                makeTotalMinus2RowKey(rowKey.rowKeyInt.cardNameKey),
                 date,
                 payments,
                 currencyRates

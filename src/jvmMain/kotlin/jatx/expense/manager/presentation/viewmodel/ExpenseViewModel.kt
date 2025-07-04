@@ -318,7 +318,9 @@ class ExpenseViewModel(
             val updatedExpenseEntry = _expenseTable.value
                 ?.getCell(rowKey, date)
                 ?.copy(currencyRates = _currencyRates.value)
-            _currentExpenseEntry.value = updatedExpenseEntry
+            updatedExpenseEntry?.let {
+                updateCurrentExpenseEntry(it)
+            }
         }
     }
 
