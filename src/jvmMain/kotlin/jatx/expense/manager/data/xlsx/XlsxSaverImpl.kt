@@ -192,8 +192,10 @@ class XlsxSaverImpl(
                         if (cellContent == "0") {
                             cell.setCellValue(0.0)
                         } else {
-                            cell.cellFormula = cellContent
-                            evaluator.evaluateFormulaCell(cell)
+                            if (cellContent.isNotEmpty()) {
+                                cell.cellFormula = cellContent
+                                evaluator.evaluateFormulaCell(cell)
+                            }
                         }
                     }
             }

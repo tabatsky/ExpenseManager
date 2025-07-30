@@ -3,21 +3,21 @@ package jatx.expense.manager.res
 import jatx.expense.manager.domain.util.cp1251toUTF8
 
 val overallCardName = "-".cp1251toUTF8()
-val cashCardName = "Наличные".cp1251toUTF8()
-val totalCategory = "Всего".cp1251toUTF8()
-val totalPlusCategory = "Потрачено".cp1251toUTF8()
-val totalPlus2Category = "Потрачено 2".cp1251toUTF8()
-val totalMinusCategory = "Получено".cp1251toUTF8()
-val totalMinus2Category = "Получено 2".cp1251toUTF8()
-val totalWithCashCategory = "Всего с наличными".cp1251toUTF8()
-val totalDate = "Всего".cp1251toUTF8()
-val lohCategory = "Лоханулся".cp1251toUTF8()
-val totalLohCategory = "Всего лоханулся".cp1251toUTF8()
+val cashCardName = "РќР°Р»РёС‡РЅС‹Рµ".cp1251toUTF8()
+val totalCategory = "Р’СЃРµРіРѕ".cp1251toUTF8()
+val totalPlusCategory = "РџРѕС‚СЂР°С‡РµРЅРѕ".cp1251toUTF8()
+val totalPlus2Category = "РџРѕС‚СЂР°С‡РµРЅРѕ 2".cp1251toUTF8()
+val totalMinusCategory = "РџРѕР»СѓС‡РµРЅРѕ".cp1251toUTF8()
+val totalMinus2Category = "РџРѕР»СѓС‡РµРЅРѕ 2".cp1251toUTF8()
+val totalWithCashCategory = "Р’СЃРµРіРѕ СЃ РЅР°Р»РёС‡РЅС‹РјРё".cp1251toUTF8()
+val totalDate = "Р’СЃРµРіРѕ".cp1251toUTF8()
+val lohCategory = "Р›РѕС…Р°РЅСѓР»СЃСЏ".cp1251toUTF8()
+val totalLohCategory = "Р’СЃРµРіРѕ Р»РѕС…Р°РЅСѓР»СЃСЏ".cp1251toUTF8()
 
-val usdCategory = "Доллары".cp1251toUTF8()
-val cnyCategory = "Юани".cp1251toUTF8()
-val investCategory = "инвестиции".cp1251toUTF8()
-val incomingCategory = "Поступления".cp1251toUTF8()
+val usdCategory = "Р”РѕР»Р»Р°СЂС‹".cp1251toUTF8()
+val cnyCategory = "Р®Р°РЅРё".cp1251toUTF8()
+val investCategory = "РёРЅРІРµСЃС‚РёС†РёРё".cp1251toUTF8()
+val incomingCategory = "РџРѕСЃС‚СѓРїР»РµРЅРёСЏ".cp1251toUTF8()
 
 val String.currencyForCategory: String
     get() = when (this) {
@@ -26,42 +26,42 @@ val String.currencyForCategory: String
         else -> "RUR"
     }
 
-const val defaultCommentPositiveAmount = "Расход"
-const val defaultCommentNegativeAmount = "Доход"
+const val defaultCommentPositiveAmount = "Р Р°СЃС…РѕРґ"
+const val defaultCommentNegativeAmount = "Р”РѕС…РѕРґ"
 const val defaultCommentZeroAmount = "---"
 
-const val buttonSaveLabel = "Сохранить"
-const val buttonSaveZeroLabel = "Введите сумму, отличную от нуля"
-const val buttonAddLabel = "Добавить"
-const val buttonDeleteLabel = "Удалить"
-const val buttonYesLabel = "Да"
-const val buttonNoLabel = "Нет"
-const val buttonChooseLabel = "Выбрать"
-const val buttonCancelLabel = "Отмена"
+const val buttonSaveLabel = "РЎРѕС…СЂР°РЅРёС‚СЊ"
+const val buttonSaveZeroLabel = "Р’РІРµРґРёС‚Рµ СЃСѓРјРјСѓ, РѕС‚Р»РёС‡РЅСѓСЋ РѕС‚ РЅСѓР»СЏ"
+const val buttonAddLabel = "Р”РѕР±Р°РІРёС‚СЊ"
+const val buttonDeleteLabel = "РЈРґР°Р»РёС‚СЊ"
+const val buttonYesLabel = "Р”Р°"
+const val buttonNoLabel = "РќРµС‚"
+const val buttonChooseLabel = "Р’С‹Р±СЂР°С‚СЊ"
+const val buttonCancelLabel = "РћС‚РјРµРЅР°"
 
-const val titleDeletionConfirmationDialog = "Запись будет удалена"
-const val textDeletionConfirmationDialog = "Вы уверены?"
+const val titleDeletionConfirmationDialog = "Р—Р°РїРёСЃСЊ Р±СѓРґРµС‚ СѓРґР°Р»РµРЅР°"
+const val textDeletionConfirmationDialog = "Р’С‹ СѓРІРµСЂРµРЅС‹?"
 
-const val menuFileLabel = "Файл"
-const val menuLoadXlsxLabel = "Загрузить XLSX"
-const val menuSaveXlsxLabel = "Сохранить XLSX"
-const val menuFunctionLabel = "Функция"
-const val menuStatisticsByCommentLabel = "Статистика по метке"
-const val menuStatisticsByCategoryLabel = "Статистика по категориям"
-const val menuPieChart = "Диаграмма расходов"
-const val menuPieChartByComment = "Диаграмма расходов по метке"
-const val menuPieChartByCommentMinus = "Диаграмма доходов по метке"
-const val menuByMonthChart = "График по месяцам"
+const val menuFileLabel = "Р¤Р°Р№Р»"
+const val menuLoadXlsxLabel = "Р—Р°РіСЂСѓР·РёС‚СЊ XLSX"
+const val menuSaveXlsxLabel = "РЎРѕС…СЂР°РЅРёС‚СЊ XLSX"
+const val menuFunctionLabel = "Р¤СѓРЅРєС†РёСЏ"
+const val menuStatisticsByCommentLabel = "РЎС‚Р°С‚РёСЃС‚РёРєР° РїРѕ РјРµС‚РєРµ"
+const val menuStatisticsByCategoryLabel = "РЎС‚Р°С‚РёСЃС‚РёРєР° РїРѕ РєР°С‚РµРіРѕСЂРёСЏРј"
+const val menuPieChart = "Р”РёР°РіСЂР°РјРјР° СЂР°СЃС…РѕРґРѕРІ"
+const val menuPieChartByComment = "Р”РёР°РіСЂР°РјРјР° СЂР°СЃС…РѕРґРѕРІ РїРѕ РјРµС‚РєРµ"
+const val menuPieChartByCommentMinus = "Р”РёР°РіСЂР°РјРјР° РґРѕС…РѕРґРѕРІ РїРѕ РјРµС‚РєРµ"
+const val menuByMonthChart = "Р“СЂР°С„РёРє РїРѕ РјРµСЃСЏС†Р°Рј"
 
-const val dialogFileChooserOpenTitle = "Загрузить XLSX"
-const val dialogFileChooserSaveTitle = "Сохранить XLSX"
-const val dialogFileChooserXLSXDescription = "Таблица Excel"
+const val dialogFileChooserOpenTitle = "Р—Р°РіСЂСѓР·РёС‚СЊ XLSX"
+const val dialogFileChooserSaveTitle = "РЎРѕС…СЂР°РЅРёС‚СЊ XLSX"
+const val dialogFileChooserXLSXDescription = "РўР°Р±Р»РёС†Р° Excel"
 const val dialogFileChooserXLSXExtension = "xlsx"
 
 const val msgWrongNumberFormat = "Wrong number format"
 
-const val labelOverallTime = "За всё время"
-const val labelNotSet = "Не задано"
-const val labelOverallCategory = "Всего"
+const val labelOverallTime = "Р—Р° РІСЃС‘ РІСЂРµРјСЏ"
+const val labelNotSet = "РќРµ Р·Р°РґР°РЅРѕ"
+const val labelOverallCategory = "Р’СЃРµРіРѕ"
 
-const val labelShowSkipped = "Отображать пропущенные"
+const val labelShowSkipped = "РћС‚РѕР±СЂР°Р¶Р°С‚СЊ РїСЂРѕРїСѓС‰РµРЅРЅС‹Рµ"
