@@ -16,6 +16,7 @@ val totalLohCategory = "Всего лоханулся".cp1251toUTF8()
 
 val usdCategory = "Доллары".cp1251toUTF8()
 val cnyCategory = "Юани".cp1251toUTF8()
+val uBTCCategory = "uBTC".cp1251toUTF8()
 val investCategory = "инвестиции".cp1251toUTF8()
 val incomingCategory = "Поступления".cp1251toUTF8()
 
@@ -23,6 +24,7 @@ val String.currencyForCategory: String
     get() = when (this) {
         usdCategory -> "USD"
         cnyCategory -> "CNY"
+        uBTCCategory -> "uBTC"
         else -> "RUR"
     }
 

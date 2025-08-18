@@ -185,7 +185,7 @@ fun ExpenseTable() {
 @Composable
 fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
     val expenseViewModel = appComponent.expenseViewModel
-    val cellHeightCoeff = if (rowKey.category in listOf(usdCategory, cnyCategory)) 2 else 1
+    val cellHeightCoeff = if (rowKey.category in listOf(usdCategory, cnyCategory, uBTCCategory)) 2 else 1
 
     Row {
         ExpenseCell(
@@ -240,7 +240,7 @@ fun CommonRow(
         theExpenseTable.dates.forEach { date ->
             val expenseEntry =
                 theExpenseTable.getCell(rowKey, date)
-            val (cellText, cellHeightCoeff) = if (expenseEntry.category in listOf(usdCategory, cnyCategory)) {
+            val (cellText, cellHeightCoeff) = if (expenseEntry.category in listOf(usdCategory, cnyCategory, uBTCCategory)) {
                 val sum1 = expenseEntry.paymentSum
                 val sum2 = expenseEntry.currentPaymentSum
                 "$sum1\n$sum2" to 2
@@ -287,7 +287,7 @@ fun colorByRowKey(rowKey: RowKey): Color {
     val categoryKey = key.categoryKey
     if (categoryKey == lohKey) return redColor
     val cardNameKey = key.cardNameKey
-    val alpha = if (rowKey.category in listOf(usdCategory, cnyCategory, investCategory)) {
+    val alpha = if (rowKey.category in listOf(usdCategory, cnyCategory, investCategory, uBTCCategory)) {
         0.5f
     } else {
         1.0f

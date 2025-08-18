@@ -24,10 +24,19 @@ class CurrencyRatesGetterImpl: CurrencyRatesGetter {
             val usdRate = 1f / rates["USD"].toString().toFloat()
             val cnyRate = 1f / rates["CNY"].toString().toFloat()
 
+            val responseBTC = httpClient.get<String> {
+                url("https://blockchain.info/ticker")
+            }
+            val jsonObjBTC = Json.decodeFromString<JsonObject>(responseBTC)
+            val rub = jsonObjBTC["RUB"] as JsonObject
+            val btcRate = rub["last"].toString().toFloat()
+            val uBTCRate = btcRate / 1000000f
+
             mapOf(
                 "RUR" to 1f,
                 "USD" to usdRate,
-                "CNY" to cnyRate
+                "CNY" to cnyRate,
+                "uBTC" to uBTCRate
             )
         } catch (e: Exception) {
             e.printStackTrace()

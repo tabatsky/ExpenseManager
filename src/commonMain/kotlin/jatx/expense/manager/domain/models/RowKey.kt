@@ -5,6 +5,7 @@ import jatx.expense.manager.res.*
 const val incomingKey = 700
 const val cnyKey = 800
 const val usdKey = 810
+const val uBTCKey = 820
 const val investKey = 890
 const val lohKey = 900
 
@@ -36,6 +37,7 @@ data class RowKey(
                     lohCategory -> lohKey
                     usdCategory -> usdKey
                     cnyCategory -> cnyKey
+                    uBTCCategory -> uBTCKey
                     investCategory -> investKey
                     incomingCategory -> incomingKey
                     else -> (categories
