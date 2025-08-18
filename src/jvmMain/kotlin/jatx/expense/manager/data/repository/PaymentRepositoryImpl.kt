@@ -1,5 +1,6 @@
 package jatx.expense.manager.data.repository
 
+import androidx.room.exclusiveTransaction
 import androidx.room.execSQL
 import androidx.room.useWriterConnection
 import jatx.expense.manager.data.converters.toDBEntity
@@ -18,25 +19,31 @@ class PaymentRepositoryImpl(
     override suspend fun dropTableIfExists() {
         appDatabase
             .useWriterConnection {
-                it.execSQL("DROP TABLE IF EXISTS paymentEntity")
+                it.exclusiveTransaction {
+                    execSQL("DROP TABLE IF EXISTS paymentEntity")
+                }
             }
     }
 
     override suspend fun createTableIfNotExists() {
         appDatabase
             .useWriterConnection {
-                it.execSQL("""
-                    CREATE TABLE IF NOT EXISTS paymentEntity
-                    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    cardName TEXT NOT NULL,
-                    category TEXT NOT NULL,
-                    rowKeyInt INTEGER NOT NULL,
-                    date INTEGER NOT NULL,
-                    amount INTEGER NOT NULL,
-                    comment TEXT NOT NULL,
-                    currency TEXT NOT NULL DEFAULT 'RUR'
-                    )
-                """.trimIndent())
+                    it.exclusiveTransaction {
+                        execSQL(
+                            """
+                                CREATE TABLE IF NOT EXISTS paymentEntity
+                                (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                cardName TEXT NOT NULL,
+                                category TEXT NOT NULL,
+                                rowKeyInt INTEGER NOT NULL,
+                                date INTEGER NOT NULL,
+                                amount INTEGER NOT NULL,
+                                comment TEXT NOT NULL,
+                                currency TEXT NOT NULL DEFAULT 'RUR'
+                                )
+                            """.trimIndent()
+                        )
+                }
             }
     }
 

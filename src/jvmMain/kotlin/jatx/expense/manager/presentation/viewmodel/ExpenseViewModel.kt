@@ -139,7 +139,16 @@ class ExpenseViewModel(
                         }
                     }
 
-                    ExpenseTable(allCells, tableXls.dates, tableXls.rowKeys)
+                    val allCellsWithoudPaymentId = allCells
+                        .map { entry ->
+                            val paymentsWithoutId = entry.value.payments.map {
+                                it.copy(id = 0)
+                            }
+                            val valueWithoutPaymentId = entry.value.copy(_payments = paymentsWithoutId)
+                            entry.key to valueWithoutPaymentId
+                        }
+                        .toMap()
+                    ExpenseTable(allCellsWithoudPaymentId, tableXls.dates, tableXls.rowKeys)
                 }
                 .let {
                     saveExpenseTableToDBUseCase.execute(it)

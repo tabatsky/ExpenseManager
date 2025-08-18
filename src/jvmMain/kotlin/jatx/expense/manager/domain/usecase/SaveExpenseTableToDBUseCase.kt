@@ -11,8 +11,11 @@ class SaveExpenseTableToDBUseCase(
     private val paymentRepository: PaymentRepository
 ) {
     suspend fun execute(expenseTable: ExpenseTable) {
+        println("dropping table")
         paymentRepository.dropTableIfExists()
+        println("creating table")
         paymentRepository.createTableIfNotExists()
+        println("inserting data")
         paymentRepository.insertPayments(expenseTable.allPayments)
     }
 }
