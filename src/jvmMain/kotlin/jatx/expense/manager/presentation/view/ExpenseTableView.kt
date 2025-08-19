@@ -209,7 +209,7 @@ fun FirstThreeColumnsRow(rowKey: RowKey, theExpenseTable: ExpenseTable) {
         zeroDate.let { date ->
             val expenseEntry =
                 theExpenseTable.getCell(rowKey, date)
-            val cellText = if (expenseEntry.category in listOf(usdCategory, cnyCategory)) {
+            val cellText = if (expenseEntry.category in listOf(usdCategory, cnyCategory, uBTCCategory)) {
                 val sum1 = expenseEntry.paymentSum
                 val sum2 = expenseEntry.currentPaymentSum
                 "$sum1\n$sum2"
