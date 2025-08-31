@@ -22,10 +22,10 @@ data class ExpenseEntry(
             other.date.monthKey == this.date.monthKey &&
             other._payments.size == this._payments.size &&
             other._payments.sumOf { it.amount } == this._payments.sumOf { it.amount } &&
-            other._payments.map { it.comment }.joinToString("|") ==
-                this._payments.map { it.comment }.joinToString("|") &&
-            other._payments.map { it.date.time.toString() }.joinToString("|") ==
-                this._payments.map { it.date.time.toString() }.joinToString("|")
+            other._payments.joinToString("|") { it.comment } ==
+            this._payments.joinToString("|") { it.comment } &&
+            other._payments.joinToString("|") { it.date.time.toString() } ==
+            this._payments.joinToString("|") { it.date.time.toString() }
 
     override fun hashCode() = cardName.hashCode() +
             10000 * category.hashCode() +
@@ -37,7 +37,10 @@ data class ExpenseEntry(
 
     val payments: List<PaymentEntry>
         get() = (if (needSortByDate) {
-            _payments.sortedBy { it.date.time }
+            _payments.sortedBy {
+                val MILLIS_PER_DAY = 24 * 60 * 60 * 1000L
+                (it.date.time / MILLIS_PER_DAY) + it.id
+            }
         } else {
             _payments
         }).map { it.copy(currencyRate = currencyRates[it.currency] ?: 1f) }
@@ -65,7 +68,7 @@ data class ExpenseEntry(
                         comment = makeDefaultComment(it.toInt())
                     )
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 println(msgWrongNumberFormat)
                 listOf()
             }
