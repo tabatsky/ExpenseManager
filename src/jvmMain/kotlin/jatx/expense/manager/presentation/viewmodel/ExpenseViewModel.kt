@@ -21,6 +21,7 @@ class ExpenseViewModel(
     private val loadExpenseTableFromDBUseCase: LoadExpenseTableFromDBUseCase,
     private val loadXlsxUseCase: LoadXlsxUseCase,
     private val saveXlsxUseCase: SaveXlsxUseCase,
+    private val saveTxtUseCase: SaveTxtUseCase,
     private val updatePaymentUseCase: UpdatePaymentUseCase,
     private val insertPaymentUseCase: InsertPaymentUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
@@ -162,6 +163,17 @@ class ExpenseViewModel(
             _expenseTable.value?.let {
                 saveXlsxUseCase.execute(it, xlsxPath)
             }
+        }
+    }
+
+    fun saveCurrentToTxt() {
+        currentExpenseEntry.value?.let {
+            saveTxtUseCase.execute(
+                it.payments,
+                it.cardName,
+                it.category,
+                it.date
+            )
         }
     }
 

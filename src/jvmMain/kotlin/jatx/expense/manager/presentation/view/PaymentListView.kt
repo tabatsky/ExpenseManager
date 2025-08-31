@@ -71,15 +71,38 @@ fun PaymentListView() {
                     }
                 }
             }
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()) {
-                Button(modifier = Modifier
+            Row(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .height(buttonHeight),
+                    .wrapContentHeight()
+            ) {
+                Button(
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .height(buttonHeight),
+                    onClick = {
+                        expenseViewModel.saveCurrentToTxt()
+                    }
+                ) {
+                    Text(
+                        text = buttonSaveToTxtLabel,
+                        textAlign = TextAlign.Center,
+                        fontSize = buttonFontSize
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(0.2f)
+                        .height(buttonHeight)
+                )
+                Button(
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .height(buttonHeight),
                     onClick = {
                         expenseViewModel.showAddPaymentDialog(true)
-                    }) {
+                    }
+                ) {
                     Text(
                         text = buttonAddLabel,
                         textAlign = TextAlign.Center,

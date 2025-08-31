@@ -1,10 +1,12 @@
 package jatx.expense.manager.di
 
+import TxtSaver
 import jatx.expense.manager.data.cbr.CurrencyRatesGetterImpl
 import jatx.expense.manager.data.db.AppDatabase
 import jatx.expense.manager.data.db.getDatabaseBuilder
 import jatx.expense.manager.data.db.getRoomDatabase
 import jatx.expense.manager.data.repository.PaymentRepositoryImpl
+import jatx.expense.manager.data.txt.TxtSaverImpl
 import jatx.expense.manager.data.xlsx.XlsxParserFactoryImpl
 import jatx.expense.manager.data.xlsx.XlsxSaverFactoryImpl
 import jatx.expense.manager.domain.cbr.CurrencyRatesGetter
@@ -73,5 +75,8 @@ abstract class AppComponent(
         @Provides get() = this
 
     protected val CurrencyRatesGetterImpl.bind: CurrencyRatesGetter
+        @Provides get() = this
+
+    protected val TxtSaverImpl.bind: TxtSaver
         @Provides get() = this
 }
