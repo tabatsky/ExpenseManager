@@ -20,6 +20,9 @@ val uBTCCategory = "uBTC".cp1251toUTF8()
 val investCategory = "инвестиции".cp1251toUTF8()
 val incomingCategory = "Поступления".cp1251toUTF8()
 
+
+val debtsCardName = "Долги".cp1251toUTF8()
+
 val String.currencyForCategory: String
     get() = when (this) {
         usdCategory -> "USD"
