@@ -81,11 +81,11 @@ fun PaymentListView() {
                         .weight(1.0f)
                         .height(buttonHeight),
                     onClick = {
-                        expenseViewModel.saveCurrentToTxt()
+                        expenseViewModel.showAddPaymentDialog(true)
                     }
                 ) {
                     Text(
-                        text = buttonSaveToTxtLabel,
+                        text = buttonAddLabel,
                         textAlign = TextAlign.Center,
                         fontSize = buttonFontSize
                     )
@@ -100,11 +100,11 @@ fun PaymentListView() {
                         .weight(1.0f)
                         .height(buttonHeight),
                     onClick = {
-                        expenseViewModel.showAddPaymentDialog(true)
+                        expenseViewModel.saveCurrentToTxt()
                     }
                 ) {
                     Text(
-                        text = buttonAddLabel,
+                        text = buttonSaveToTxtLabel,
                         textAlign = TextAlign.Center,
                         fontSize = buttonFontSize
                     )

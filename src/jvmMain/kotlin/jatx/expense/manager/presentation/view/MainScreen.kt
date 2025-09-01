@@ -33,6 +33,10 @@ fun MainScreen() {
                 .weight(0.25f)) {
                 PaymentListView()
             }
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .width(20.dp)
+            )
         }
     }
 }
