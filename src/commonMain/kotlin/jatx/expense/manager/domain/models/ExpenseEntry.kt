@@ -39,7 +39,7 @@ data class ExpenseEntry(
         get() = (if (needSortByDate) {
             _payments.sortedBy {
                 val MILLIS_PER_DAY = 24 * 60 * 60 * 1000L
-                (it.date.time / MILLIS_PER_DAY) + it.id
+                (it.date.time / MILLIS_PER_DAY) * 10000L + it.id
             }
         } else {
             _payments
