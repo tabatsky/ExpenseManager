@@ -5,7 +5,8 @@ import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.xlsx.XlsxSaverFactory
 import me.tatarka.inject.annotations.Inject
 
-const val theDefaultXlsxPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
+//const val theDefaultXlsxPath = "C:\\Users\\User\\Desktop\\Expense\\траты.xlsx"
+const val theDefaultXlsxPath = "траты.xlsx"
 
 @AppScope
 @Inject
