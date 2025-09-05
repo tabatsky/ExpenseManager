@@ -321,7 +321,9 @@ data class ExpenseTable(
         result.add(RowKey(overallCardName, totalCategory, 0))
         result.add(RowKey(overallCardName, totalPlusCategory, makeTotalPlusRowKey(0)))
         result.add(RowKey(overallCardName, totalMinusCategory, makeTotalPlusRowKey(0)))
-        result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        if (useLohCategory) {
+            result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        }
         result.sortedBy {
             val key = it.rowKeyInt
             val sortKey = if (key % 1000 <= 600) {
@@ -341,7 +343,9 @@ data class ExpenseTable(
             .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalKeys)
         result.add(RowKey(overallCardName, totalCategory, 0))
-        result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        if (useLohCategory) {
+            result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
+        }
         result.sortedBy {
             val key = it.rowKeyInt
             val sortKey = if (key % 1000 < 800) {
