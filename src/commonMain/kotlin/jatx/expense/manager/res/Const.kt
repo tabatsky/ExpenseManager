@@ -1,3 +1,3 @@
 package jatx.expense.manager.res
 
-const val useLohCategory = true
+const val useLohCategory = false
