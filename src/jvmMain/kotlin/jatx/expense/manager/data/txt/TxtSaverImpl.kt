@@ -15,7 +15,8 @@ import java.io.File
 import java.io.PrintWriter
 import java.util.Date
 
-const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense\\payments"
+//const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense\\payments"
+const val theFolderPath = "payments"
 
 @AppScope
 @Inject

@@ -13,7 +13,8 @@ import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 
-const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
+//const val theFolderPath = "C:\\Users\\User\\Desktop\\Expense"
+const val theFolderPath = "."
 
 @AppScope
 @Inject
@@ -80,6 +81,7 @@ class XlsxParserImpl(private val xlsxPath: String): XlsxParser {
     }
 
     private fun parseExpenseRow(workSheet: Sheet, rowNum: Int, allDates: List<Date>): List<ExpenseEntry>? {
+        println("rowNum: $rowNum")
         val row = workSheet.getRow(rowNum)
 
         val lastCellNum = row?.lastCellNum ?: 0
