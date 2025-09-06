@@ -22,9 +22,7 @@ class LoadExpenseTableFromDBUseCase(
             .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
             .distinct()
             .sortedBy { it.rowKeyInt }
-        val minMonthKey = allPayments
-            .map { it.date.monthKey }
-            .minOrNull() ?: Date().monthKey
+        val minMonthKey = allPayments.minOfOrNull { it.date.monthKey } ?: Date().monthKey
         val maxMonthKey = Date().monthKey
         val allMonthKeys = (minMonthKey .. maxMonthKey).toList()
 

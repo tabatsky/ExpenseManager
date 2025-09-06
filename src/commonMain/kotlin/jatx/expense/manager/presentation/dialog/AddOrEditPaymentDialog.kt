@@ -136,7 +136,7 @@ private fun AddOrEditPaymentDialog(
                             val filteredString = it.replace("-", "")
                             val absoluteAmount = filteredString.toInt().absoluteValue
                             amount = sign * absoluteAmount
-                        } catch (e: NumberFormatException) {
+                        } catch (_: NumberFormatException) {
                             println(msgWrongNumberFormat)
                         }
                     }
