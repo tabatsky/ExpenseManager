@@ -27,7 +27,7 @@ import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
 
-val fixedRowCount = if (useLohCategory) 4 else 3
+val fixedRowCount = if (lohCategoryEnabled) 4 else 3
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

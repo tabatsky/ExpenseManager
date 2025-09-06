@@ -321,7 +321,7 @@ data class ExpenseTable(
         result.add(RowKey(overallCardName, totalCategory, 0))
         result.add(RowKey(overallCardName, totalPlusCategory, makeTotalPlusRowKey(0)))
         result.add(RowKey(overallCardName, totalMinusCategory, makeTotalPlusRowKey(0)))
-        if (useLohCategory) {
+        if (lohCategoryEnabled) {
             result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
         }
         result.sortedBy {
@@ -343,7 +343,7 @@ data class ExpenseTable(
             .map { RowKey(it.cardName, totalCategory, makeTotalRowKey(it.rowKeyInt.cardNameKey)) }
         result.addAll(totalKeys)
         result.add(RowKey(overallCardName, totalCategory, 0))
-        if (useLohCategory) {
+        if (lohCategoryEnabled) {
             result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
         }
         result.sortedBy {

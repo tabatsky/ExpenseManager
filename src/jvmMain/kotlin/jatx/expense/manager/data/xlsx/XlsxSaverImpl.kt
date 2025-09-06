@@ -35,7 +35,7 @@ class XlsxSaverImpl(
         allRowNums.add(1)
         var cardName = overallCardName
         var rowNum = 2
-        if (useLohCategory) {
+        if (lohCategoryEnabled) {
             allRowNums.add(2)
             rowNum = 3
         }
@@ -65,7 +65,7 @@ class XlsxSaverImpl(
     override fun saveXlsx() {
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Sheet1")
-        val rowSplit = if (useLohCategory) 3 else 2
+        val rowSplit = if (lohCategoryEnabled) 3 else 2
         sheet.createFreezePane(3, rowSplit)
         val evaluator = workbook.creationHelper.createFormulaEvaluator()
         val colorMap = workbook.stylesSource.indexedColors
@@ -146,7 +146,7 @@ class XlsxSaverImpl(
                                 }
 
                             makeSummFormula(totalCellNames)
-                        } else if (i == 1 && useLohCategory) {
+                        } else if (i == 1 && lohCategoryEnabled) {
                             val totalCellNames = arrayListOf<String>()
                             expenseTable
                                 .rowKeysWithTotalsNoPlusMinus
