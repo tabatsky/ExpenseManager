@@ -77,6 +77,6 @@ abstract class AppComponent(
     protected val CurrencyRatesGetterImpl.bind: CurrencyRatesGetter
         @Provides get() = this
 
-    protected val TxtSaverImpl.bind: TxtSaver
+   protected val TxtSaverImpl.bind: TxtSaver
         @Provides get() = this
 }

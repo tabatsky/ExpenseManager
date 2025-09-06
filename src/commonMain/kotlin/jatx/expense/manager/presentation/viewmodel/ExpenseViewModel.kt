@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import java.util.*
+import kotlin.collections.map
 
 @AppScope
 @Inject

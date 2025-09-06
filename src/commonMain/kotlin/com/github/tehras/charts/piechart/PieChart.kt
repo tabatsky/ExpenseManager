@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import com.github.tehras.charts.piechart.PieChartUtils.calculateAngle
 import com.github.tehras.charts.piechart.animation.simpleChartAnimation

@@ -32,8 +32,8 @@ data class BarChartData(
   val maxBarValue = bars.maxByOrNull { it.value }?.value ?: 0f
 
   data class Bar(
-    val value: Float,
-    val color: Color,
-    val label: String
+      val value: Float,
+      val color: Color,
+      val label: String
   )
 }
