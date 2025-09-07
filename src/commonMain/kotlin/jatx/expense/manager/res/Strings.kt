@@ -71,3 +71,4 @@ const val labelNotSet = "Не задано"
 const val labelOverallCategory = "Всего"
 
 const val labelShowSkipped = "Отображать пропущенные"
+const val labelJoinByCards = "Объединять банки"

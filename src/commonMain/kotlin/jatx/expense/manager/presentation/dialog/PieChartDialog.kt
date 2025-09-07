@@ -41,6 +41,7 @@ fun PieChartDialogWrapper() {
         dialogState.size = DpSize(pieChartDialogWidth, pieChartDialogHeight)
 
         val showSkipped by expenseViewModel.pieChartShowSkipped.collectAsState()
+        val joinByCards by expenseViewModel.pieChartJoinByCards.collectAsState()
 
         val monthKey by expenseViewModel.pieChartMonthKey.collectAsState()
         val monthKey2 by expenseViewModel.pieChartMonthKey2.collectAsState()
@@ -53,9 +54,9 @@ fun PieChartDialogWrapper() {
         val labelMonthKey2 = monthKey2?.dateFromMonthKey?.formattedMonthAndYear ?: labelNotSet
 
         val pieChartData = if (monthKey <= Date().monthKey)
-            expenseViewModel.pieChartData(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey, showSkipped)
+            expenseViewModel.pieChartData(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey, showSkipped, joinByCards)
         else
-            expenseViewModel.overallPieChartData(showSkipped)
+            expenseViewModel.overallPieChartData(showSkipped, joinByCards)
 
         val count = pieChartData.size
         val colors = pieChartData.indices.map {
@@ -134,7 +135,20 @@ fun PieChartDialogWrapper() {
                             checked = showSkipped,
                             onCheckedChange = { expenseViewModel.updatePieChartShowSkipped(it) }
                         )
-                        Text(labelShowSkipped)
+                        Text(
+                            text = labelShowSkipped,
+                            modifier = Modifier
+                                .weight(1.0f)
+                        )
+                        Checkbox(
+                            checked = joinByCards,
+                            onCheckedChange = { expenseViewModel.updatePieChartJoinByCards(it) }
+                        )
+                        Text(
+                            text = labelJoinByCards,
+                            modifier = Modifier
+                                .weight(1.0f)
+                        )
                     }
                     Row {
                         Text(

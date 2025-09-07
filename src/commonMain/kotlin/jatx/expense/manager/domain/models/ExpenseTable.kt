@@ -20,12 +20,19 @@ data class ExpenseTable(
 ) {
     val cellCount = allCells.size
 
-    fun overallPieChartData(showSkipped: Boolean) = rowKeys
-        .map { "${it.cardName} - ${it.category}" }
+    fun overallPieChartData(showSkipped: Boolean, joinByCards: Boolean) = rowKeys
+        .map {
+            if (joinByCards) {
+                it.category
+            } else {
+                "${it.cardName} - ${it.category}"
+            }
+        }
+        .distinct()
         .map { label ->
             val amount = dates
                 .sumOf {
-                    pieChartDataNotFiltered(it, null, showSkipped)
+                    pieChartDataNotFiltered(it, null, showSkipped, joinByCards)
                         .find { it.first == label }
                         ?.second ?: 0
                 }
@@ -36,13 +43,13 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
 
-    fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean) =
-        pieChartDataNotFiltered(date, date2, showSkipped)
+    fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean, joinByCards: Boolean) =
+        pieChartDataNotFiltered(date, date2, showSkipped, joinByCards)
             .filter {
                 it.second > 0
             }
 
-    private fun pieChartDataNotFiltered(date: Date, date2: Date? = null, showSkipped: Boolean) =
+    private fun pieChartDataNotFiltered(date: Date, date2: Date? = null, showSkipped: Boolean, joinByCards: Boolean) =
         if (showSkipped) {
             rowKeys
                 .asSequence()
@@ -61,7 +68,11 @@ data class ExpenseTable(
                             .flatMap { it.payments }
                             .sumOf { it.rurAmount }
                     }
-                    val label = "${rowKey.cardName} - ${rowKey.category}"
+                    val label = if (joinByCards) {
+                        rowKey.category
+                    } else {
+                        "${rowKey.cardName} - ${rowKey.category}"
+                    }
                     label to amount
                 }
                 .sortedBy { -it.second }
@@ -88,7 +99,11 @@ data class ExpenseTable(
                         .filterTotalPlus()
                         .filter { it.rurAmount > 0 }
                         .sumOf { it.rurAmount }
-                    val label = "${expenseEntry.cardName} - ${expenseEntry.category}"
+                    val label = if (joinByCards) {
+                        expenseEntry.category
+                    } else {
+                        "${expenseEntry.cardName} - ${expenseEntry.category}"
+                    }
                     label to amount
                 }
                 .groupBy { it.first }
@@ -96,6 +111,9 @@ data class ExpenseTable(
                 .sortedBy { -it.second }
                 .toList()
         }
+            .groupBy { it.first }
+            .toList()
+            .map { it.first to it.second.sumOf { it.second } }
 
     fun overallPieChartDataByComment() = dates
         .flatMap {

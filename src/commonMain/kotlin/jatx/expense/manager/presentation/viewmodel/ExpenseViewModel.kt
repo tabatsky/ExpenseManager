@@ -80,9 +80,11 @@ class ExpenseViewModel(
     val pieChartMonthKey2 = _pieChartMonthKey2.asStateFlow()
     private val _pieChartShowSkipped = MutableStateFlow(false)
     val pieChartShowSkipped = _pieChartShowSkipped.asStateFlow()
+    private val _pieChartJoinByCards = MutableStateFlow(false)
+    val pieChartJoinByCards = _pieChartJoinByCards.asStateFlow()
 
-    fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean) = expenseTable.value?.pieChartData(date, date2, showSkipped) ?: listOf()
-    fun overallPieChartData(showSkipped: Boolean) = expenseTable.value?.overallPieChartData(showSkipped) ?: listOf()
+    fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.pieChartData(date, date2, showSkipped, joinByCards) ?: listOf()
+    fun overallPieChartData(showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.overallPieChartData(showSkipped, joinByCards) ?: listOf()
 
     fun pieChartDataByComment(date: Date, date2: Date? = null) = expenseTable.value?.pieChartDataByComment(date, date2) ?: listOf()
     fun overallPieChartDataByComment() = expenseTable.value?.overallPieChartDataByComment() ?: listOf()
@@ -248,6 +250,10 @@ class ExpenseViewModel(
 
     fun updatePieChartShowSkipped(show: Boolean) {
         _pieChartShowSkipped.value = show
+    }
+
+    fun updatePieChartJoinByCards(join: Boolean) {
+        _pieChartJoinByCards.value = join
     }
 
     fun pieChartNextMonth() {
