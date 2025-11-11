@@ -20,8 +20,8 @@ fun ExpenseTable.byMonthData() = let { table ->
     }.let { list ->
         val plusMean = list.map { it.first.first }.average().roundToInt()
         val minusMean = list.map { it.second.first }.average().roundToInt()
-        val plus = plusMean to "среднее   $plusMean"
-        val minus = minusMean to "среднее   $minusMean"
+        val plus = plusMean to "СЃСЂРµРґРЅРµРµ   $plusMean"
+        val minus = minusMean to "СЃСЂРµРґРЅРµРµ   $minusMean"
         list + (plus to minus)
     }.flatMap {
         val plus = it.first
