@@ -18,6 +18,8 @@ val usdCategory = "Доллары".cp1251toUTF8()
 val cnyCategory = "Юани".cp1251toUTF8()
 val uBTCCategory = "uBTC".cp1251toUTF8()
 val investCategory = "инвестиции".cp1251toUTF8()
+val invest2Category = "инвестиции 2".cp1251toUTF8()
+val invest3Category = "смарт-счёт".cp1251toUTF8()
 val incomingCategory = "Поступления".cp1251toUTF8()
 
 

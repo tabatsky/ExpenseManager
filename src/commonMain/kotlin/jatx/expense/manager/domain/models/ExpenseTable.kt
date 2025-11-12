@@ -296,7 +296,7 @@ data class ExpenseTable(
                 expenseEntry.category != incomingCategory
                         && !SkipSet.containsLabel(expenseEntry.label)
                         && !ReduceSet.containsKey(expenseEntry.cardName)
-                        && expenseEntry.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory)
+                        && expenseEntry.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory)
                         || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
                         || IncomingCommentSet.labelMatching(it.comment.cp1251toUTF8())
             }

@@ -7,6 +7,8 @@ const val cnyKey = 800
 const val usdKey = 810
 const val uBTCKey = 820
 const val investKey = 890
+const val invest2Key = 891
+const val invest3Key = 892
 const val lohKey = 900
 
 data class RowKey(
@@ -39,6 +41,8 @@ data class RowKey(
                     cnyCategory -> cnyKey
                     uBTCCategory -> uBTCKey
                     investCategory -> investKey
+                    invest2Category -> invest2Key
+                    invest3Category -> invest3Key
                     incomingCategory -> incomingKey
                     else -> (categories
                         .indexOf(category)
