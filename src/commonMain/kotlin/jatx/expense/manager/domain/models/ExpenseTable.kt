@@ -53,7 +53,7 @@ data class ExpenseTable(
         if (showSkipped) {
             rowKeys
                 .asSequence()
-                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory) }
+                .filter { it.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory) }
                 .map { rowKey ->
                     val amount = if (date2 == null) {
                          getCell(rowKey, date)
@@ -80,7 +80,7 @@ data class ExpenseTable(
         } else {
             rowKeys
                 .asSequence()
-                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory) }
+                .filter { it.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory) }
                 .flatMap { rowKey ->
                     if (date2 == null) {
                         listOfNotNull(allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)])
@@ -139,7 +139,7 @@ data class ExpenseTable(
     private fun pieChartDataByCommentNotFiltered(date: Date, date2: Date? = null) =
         rowKeys
             .asSequence()
-            .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory) }
+            .filter { it.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory) }
             .flatMap { rowKey ->
                 if (date2 == null) {
                     listOfNotNull(allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)])
@@ -244,7 +244,7 @@ data class ExpenseTable(
 
 
     fun overallTotalPlusPayments(date: Date) = rowKeys
-        .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory) }
+        .filter { it.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory) }
         .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
         .flatMap { expenseEntry ->
             expenseEntry.filterTotalPlus()
@@ -254,7 +254,7 @@ data class ExpenseTable(
 
     private fun totalPlusPayments(date: Date, cardName: String) = rowKeys
         .filter { it.cardName == cardName }
-        .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory) }
+        .filter { it.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory) }
         .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
         .flatMap { expenseEntry ->
             expenseEntry.filterTotalPlus()
@@ -560,7 +560,7 @@ data class ExpenseTable(
         if (rowKey.category == totalPlus2Category) {
             val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
-                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory) }
+                .filter { it.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory) }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount > 0 }
@@ -590,7 +590,7 @@ data class ExpenseTable(
         if (rowKey.category == totalMinus2Category) {
             val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
-                .filter { it.category !in setOf(investCategory, usdCategory, cnyCategory, uBTCCategory) }
+                .filter { it.category !in setOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory) }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
                 .filter { it.amount < 0 }

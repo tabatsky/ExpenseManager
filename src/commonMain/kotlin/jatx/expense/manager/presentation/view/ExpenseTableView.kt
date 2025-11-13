@@ -287,7 +287,7 @@ fun colorByRowKey(rowKey: RowKey): Color {
     val categoryKey = key.categoryKey
     if (categoryKey == lohKey) return redColor
     val cardNameKey = key.cardNameKey
-    val alpha = if (rowKey.category in listOf(usdCategory, cnyCategory, investCategory, invest2Category, invest3Category, uBTCCategory)) {
+    val alpha = if (rowKey.category in listOf(investCategory, invest2Category, invest3Category, usdCategory, cnyCategory, uBTCCategory)) {
         0.5f
     } else {
         1.0f
