@@ -5,9 +5,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +22,7 @@ import androidx.compose.ui.window.rememberDialogState
 import com.github.tehras.charts.piechart.PieChart
 import com.github.tehras.charts.piechart.PieChartData
 import jatx.expense.manager.di.appComponent
+import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
@@ -41,6 +46,7 @@ fun PieChartByCommentDialogWrapper() {
 
         val monthKey by expenseViewModel.pieChartMonthKey.collectAsState()
         val monthKey2 by expenseViewModel.pieChartMonthKey2.collectAsState()
+        val filter by expenseViewModel.pieChartFilter.collectAsState()
 
         val labelMonthKey = if (monthKey <= Date().monthKey)
             monthKey.dateFromMonthKey.formattedMonthAndYear
@@ -50,9 +56,9 @@ fun PieChartByCommentDialogWrapper() {
         val labelMonthKey2 = monthKey2?.dateFromMonthKey?.formattedMonthAndYear ?: labelNotSet
 
         val pieChartData = if (monthKey <= Date().monthKey)
-            expenseViewModel.pieChartDataByComment(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey)
+            expenseViewModel.pieChartDataByComment(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey, filter)
         else
-            expenseViewModel.overallPieChartDataByComment()
+            expenseViewModel.overallPieChartDataByComment(filter)
 
         val count = pieChartData.size
         val colors = pieChartData.indices.map {
@@ -74,6 +80,21 @@ fun PieChartByCommentDialogWrapper() {
                     modifier = Modifier.size(pieChartSize)
                 )
                 Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    )  {
+                        var filterTmp by remember { mutableStateOf(filter.utf8toCP1251()) }
+
+                        TextField(
+                            value = filterTmp,
+                            onValueChange = {
+                                filterTmp = it
+                                expenseViewModel.pieChartUpdateFilter(filterTmp.cp1251toUTF8())
+                                 },
+                            label = { Text(labelPieChartFilter) },
+                            singleLine = true
+                        )
+                    }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {

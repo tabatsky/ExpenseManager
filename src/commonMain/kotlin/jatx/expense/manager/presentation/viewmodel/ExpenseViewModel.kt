@@ -74,6 +74,8 @@ class ExpenseViewModel(
     val needShowPieChartByCommentDialog = _needShowPieChartByCommentDialog.asStateFlow()
     private val _needShowPieChartByCommentMinusDialog = MutableStateFlow(false)
     val needShowPieChartByCommentMinusDialog = _needShowPieChartByCommentMinusDialog.asStateFlow()
+    private val _pieChartFilter = MutableStateFlow("")
+    val pieChartFilter = _pieChartFilter.asStateFlow()
     private val _pieChartMonthKey = MutableStateFlow(Date().monthKey)
     val pieChartMonthKey = _pieChartMonthKey.asStateFlow()
     private val _pieChartMonthKey2 = MutableStateFlow<Int?>(null)
@@ -86,8 +88,8 @@ class ExpenseViewModel(
     fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.pieChartData(date, date2, showSkipped, joinByCards) ?: listOf()
     fun overallPieChartData(showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.overallPieChartData(showSkipped, joinByCards) ?: listOf()
 
-    fun pieChartDataByComment(date: Date, date2: Date? = null) = expenseTable.value?.pieChartDataByComment(date, date2) ?: listOf()
-    fun overallPieChartDataByComment() = expenseTable.value?.overallPieChartDataByComment() ?: listOf()
+    fun pieChartDataByComment(date: Date, date2: Date? = null, filter: String = "") = expenseTable.value?.pieChartDataByComment(date, date2, filter) ?: listOf()
+    fun overallPieChartDataByComment(filter: String = "") = expenseTable.value?.overallPieChartDataByComment(filter) ?: listOf()
 
     fun pieChartDataByCommentMinus(date: Date, date2: Date? = null) = expenseTable.value?.pieChartDataByCommentMinus(date, date2) ?: listOf()
     fun overallPieChartDataByCommentMinus() = expenseTable.value?.overallPieChartDataByCommentMinus() ?: listOf()
@@ -254,6 +256,11 @@ class ExpenseViewModel(
 
     fun updatePieChartJoinByCards(join: Boolean) {
         _pieChartJoinByCards.value = join
+    }
+
+
+    fun pieChartUpdateFilter(filter: String) {
+        _pieChartFilter.value = filter
     }
 
     fun pieChartNextMonth() {

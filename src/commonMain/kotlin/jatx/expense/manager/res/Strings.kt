@@ -1,6 +1,8 @@
 package jatx.expense.manager.res
 
 import jatx.expense.manager.domain.util.cp1251toUTF8
+import jatx.expense.manager.domain.util.utf8toCP1251
+import java.util.Locale
 
 val overallCardName = "-".cp1251toUTF8()
 val cashCardName = "Наличные".cp1251toUTF8()
@@ -80,3 +82,7 @@ const val labelOverallCategory = "Всего"
 
 const val labelShowSkipped = "Отображать пропущенные"
 const val labelJoinByCards = "Объединять банки"
+
+const val labelPieChartFilter = "Фильтр:"
+
+fun String.rusLowercase() = this.utf8toCP1251().lowercase(Locale("ru", "RU"))

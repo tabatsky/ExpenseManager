@@ -115,11 +115,14 @@ data class ExpenseTable(
             .toList()
             .map { it.first to it.second.sumOf { it.second } }
 
-    fun overallPieChartDataByComment() = dates
+    fun overallPieChartDataByComment(filter: String = "") = dates
         .flatMap {
             pieChartDataByCommentNotFiltered(it)
                 .filter {
                     it.second > 0
+                }
+                .filter {
+                    it.first.rusLowercase().contains(filter.rusLowercase())
                 }
         }
         .groupBy {
@@ -130,10 +133,13 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
 
-    fun pieChartDataByComment(date: Date, date2: Date? = null) =
+    fun pieChartDataByComment(date: Date, date2: Date? = null, filter: String = "") =
         pieChartDataByCommentNotFiltered(date, date2)
             .filter {
                 it.second > 0
+            }
+            .filter {
+                it.first.rusLowercase().contains(filter.rusLowercase())
             }
 
     private fun pieChartDataByCommentNotFiltered(date: Date, date2: Date? = null) =
@@ -158,6 +164,7 @@ data class ExpenseTable(
                     .filterTotalPlus()
                     .filter { it.rurAmount > 0 }
                     .groupBy {
+                        val category = it.category.utf8toCP1251()
                         it
                             .comment.let {
                                 if (ExpenseCommentSet.labelMatching(it.cp1251toUTF8())) {
@@ -169,7 +176,8 @@ data class ExpenseTable(
                             .takeIf {
                                 it != defaultCommentPositiveAmount &&
                                         it != defaultCommentNegativeAmount
-                            } ?: it.category.utf8toCP1251()
+                            }
+                            ?.let { "$category - $it" } ?: category
                     }
                     .map {
                         it.key.cp1251toUTF8() to it.value.sumOf { it.rurAmount }
