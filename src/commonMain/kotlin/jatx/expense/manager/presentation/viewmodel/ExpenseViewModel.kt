@@ -84,12 +84,14 @@ class ExpenseViewModel(
     val pieChartShowSkipped = _pieChartShowSkipped.asStateFlow()
     private val _pieChartJoinByCards = MutableStateFlow(false)
     val pieChartJoinByCards = _pieChartJoinByCards.asStateFlow()
+    private val _pieChartFullComments = MutableStateFlow(false)
+    val pieChartFullComments = _pieChartFullComments.asStateFlow()
 
     fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.pieChartData(date, date2, showSkipped, joinByCards) ?: listOf()
     fun overallPieChartData(showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.overallPieChartData(showSkipped, joinByCards) ?: listOf()
 
-    fun pieChartDataByComment(date: Date, date2: Date? = null, filter: String = "") = expenseTable.value?.pieChartDataByComment(date, date2, filter) ?: listOf()
-    fun overallPieChartDataByComment(filter: String = "") = expenseTable.value?.overallPieChartDataByComment(filter) ?: listOf()
+    fun pieChartDataByComment(date: Date, date2: Date? = null, filter: String = "", fullComments: Boolean = false) = expenseTable.value?.pieChartDataByComment(date, date2, filter, fullComments) ?: listOf()
+    fun overallPieChartDataByComment(filter: String = "", fullComments: Boolean = false) = expenseTable.value?.overallPieChartDataByComment(filter, fullComments) ?: listOf()
 
     fun pieChartDataByCommentMinus(date: Date, date2: Date? = null) = expenseTable.value?.pieChartDataByCommentMinus(date, date2) ?: listOf()
     fun overallPieChartDataByCommentMinus() = expenseTable.value?.overallPieChartDataByCommentMinus() ?: listOf()
@@ -258,6 +260,9 @@ class ExpenseViewModel(
         _pieChartJoinByCards.value = join
     }
 
+    fun updatePieChartFullComments(full: Boolean) {
+        _pieChartFullComments.value = full
+    }
 
     fun pieChartUpdateFilter(filter: String) {
         _pieChartFilter.value = filter

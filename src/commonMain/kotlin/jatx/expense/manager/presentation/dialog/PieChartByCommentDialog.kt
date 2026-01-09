@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -47,6 +48,7 @@ fun PieChartByCommentDialogWrapper() {
         val monthKey by expenseViewModel.pieChartMonthKey.collectAsState()
         val monthKey2 by expenseViewModel.pieChartMonthKey2.collectAsState()
         val filter by expenseViewModel.pieChartFilter.collectAsState()
+        val fullComments by expenseViewModel.pieChartFullComments.collectAsState()
 
         val labelMonthKey = if (monthKey <= Date().monthKey)
             monthKey.dateFromMonthKey.formattedMonthAndYear
@@ -56,9 +58,9 @@ fun PieChartByCommentDialogWrapper() {
         val labelMonthKey2 = monthKey2?.dateFromMonthKey?.formattedMonthAndYear ?: labelNotSet
 
         val pieChartData = if (monthKey <= Date().monthKey)
-            expenseViewModel.pieChartDataByComment(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey, filter)
+            expenseViewModel.pieChartDataByComment(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey, filter, fullComments)
         else
-            expenseViewModel.overallPieChartDataByComment(filter)
+            expenseViewModel.overallPieChartDataByComment(filter, fullComments)
 
         val count = pieChartData.size
         val colors = pieChartData.indices.map {
@@ -144,6 +146,19 @@ fun PieChartByCommentDialogWrapper() {
                         ) {
                             Text(">")
                         }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = fullComments,
+                            onCheckedChange = { expenseViewModel.updatePieChartFullComments(it) }
+                        )
+                        Text(
+                            text = labelFullComments,
+                            modifier = Modifier
+                                .weight(1.0f)
+                        )
                     }
                     Row {
                         Text(

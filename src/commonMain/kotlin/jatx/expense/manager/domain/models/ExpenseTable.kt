@@ -115,9 +115,9 @@ data class ExpenseTable(
             .toList()
             .map { it.first to it.second.sumOf { it.second } }
 
-    fun overallPieChartDataByComment(filter: String = "") = dates
+    fun overallPieChartDataByComment(filter: String = "", fullComments: Boolean = false) = dates
         .flatMap {
-            pieChartDataByCommentNotFiltered(it)
+            pieChartDataByCommentNotFiltered(it, null, fullComments)
                 .filter {
                     it.second > 0
                 }
@@ -133,8 +133,8 @@ data class ExpenseTable(
         }
         .sortedBy { -it.second }
 
-    fun pieChartDataByComment(date: Date, date2: Date? = null, filter: String = "") =
-        pieChartDataByCommentNotFiltered(date, date2)
+    fun pieChartDataByComment(date: Date, date2: Date? = null, filter: String = "", fullComments: Boolean = false) =
+        pieChartDataByCommentNotFiltered(date, date2, fullComments)
             .filter {
                 it.second > 0
             }
@@ -142,7 +142,7 @@ data class ExpenseTable(
                 it.first.rusLowercase().contains(filter.rusLowercase())
             }
 
-    private fun pieChartDataByCommentNotFiltered(date: Date, date2: Date? = null) =
+    private fun pieChartDataByCommentNotFiltered(date: Date, date2: Date? = null, fullComments: Boolean = false) =
         rowKeys
             .asSequence()
             .filter { it.category !in specialCategories }
@@ -167,7 +167,9 @@ data class ExpenseTable(
                         val category = it.category.utf8toCP1251()
                         it
                             .comment.let {
-                                if (ExpenseCommentSet.labelMatching(it.cp1251toUTF8())) {
+                                if (fullComments) {
+                                    it
+                                } else if (ExpenseCommentSet.labelMatching(it.cp1251toUTF8())) {
                                     it.split("-").last().trim()
                                 } else {
                                     it.split("-").first().trim()

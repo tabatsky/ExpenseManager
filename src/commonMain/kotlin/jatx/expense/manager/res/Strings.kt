@@ -82,6 +82,7 @@ const val labelOverallCategory = "Всего"
 
 const val labelShowSkipped = "Отображать пропущенные"
 const val labelJoinByCards = "Объединять банки"
+const val labelFullComments = "Метка полностью"
 
 const val labelPieChartFilter = "Фильтр:"
 
