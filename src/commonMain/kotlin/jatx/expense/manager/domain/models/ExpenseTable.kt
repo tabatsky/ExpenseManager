@@ -121,8 +121,12 @@ data class ExpenseTable(
                 .filter {
                     it.second > 0
                 }
-                .filter {
-                    it.first.rusLowercase().contains(filter.rusLowercase())
+                .filter { comment ->
+                    var match = false
+                    filter.split("+").forEach {
+                        match = match || comment.first.rusLowercase().contains(it.rusLowercase())
+                    }
+                    match
                 }
         }
         .groupBy {
@@ -138,8 +142,12 @@ data class ExpenseTable(
             .filter {
                 it.second > 0
             }
-            .filter {
-                it.first.rusLowercase().contains(filter.rusLowercase())
+            .filter { comment ->
+                var match = false
+                filter.split("+").forEach {
+                    match = match || comment.first.rusLowercase().contains(it.rusLowercase())
+                }
+                match
             }
 
     private fun pieChartDataByCommentNotFiltered(date: Date, date2: Date? = null, fullComments: Boolean = false) =
