@@ -286,6 +286,7 @@ data class ExpenseTable(
             .filter {
                 !SkipSet.containsLabel(expenseEntry.label)
                         && !ReduceSet.containsKey(expenseEntry.cardName)
+                        && !SkipCommentSet.containsLabel(it.comment.cp1251toUTF8())
                         || ExpenseCommentSet.labelMatching(it.comment.cp1251toUTF8())
             }
     }
@@ -315,6 +316,7 @@ data class ExpenseTable(
                         && !SkipSet.containsLabel(expenseEntry.label)
                         && !ReduceSet.containsKey(expenseEntry.cardName)
                         && expenseEntry.category !in specialCategories
+                        && !SkipCommentSet.containsLabel(it.comment.cp1251toUTF8())
                         || IncomingSet.containsLabel(it.comment.cp1251toUTF8())
                         || IncomingCommentSet.labelMatching(it.comment.cp1251toUTF8())
             }
