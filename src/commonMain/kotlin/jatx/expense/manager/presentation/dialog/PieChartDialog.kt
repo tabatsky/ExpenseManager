@@ -53,6 +53,8 @@ fun PieChartDialogWrapper() {
 
         val labelMonthKey2 = monthKey2?.dateFromMonthKey?.formattedMonthAndYear ?: labelNotSet
 
+        val monthCount = ((monthKey2 ?: monthKey) - monthKey + 1).takeIf { it > 1 } ?: 1
+
         val pieChartData = if (monthKey <= Date().monthKey)
             expenseViewModel.pieChartData(monthKey.dateFromMonthKey, monthKey2?.dateFromMonthKey, showSkipped, joinByCards)
         else
@@ -163,6 +165,14 @@ fun PieChartDialogWrapper() {
                                 .weight(1.0f),
                             color = Color.Black
                         )
+                        if (monthCount > 1) {
+                            Text(
+                                text = (total / monthCount).toString(),
+                                modifier = Modifier
+                                    .weight(1.0f),
+                                color = Color.Black
+                            )
+                        }
                         Text(
                             text =  "%.2f".format(100.0f) + " %",
                             modifier = Modifier
@@ -192,6 +202,14 @@ fun PieChartDialogWrapper() {
                                         .weight(1.0f),
                                     color = Color.Black
                                 )
+                                if (monthCount > 1) {
+                                    Text(
+                                        text = (amount / monthCount).toString(),
+                                        modifier = Modifier
+                                            .weight(1.0f),
+                                        color = Color.Black
+                                    )
+                                }
                                 Text(
                                     text = percentStr,
                                     modifier = Modifier
