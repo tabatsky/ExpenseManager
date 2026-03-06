@@ -497,6 +497,7 @@ data class ExpenseTable(
         if (rowKey.cardName == overallCardName && rowKey.category == totalCategory) {
             val payments = rowKeys
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .filter { !TotalSkipSet.containsLabel(it.label) }
                 .flatMap { it.payments }
                 .sortedBy { it.date.time }
             return ExpenseEntry(
@@ -553,6 +554,7 @@ data class ExpenseTable(
             val payments = rowKeys
                 .filter { it.cardName == rowKey.cardName }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .filter { !TotalSkipSet.containsLabel(it.label) }
                 .flatMap { it.payments }
                 .sortedBy { it.date.time }
             return ExpenseEntry(
