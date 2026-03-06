@@ -20,6 +20,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import jatx.expense.manager.data.skipset.TotalSkipSet
 import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.util.*
@@ -283,6 +284,7 @@ val cellColors = listOf(
 )
 
 fun colorByRowKey(rowKey: RowKey): Color {
+    if (TotalSkipSet.containsLabel(rowKey.label)) return grayColor
     val key = rowKey.rowKeyInt
     val categoryKey = key.categoryKey
     if (categoryKey == lohKey) return redColor

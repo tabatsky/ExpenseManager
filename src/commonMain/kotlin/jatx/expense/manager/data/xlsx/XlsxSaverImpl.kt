@@ -1,5 +1,6 @@
 package jatx.expense.manager.data.xlsx
 
+import jatx.expense.manager.data.skipset.TotalSkipSet
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.models.PaymentEntry
@@ -88,7 +89,9 @@ class XlsxSaverImpl(
             .rowKeysWithTotalsNoPlusMinus
             .forEachIndexed { i, rowKey ->
                 println("$i ${rowKey.category}")
-                val composeColor = if (rowKey.category == lohCategory || rowKey.category == totalLohCategory)
+                val composeColor = if (TotalSkipSet.containsLabel(rowKey.label))
+                    grayColor
+                else if (rowKey.category == lohCategory || rowKey.category == totalLohCategory)
                     redColor
                 else
                     when (rowKey.rowKeyInt.cardNameKey) {
@@ -97,8 +100,16 @@ class XlsxSaverImpl(
                         3 -> greenColor
                         else -> blackColor
                     }
+                val alpha = if (rowKey.category in specialCategories) {
+                    0.5f
+                } else {
+                    1.0f
+                }
+                val red = composeColor.red
+                val green = composeColor.green
+                val blue = composeColor.blue
                 val color = XSSFColor(
-                    Color(composeColor.red, composeColor.green, composeColor.blue),
+                    Color(red, green, blue, alpha),
                     colorMap
                 )
                 val rowNum = allRowNums[i]

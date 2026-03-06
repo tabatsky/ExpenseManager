@@ -7,5 +7,6 @@ val violetColor = Color(0xFFBA60F1)
 val greenColor = Color(0xFF70BB69)
 val redColor = Color(0xFFFF3A00)
 val yellowColor = Color(0xFFDDDD77)
+val grayColor = Color(0xFFAAAAAA)
 val whiteColor = Color.White
 val blackColor = Color.Black
