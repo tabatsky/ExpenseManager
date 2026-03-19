@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 data class BarChartData(
   val bars: List<Bar>,
-  val padBy: Float = 10f,
+  val padBy: Float = 0f,
   val startAtZero: Boolean = true
 ) {
   init {
@@ -15,6 +15,8 @@ data class BarChartData(
     get() {
       val min = bars.minByOrNull { it.value }?.value ?: 0f
       val max = bars.maxByOrNull { it.value }?.value ?: 0f
+
+      println("min $min max $max")
 
       return min to max
     }

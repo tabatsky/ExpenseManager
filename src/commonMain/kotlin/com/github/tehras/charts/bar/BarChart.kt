@@ -4,12 +4,14 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.unit.dp
 import com.github.tehras.charts.bar.BarChartUtils.axisAreas
 import com.github.tehras.charts.bar.BarChartUtils.barDrawableArea
 import com.github.tehras.charts.bar.BarChartUtils.forEachWithArea
@@ -42,6 +44,7 @@ fun BarChart(
   val progress = transitionAnimation.value
 
   Canvas(modifier = modifier
+    .padding(top = 40.dp)
     .fillMaxSize()
     .drawBehind {
       drawIntoCanvas { canvas ->

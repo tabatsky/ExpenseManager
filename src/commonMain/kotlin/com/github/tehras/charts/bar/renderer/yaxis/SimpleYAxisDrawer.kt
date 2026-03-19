@@ -17,6 +17,8 @@ import org.jetbrains.skia.TextLine
 
 typealias LabelFormatter = (value: Float) -> String
 
+const val maxYCoeff = 1.25f
+
 class SimpleYAxisDrawer(
   private val labelTextSize: TextUnit = 12.sp,
   private val labelTextColor: Color = Color.Black,
@@ -44,10 +46,12 @@ class SimpleYAxisDrawer(
     val lineThickness = axisLineThickness.toPx()
     val x = drawableArea.right - (lineThickness / 2f)
 
+    val height = drawableArea.bottom - drawableArea.top
+
     canvas.drawLine(
       p1 = Offset(
         x = x,
-        y = drawableArea.top
+        y = drawableArea.bottom - height * maxYCoeff
       ),
       p2 = Offset(
         x = x,
@@ -73,17 +77,25 @@ class SimpleYAxisDrawer(
     val minLabelHeight = 100f
     val totalHeight = drawableArea.height
 
-    val step = 10000f
-    val labelCount = ((maxValue - minValue) / step).toInt() + 1
+    if ((maxValue - minValue).toInt() == 0) return@with
+
+    val step = 10000 * ((maxValue - minValue).toInt() / 100000)
+    val shift = if ((maxValue - minValue).toInt() % step == 0) 1 else 2
+    val baseLabelCount = ((maxValue - minValue).toInt() / step).plus(shift)
+    val labelCount = baseLabelCount.minus(1).times(maxYCoeff).toInt().plus(1)
+    println("label count: $labelCount")
+    println("min value: $minValue; max value: $maxValue")
 
     val actualMax = (labelCount - 1) * step + minValue
-    val actualTotalHeight = (labelCount - 1) * step / (maxValue - minValue) * totalHeight
+    val hCoeff =  ((maxValue - minValue) / step -
+            (maxValue - minValue).toInt() / step +
+            baseLabelCount) / baseLabelCount
+    val actualTotalHeight = totalHeight * maxYCoeff / hCoeff
 
-    println(minValue)
-    println(maxValue)
     println(actualMax)
+    println("$totalHeight $actualTotalHeight $hCoeff")
 
-    for (i in 0..labelCount) {
+    for (i in 0 until  labelCount) {
       val value = minValue + (i * step)
 
       val label = labelValueFormatter(value)
@@ -92,7 +104,7 @@ class SimpleYAxisDrawer(
 //      labelPaint.getTextBounds(label, 0, label.length, textBounds)
 
       val y =
-        drawableArea.bottom - (i * (actualTotalHeight / labelCount))// + (textBounds.height() / 2f)
+        drawableArea.bottom - (i * (actualTotalHeight / (labelCount - 1)))// + (textBounds.height() / 2f)
 
       canvas.nativeCanvas.drawTextLine(
         TextLine.Companion.make(label, Font()),
