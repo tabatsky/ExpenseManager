@@ -90,7 +90,7 @@ class SimpleYAxisDrawer(
     val hCoeff =  ((maxValue - minValue) / step -
             (maxValue - minValue).toInt() / step +
             baseLabelCount) / baseLabelCount
-    val actualTotalHeight = totalHeight * maxYCoeff / hCoeff
+    val actualTotalHeight = totalHeight * maxYCoeff * hCoeff
 
     println(actualMax)
     println("$totalHeight $actualTotalHeight $hCoeff")
@@ -103,11 +103,13 @@ class SimpleYAxisDrawer(
 
 //      labelPaint.getTextBounds(label, 0, label.length, textBounds)
 
+      val font = Font()
+
       val y =
-        drawableArea.bottom - (i * (actualTotalHeight / (labelCount - 1)))// + (textBounds.height() / 2f)
+        drawableArea.bottom - (i * (actualTotalHeight / (labelCount - 1))) + font.size / 2 // + (textBounds.height() / 2f)
 
       canvas.nativeCanvas.drawTextLine(
-        TextLine.Companion.make(label, Font()),
+        TextLine.Companion.make(label, font),
         x,
         y,
         org.jetbrains.skia.Paint()
