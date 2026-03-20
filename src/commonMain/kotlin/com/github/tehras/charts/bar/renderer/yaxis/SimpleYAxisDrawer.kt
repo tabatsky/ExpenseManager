@@ -82,15 +82,13 @@ class SimpleYAxisDrawer(
     val step = 10000 * ((maxValue - minValue).toInt() / 100000)
     val shift = if ((maxValue - minValue).toInt() % step == 0) 1 else 2
     val baseLabelCount = ((maxValue - minValue).toInt() / step).plus(shift)
-    val labelCount = baseLabelCount.minus(1).times(maxYCoeff).toInt().plus(1)
+    val labelCount = baseLabelCount.minus(shift).times(maxYCoeff).toInt().plus(shift)
     println("label count: $labelCount")
     println("min value: $minValue; max value: $maxValue")
 
     val actualMax = (labelCount - 1) * step + minValue
-    val hCoeff =  ((maxValue - minValue) / step -
-            (maxValue - minValue).toInt() / step +
-            baseLabelCount) / baseLabelCount
-    val actualTotalHeight = totalHeight * maxYCoeff * hCoeff
+    val hCoeff =  (maxValue - minValue) / (actualMax - minValue)
+    val actualTotalHeight = totalHeight / hCoeff
 
     println(actualMax)
     println("$totalHeight $actualTotalHeight $hCoeff")
@@ -106,7 +104,7 @@ class SimpleYAxisDrawer(
       val font = Font()
 
       val y =
-        drawableArea.bottom - (i * (actualTotalHeight / (labelCount - 1))) + font.size / 2 // + (textBounds.height() / 2f)
+        drawableArea.bottom - (i * (actualTotalHeight / (labelCount - 1))) // + font.size / 2 // + (textBounds.height() / 2f)
 
       canvas.nativeCanvas.drawTextLine(
         TextLine.Companion.make(label, font),
