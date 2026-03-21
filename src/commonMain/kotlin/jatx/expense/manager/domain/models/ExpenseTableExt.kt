@@ -37,8 +37,18 @@ fun ExpenseTable.byMonthData(filter: String = "") = let { table ->
         val minus = minusAmount to "${date.formattedMonthAndYear}    $minusAmount"
         plus to minus
     }.let { list ->
-        val plusMean = list.map { it.first.first }.average().roundToInt()
-        val minusMean = list.map { it.second.first }.average().roundToInt()
+        val plusMean = list
+            .map { it.first.first }
+            .filter { it > 0 }
+            .takeIf { it.isNotEmpty() }
+            ?.average()
+            ?.roundToInt() ?: 0
+        val minusMean = list
+            .map { it.second.first }
+            .filter { it < 0 }
+            .takeIf { it.isNotEmpty() }
+            ?.average()
+            ?.roundToInt() ?: 0
         val plus = plusMean to "среднее   $plusMean"
         val minus = minusMean to "среднее   $minusMean"
         list + (plus to minus)
