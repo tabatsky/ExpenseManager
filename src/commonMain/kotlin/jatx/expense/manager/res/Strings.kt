@@ -54,6 +54,8 @@ const val buttonYesLabel = "Да"
 const val buttonNoLabel = "Нет"
 const val buttonChooseLabel = "Выбрать"
 const val buttonCancelLabel = "Отмена"
+const val buttonUpLabel = "Вверх"
+const val buttonDownLabel = "Вниз"
 
 const val titleDeletionConfirmationDialog = "Запись будет удалена"
 const val textDeletionConfirmationDialog = "Вы уверены?"

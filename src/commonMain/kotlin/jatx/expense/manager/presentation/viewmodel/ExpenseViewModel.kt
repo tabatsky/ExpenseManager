@@ -27,6 +27,7 @@ class ExpenseViewModel(
     private val insertPaymentUseCase: InsertPaymentUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
     private val renameCategoryUseCase: RenameCategoryUseCase,
+    private val swapRowKeysIntUseCase: SwapRowKeysIntUseCase,
     private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
     private val appDatabase: AppDatabase,
     private val coroutineScope: CoroutineScope
@@ -341,6 +342,13 @@ class ExpenseViewModel(
              renameCategoryUseCase.execute(newCategory, rowKey)
              loadExpenseTableFromDBAndSaveToDefaultXlsx()
          }
+    }
+
+    fun swapRowKeysIntAndReloadExpenseTable(rowKeyInt1: Int, rowKeyInt2: Int) {
+        coroutineScope.launch {
+            swapRowKeysIntUseCase.execute(rowKeyInt1, rowKeyInt2)
+            loadExpenseTableFromDBAndSaveToDefaultXlsx()
+        }
     }
 
     private suspend fun loadExpenseTableFromDBAndSaveToDefaultXlsx() {

@@ -24,4 +24,7 @@ interface PaymentDao {
 
     @Query("UPDATE paymentEntity SET category=:newCategory WHERE cardName=:cardName AND category=:oldCategory")
     suspend fun renameCategory(newCategory: String, cardName: String, oldCategory: String)
+
+    @Query("UPDATE paymentEntity SET rowKeyInt=:newRowKeyInt WHERE rowKeyInt=:oldRowKeyInt")
+    suspend fun patchRowKeyInt(newRowKeyInt: Int, oldRowKeyInt: Int)
 }

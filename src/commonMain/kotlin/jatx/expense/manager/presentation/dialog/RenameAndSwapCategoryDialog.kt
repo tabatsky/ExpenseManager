@@ -15,32 +15,53 @@ import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.res.buttonCancelLabel
+import jatx.expense.manager.res.buttonDownLabel
 import jatx.expense.manager.res.buttonSaveLabel
+import jatx.expense.manager.res.buttonUpLabel
 
 @Composable
-fun RenameCategoryDialogWrapper() {
+fun RenameAndSwapCategoryDialogWrapper() {
     val expenseViewModel = appComponent.expenseViewModel
 
     val rowKeyToEdit by expenseViewModel.rowKeyToEdit.collectAsState()
 
     rowKeyToEdit?.let { rowKey ->
-        RenameCategoryDialog(
+        val buttonUpEnabled = expenseViewModel.expenseTable.value?.let {
+            it.isRegularRowKey(rowKey) && !it.isFirstRegularRowKeyForCardNameKey(rowKey)
+        } ?: false
+        val buttonDownEnabled = expenseViewModel.expenseTable.value?.let {
+            it.isRegularRowKey(rowKey) && !it.isLastRegularRowKeyForCardNameKey(rowKey)
+        } ?: false
+
+        RenameAndSwapCategoryDialog(
             rowKey = rowKey,
+            buttonUpEnabled = buttonUpEnabled,
+            buttonDownEnabled = buttonDownEnabled,
             onDismiss = {
                 expenseViewModel.showRenameCategoryDialog(null)
             },
             onSave = { newCategory ->
                 expenseViewModel.renameCategoryAndReloadExpenseTable(newCategory, rowKey)
+            },
+            onUp = {
+                expenseViewModel.swapRowKeysIntAndReloadExpenseTable(rowKey.rowKeyInt, rowKey.rowKeyInt - 1)
+            },
+            onDown = {
+                expenseViewModel.swapRowKeysIntAndReloadExpenseTable(rowKey.rowKeyInt, rowKey.rowKeyInt + 1)
             }
         )
     }
 }
 
 @Composable
-private fun RenameCategoryDialog(
+private fun RenameAndSwapCategoryDialog(
     rowKey: RowKey,
+    buttonUpEnabled: Boolean,
+    buttonDownEnabled: Boolean,
     onDismiss: () -> Unit,
-    onSave: (String) -> Unit
+    onSave: (String) -> Unit,
+    onUp: () -> Unit,
+    onDown: () -> Unit
 ) {
     var categoryCP1251 by remember { mutableStateOf(rowKey.category.utf8toCP1251()) }
 
@@ -75,6 +96,29 @@ private fun RenameCategoryDialog(
                     onDismiss()
                 }) {
                     Text(buttonCancelLabel)
+                }
+            }
+
+            Row {
+                Button(enabled = buttonUpEnabled,
+                    onClick = {
+                        onUp()
+                        onDismiss()
+                    }) {
+                    Text(buttonUpLabel)
+                }
+
+                Divider(
+                    modifier = Modifier
+                        .weight(1.0f)
+                )
+
+                Button(enabled = buttonDownEnabled,
+                    onClick = {
+                        onDown()
+                        onDismiss()
+                    }) {
+                    Text(buttonDownLabel)
                 }
             }
         }

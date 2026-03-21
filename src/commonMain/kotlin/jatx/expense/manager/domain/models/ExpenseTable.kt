@@ -20,6 +20,20 @@ data class ExpenseTable(
 ) {
     val cellCount = allCells.size
 
+    fun allRegularRowKeysForCardNameKey(cardNameKey: Int) = rowKeys
+        .filter { it.rowKeyInt.cardNameKey == cardNameKey }
+        .filter { it.rowKeyInt.categoryKey > 0 && it.rowKeyInt.categoryKey < 100 }
+        .sortedBy { it.rowKeyInt.categoryKey }
+
+    fun isRegularRowKey(rowKey: RowKey) =
+        rowKey in allRegularRowKeysForCardNameKey(rowKey.rowKeyInt.cardNameKey)
+
+    fun isFirstRegularRowKeyForCardNameKey(rowKey: RowKey) =
+        (rowKey == allRegularRowKeysForCardNameKey(rowKey.rowKeyInt.cardNameKey).first())
+
+    fun isLastRegularRowKeyForCardNameKey(rowKey: RowKey) =
+        (rowKey == allRegularRowKeysForCardNameKey(rowKey.rowKeyInt.cardNameKey).last())
+
     fun overallPieChartData(showSkipped: Boolean, joinByCards: Boolean) = rowKeys
         .map {
             if (joinByCards) {

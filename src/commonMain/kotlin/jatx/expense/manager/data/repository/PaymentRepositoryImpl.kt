@@ -84,4 +84,16 @@ class PaymentRepositoryImpl(
         appDatabase
             .getDao()
             .renameCategory(newCategory, cardName, category)
+
+    override suspend fun swapRowKeysInt(rowKeyInt1: Int, rowKeyInt2: Int) {
+        appDatabase
+            .getDao()
+            .patchRowKeyInt(9999999, rowKeyInt1)
+        appDatabase
+            .getDao()
+            .patchRowKeyInt(rowKeyInt1, rowKeyInt2)
+        appDatabase
+            .getDao()
+            .patchRowKeyInt(rowKeyInt2, 9999999)
+    }
 }

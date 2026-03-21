@@ -12,7 +12,7 @@ fun MainScreen() {
         EditPaymentDialogWrapper()
         AddPaymentDialogWrapper()
         DatePickerDialogWrapper()
-        RenameCategoryDialogWrapper()
+        RenameAndSwapCategoryDialogWrapper()
         PieChartDialogWrapper()
         PieChartByCommentDialogWrapper()
         PieChartByCommentMinusDialogWrapper()
