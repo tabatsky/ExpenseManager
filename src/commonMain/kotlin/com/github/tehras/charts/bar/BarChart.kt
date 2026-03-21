@@ -4,14 +4,12 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.unit.dp
 import com.github.tehras.charts.bar.BarChartUtils.axisAreas
 import com.github.tehras.charts.bar.BarChartUtils.barDrawableArea
 import com.github.tehras.charts.bar.BarChartUtils.forEachWithArea
@@ -44,7 +42,6 @@ fun BarChart(
   val progress = transitionAnimation.value
 
   Canvas(modifier = modifier
-    .padding(top = 40.dp)
     .fillMaxSize()
     .drawBehind {
       drawIntoCanvas { canvas ->
@@ -69,19 +66,22 @@ fun BarChart(
           canvas = canvas,
           drawableArea = xAxisArea
         )
-        // Draw each bar.
-        barChartData.forEachWithArea(
-          this,
-          barDrawableArea,
-          progress,
-          labelDrawer
-        ) { barArea, bar ->
-          barDrawer.drawBar(
-            drawScope = this,
-            canvas = canvas,
-            barArea = barArea,
-            bar = bar
-          )
+
+        if (barChartData.maxYValue.toInt() != 0) {
+          // Draw each bar.
+          barChartData.forEachWithArea(
+            this,
+            barDrawableArea,
+            progress,
+            labelDrawer
+          ) { barArea, bar ->
+            barDrawer.drawBar(
+              drawScope = this,
+              canvas = canvas,
+              barArea = barArea,
+              bar = bar
+            )
+          }
         }
       }
     }
@@ -100,21 +100,6 @@ fun BarChart(
       )
       val barDrawableArea = barDrawableArea(xAxisArea)
 
-      barChartData.forEachWithArea(
-        this,
-        barDrawableArea,
-        progress,
-        labelDrawer
-      ) { barArea, bar ->
-        labelDrawer.drawLabel(
-          drawScope = this,
-          canvas = canvas,
-          label = bar.label,
-          barArea = barArea,
-          xAxisArea = xAxisArea
-        )
-      }
-
       yAxisDrawer.drawAxisLabels(
         drawScope = this,
         canvas = canvas,
@@ -122,6 +107,23 @@ fun BarChart(
         maxValue = barChartData.maxYValue,
         drawableArea = yAxisArea
       )
+
+      if (barChartData.maxYValue.toInt() != 0) {
+        barChartData.forEachWithArea(
+          this,
+          barDrawableArea,
+          progress,
+          labelDrawer
+        ) { barArea, bar ->
+          labelDrawer.drawLabel(
+            drawScope = this,
+            canvas = canvas,
+            label = bar.label,
+            barArea = barArea,
+            xAxisArea = xAxisArea
+          )
+        }
+      }
     }
   }
 }

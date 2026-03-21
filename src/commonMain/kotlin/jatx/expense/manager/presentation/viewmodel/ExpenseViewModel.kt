@@ -101,9 +101,9 @@ class ExpenseViewModel(
     private val _needShowByMonthChartDialog = MutableStateFlow(false)
     val needShowByMonthChartDialog = _needShowByMonthChartDialog.asStateFlow()
 
-    fun byMonthData() = expenseTable
+    fun byMonthData(filter: String = "") = expenseTable
         .map {
-            it?.byMonthData() ?: listOf()
+            it?.byMonthData(filter) ?: listOf()
         }
 
     fun onAppStart() {

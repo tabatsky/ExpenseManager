@@ -79,19 +79,19 @@ class SimpleYAxisDrawer(
 
     if ((maxValue - minValue).toInt() == 0) return@with
 
-    val step = 10000 * ((maxValue - minValue).toInt() / 100000)
+    val step = 10000 * ((((maxValue - minValue).toInt() - 1) / 100000) + 1)
     val shift = if ((maxValue - minValue).toInt() % step == 0) 1 else 2
     val baseLabelCount = ((maxValue - minValue).toInt() / step).plus(shift)
     val labelCount = baseLabelCount.minus(shift).times(maxYCoeff).toInt().plus(shift)
-    println("label count: $labelCount")
-    println("min value: $minValue; max value: $maxValue")
+//    println("label count: $labelCount")
+//    println("min value: $minValue; max value: $maxValue")
 
     val actualMax = (labelCount - 1) * step + minValue
     val hCoeff =  (maxValue - minValue) / (actualMax - minValue)
     val actualTotalHeight = totalHeight / hCoeff
 
-    println(actualMax)
-    println("$totalHeight $actualTotalHeight $hCoeff")
+//    println(actualMax)
+//    println("$totalHeight $actualTotalHeight $hCoeff")
 
     for (i in 0 until  labelCount) {
       val value = minValue + (i * step)
