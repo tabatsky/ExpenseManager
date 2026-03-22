@@ -283,6 +283,39 @@ val cellColors = listOf(
     greenColor
 )
 
+fun rgbToHsv(r: Float, g: Float, b: Float): FloatArray {
+    val hsv = FloatArray(3)
+//    val r_f = r / 255f
+//    val g_f = g / 255f
+//    val b_f = b / 255f
+    val r_f = r
+    val g_f = g
+    val b_f = b
+
+    val max = maxOf(r_f, g_f, b_f)
+    val min = minOf(r_f, g_f, b_f)
+    val delta = max - min
+
+    // Calculate Hue
+    if (delta == 0f) {
+        hsv[0] = 0f
+    } else {
+        when (max) {
+            r_f -> hsv[0] = ((g_f - b_f) / delta % 6 + 6) % 6 * 60
+            g_f -> hsv[0] = ((b_f - r_f) / delta + 2) * 60
+            b_f -> hsv[0] = ((r_f - g_f) / delta + 4) * 60
+        }
+    }
+
+    // Calculate Saturation
+    hsv[1] = if (max == 0f) 0f else delta / max
+
+    // Calculate Value (Brightness)
+    hsv[2] = max
+
+    return hsv
+}
+
 fun colorByRowKey(rowKey: RowKey): Color {
     if (TotalSkipSet.containsLabel(rowKey.label)) return grayColor
     val key = rowKey.rowKeyInt
@@ -294,10 +327,18 @@ fun colorByRowKey(rowKey: RowKey): Color {
     } else {
         1.0f
     }
-    return cellColors.getOrNull(cardNameKey - 1)?.let {
+    val hueShift = if (rowKey.category in totalCategoriesAndIncoming) {
+        -15.0f
+    } else {
+        0.0f
+    }
+    val color = cellColors.getOrNull(cardNameKey - 1)?.let {
         val red = it.red
         val green = it.green
         val blue = it.blue
         Color(red, green, blue, alpha)
     } ?: whiteColor
+    val hsv = rgbToHsv(color.red, color.green, color.blue)
+    val hue = (hsv[0] + hueShift).let { it.takeIf { it >= 0.0 } ?: (it + 360.0f) }
+    return Color.hsv(hue, hsv[1], hsv[2], alpha)
 }

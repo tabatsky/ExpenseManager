@@ -30,6 +30,10 @@ val specialCategories = setOf(
 
 val incomingCategory = "Поступления".cp1251toUTF8()
 
+val totalCategoriesAndIncoming = setOf(
+    totalCategory, totalPlusCategory, totalPlus2Category,
+    totalMinusCategory, totalMinus2Category, incomingCategory
+)
 
 val debtsCardName = "Долги".cp1251toUTF8()
 
