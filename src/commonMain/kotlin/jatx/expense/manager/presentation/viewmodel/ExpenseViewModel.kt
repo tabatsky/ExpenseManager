@@ -1,9 +1,14 @@
 package jatx.expense.manager.presentation.viewmodel
 
+import com.google.gson.Gson
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.app
 import dev.gitlive.firebase.auth.AuthResult
+import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
+import dev.gitlive.firebase.firestore.firestore
+import jatx.expense.manager.data.backup.BackupData
+import jatx.expense.manager.data.backup.toPaymentEntryGson
 import jatx.expense.manager.data.db.AppDatabase
 import jatx.expense.manager.data.firebase.initFirebase
 import jatx.expense.manager.data.firebase.readFirebaseAuthDataFromFile
@@ -15,8 +20,10 @@ import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 import kotlin.collections.map
@@ -35,11 +42,18 @@ class ExpenseViewModel(
     private val renameCategoryUseCase: RenameCategoryUseCase,
     private val swapRowKeysIntUseCase: SwapRowKeysIntUseCase,
     private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
+    private val selectAllUseCase: SelectAllUseCase,
     private val appDatabase: AppDatabase,
     private val coroutineScope: CoroutineScope
 ) {
     private val auth by lazy {
         Firebase.auth(Firebase.app("ExpenseManager"))
+    }
+
+    private var theUser: FirebaseUser? = null
+
+    private val db by lazy {
+        Firebase.firestore(Firebase.app("ExpenseManager"))
     }
 
     private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
@@ -409,11 +423,41 @@ class ExpenseViewModel(
             null
         }
 
-        println(authResult)
-        println(authResult?.user)
+        println("uid: ${authResult?.user?.uid}")
+
+        theUser = authResult?.user
     }
 
-    fun onAppExit() {
-        appDatabase.close()
+    suspend fun saveDataToFirestore() {
+        theUser?.let { user ->
+            withContext(Dispatchers.IO) {
+                val data = selectAllUseCase.execute().map { it.toPaymentEntryGson() }
+                val backupData = BackupData(data)
+                val backupDataStr = Gson().toJson(backupData)
+                val userUid = user.uid
+
+                val doc = hashMapOf(
+                    "backupDataStr" to backupDataStr
+                )
+
+                try {
+                    db.collection("backups")
+                        .document(userUid)
+                        .set(doc)
+                } catch (t: Throwable) {
+                    t.printStackTrace()
+                }
+            }
+        }
+    }
+
+    fun onAppExit(after: () -> Unit) {
+        coroutineScope.launch {
+            withContext(Dispatchers.Main) {
+                saveDataToFirestore()
+                appDatabase.close()
+                after()
+            }
+        }
     }
 }

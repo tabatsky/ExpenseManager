@@ -25,8 +25,9 @@ fun main() {
 
         Window(
             onCloseRequest = {
-                appComponent.expenseViewModel.onAppExit()
-                exitApplication()
+                appComponent.expenseViewModel.onAppExit {
+                    exitApplication()
+                }
             },
             state = windowState
         ) {
