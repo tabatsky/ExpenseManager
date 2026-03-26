@@ -1,6 +1,12 @@
 package jatx.expense.manager.presentation.viewmodel
 
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.app
+import dev.gitlive.firebase.auth.AuthResult
+import dev.gitlive.firebase.auth.auth
 import jatx.expense.manager.data.db.AppDatabase
+import jatx.expense.manager.data.firebase.initFirebase
+import jatx.expense.manager.data.firebase.readFirebaseAuthDataFromFile
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
@@ -32,6 +38,10 @@ class ExpenseViewModel(
     private val appDatabase: AppDatabase,
     private val coroutineScope: CoroutineScope
 ) {
+    private val auth by lazy {
+        Firebase.auth(Firebase.app("ExpenseManager"))
+    }
+
     private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
 
     private val _expenseTable: MutableStateFlow<ExpenseTable?> = MutableStateFlow(null)
@@ -113,6 +123,8 @@ class ExpenseViewModel(
             _currencyRates.update {
                 getCurrencyRateUseCase.execute()
             }
+            initFirebase()
+            firebaseAuth()
         }
     }
 
@@ -370,6 +382,35 @@ class ExpenseViewModel(
                 updateCurrentExpenseEntry(it)
             }
         }
+    }
+
+
+    suspend fun firebaseSignUp(): AuthResult {
+        val authData = readFirebaseAuthDataFromFile()
+        return auth.createUserWithEmailAndPassword(authData.email, authData.password)
+    }
+
+    suspend fun firebaseSignIn(): AuthResult  {
+        val authData = readFirebaseAuthDataFromFile()
+        return auth.signInWithEmailAndPassword(authData.email, authData.password)
+    }
+
+    suspend fun firebaseAuth() {
+        try {
+            firebaseSignUp()
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
+
+        val authResult = try {
+            firebaseSignIn()
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            null
+        }
+
+        println(authResult)
+        println(authResult?.user)
     }
 
     fun onAppExit() {

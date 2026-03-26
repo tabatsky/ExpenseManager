@@ -27,6 +27,9 @@ kotlin {
                 implementation("androidx.room:room-runtime:2.7.0-alpha01")
                 implementation("androidx.sqlite:sqlite-bundled:2.5.0-alpha01")
                 implementation("androidx.sqlite:sqlite:2.5.0-alpha01")
+                implementation("dev.gitlive:firebase-common:2.0.0")
+                implementation("dev.gitlive:firebase-auth:2.0.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
             }
         }
         val jvmMain by getting {
@@ -39,6 +42,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-java:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
                 implementation("me.tatarka.inject:kotlin-inject-runtime-kmp:0.7.2")
+                implementation("dev.gitlive:firebase-java-sdk:0.6.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
             }
         }
         val jvmTest by getting
