@@ -1,9 +1,10 @@
 plugins {
     kotlin("multiplatform")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose")
     id("androidx.room")
-    kotlin("plugin.serialization") version "1.9.20"
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    kotlin("plugin.serialization") version "2.0.21"
+    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
 }
 
 group = "jatx.expense.manager"
@@ -17,9 +18,9 @@ repositories {
 
 kotlin {
     jvm {
-        jvmToolchain(17)
         withJava()
     }
+    jvmToolchain(22)
     sourceSets {
         val commonMain by getting {
             dependencies {
