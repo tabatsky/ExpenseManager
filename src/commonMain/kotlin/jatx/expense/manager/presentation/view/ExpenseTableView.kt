@@ -272,7 +272,8 @@ fun ExpenseCell(modifier: Modifier, text: String) {
         Text(
             text = text,
             textAlign = TextAlign.Center,
-            fontSize = commonFontSize
+            fontSize = commonFontSize,
+            lineHeight = commonFontSize
         )
     }
 }
