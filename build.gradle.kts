@@ -30,7 +30,6 @@ kotlin {
             }
         }
         val jvmMain by getting {
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation("org.jetbrains.compose.material3:material3-desktop:1.5.12")
