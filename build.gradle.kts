@@ -1,10 +1,12 @@
+val roomVersion = "2.8.4"
+
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose")
     id("androidx.room")
-    kotlin("plugin.serialization") version "2.0.21"
-    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
+    kotlin("plugin.serialization") version "2.2.21"
+    id("com.google.devtools.ksp") version "2.2.21-2.0.5"
 }
 
 group = "jatx.expense.manager"
@@ -17,19 +19,20 @@ repositories {
 }
 
 kotlin {
-    jvm {
-        withJava()
-    }
+    jvm()
     jvmToolchain(22)
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("androidx.room:room-runtime:2.7.0-alpha01")
+                implementation("androidx.room:room-runtime:$roomVersion")
                 implementation("androidx.sqlite:sqlite-bundled:2.5.0-alpha01")
                 implementation("androidx.sqlite:sqlite:2.5.0-alpha01")
-                implementation("dev.gitlive:firebase-common:2.0.0")
-                implementation("dev.gitlive:firebase-auth:2.0.0")
+                implementation("dev.gitlive:firebase-common:2.4.0")
+                implementation("dev.gitlive:firebase-auth:2.4.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+                implementation("com.google.code.gson:gson:2.9.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+                implementation("dev.gitlive:firebase-firestore:2.4.0")
             }
         }
         val jvmMain by getting {
@@ -42,17 +45,25 @@ kotlin {
                 implementation("io.ktor:ktor-client-java:1.6.4")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
                 implementation("me.tatarka.inject:kotlin-inject-runtime-kmp:0.7.2")
-                implementation("dev.gitlive:firebase-java-sdk:0.6.1")
+                implementation("dev.gitlive:firebase-java-sdk:0.6.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
+                implementation("dev.gitlive:firebase-firestore-jvm:2.4.0")
             }
         }
         val jvmTest by getting
+
+        all {
+            languageSettings {
+                // Suppress internal serialization API warnings
+                optIn("kotlinx.serialization.InternalSerializationApi")
+            }
+        }
     }
 }
 
 dependencies {
     add("kspJvm", "me.tatarka.inject:kotlin-inject-compiler-ksp:0.7.2")
-    add("kspJvm", "androidx.room:room-compiler:2.7.0-alpha01")
+    add("kspJvm", "androidx.room:room-compiler:$roomVersion")
 }
 
 compose.desktop {
@@ -62,14 +73,19 @@ compose.desktop {
             packageName = "ExpenseManager"
             packageVersion = "1.0.0"
         }
+        buildTypes.release {
+            proguard {
+                isEnabled.set(false)
+            }
+        }
     }
 }
 
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = "jatx.expense.manager.MainKt"
-    }
-}
+//tasks.withType<Jar> {
+//    manifest {
+//        attributes["Main-Class"] = "jatx.expense.manager.MainKt"
+//    }
+//}
 
 room {
     schemaDirectory("$projectDir/schemas")
