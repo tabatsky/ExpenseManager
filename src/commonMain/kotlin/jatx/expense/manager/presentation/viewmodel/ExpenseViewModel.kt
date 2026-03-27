@@ -90,8 +90,8 @@ class ExpenseViewModel(
     private val _rowKeyToEdit: MutableStateFlow<RowKey?> = MutableStateFlow(null)
     val rowKeyToEdit = _rowKeyToEdit.asStateFlow()
 
-    private val _showEditPaymentDialog = MutableStateFlow(false)
-    val showEditPaymentDialog = _showEditPaymentDialog.asStateFlow()
+    private val _needShowEditPaymentDialog = MutableStateFlow(false)
+    val needShowEditPaymentDialog = _needShowEditPaymentDialog.asStateFlow()
 
     private val _needShowPieChartDialog = MutableStateFlow(false)
     val needShowPieChartDialog = _needShowPieChartDialog.asStateFlow()
@@ -111,6 +111,9 @@ class ExpenseViewModel(
     val pieChartJoinByCards = _pieChartJoinByCards.asStateFlow()
     private val _pieChartFullComments = MutableStateFlow(false)
     val pieChartFullComments = _pieChartFullComments.asStateFlow()
+
+    private val _needShowProgressDialog = MutableStateFlow(false)
+    val needShowProgressDialog = _needShowProgressDialog.asStateFlow()
 
     fun pieChartData(date: Date, date2: Date? = null, showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.pieChartData(date, date2, showSkipped, joinByCards) ?: listOf()
     fun overallPieChartData(showSkipped: Boolean, joinByCards: Boolean) = expenseTable.value?.overallPieChartData(showSkipped, joinByCards) ?: listOf()
@@ -251,7 +254,7 @@ class ExpenseViewModel(
     fun showEditPaymentDialog(paymentEntry: PaymentEntry?, show: Boolean) {
         paymentEntry?.takeIf { it.id >= 0 }?.let {
             _currentPaymentEntry.value = it
-            _showEditPaymentDialog.value = show
+            _needShowEditPaymentDialog.value = show
         }
     }
 
@@ -451,11 +454,17 @@ class ExpenseViewModel(
         }
     }
 
+    fun showProgressDialog(show: Boolean) {
+        _needShowProgressDialog.value = show
+    }
+
     fun onAppExit(after: () -> Unit) {
         coroutineScope.launch {
             withContext(Dispatchers.Main) {
+                showProgressDialog(true)
                 saveDataToFirestore()
                 appDatabase.close()
+                showProgressDialog(false)
                 after()
             }
         }

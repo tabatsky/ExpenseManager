@@ -17,6 +17,7 @@ fun MainScreen() {
         PieChartByCommentDialogWrapper()
         PieChartByCommentMinusDialogWrapper()
         ByMonthChartDialogWrapper()
+        ProgressDialogWrapper()
 
         Row {
             Box(modifier = Modifier

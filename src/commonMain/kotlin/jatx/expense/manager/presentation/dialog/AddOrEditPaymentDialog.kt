@@ -23,7 +23,7 @@ fun EditPaymentDialogWrapper() {
     val expenseViewModel = appComponent.expenseViewModel
 
     val currentPaymentEntry by expenseViewModel.currentPaymentEntry.collectAsState()
-    val showEditPaymentDialog by expenseViewModel.showEditPaymentDialog.collectAsState()
+    val showEditPaymentDialog by expenseViewModel.needShowEditPaymentDialog.collectAsState()
 
     currentPaymentEntry?.let { paymentEntry ->
         var showConfirmation by rememberSaveable { mutableStateOf(false) }

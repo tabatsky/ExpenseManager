@@ -16,6 +16,8 @@ val pieChartDialogWidth = 1200.dp
 val pieChartDialogHeight = 600.dp
 val pieChartSize = 600.dp
 
+val progressDialogSize = 400.dp
+
 
 val buttonHeight = 36.dp
 
