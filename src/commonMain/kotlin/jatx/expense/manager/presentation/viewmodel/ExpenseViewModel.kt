@@ -136,12 +136,14 @@ class ExpenseViewModel(
 
     fun onAppStart() {
         coroutineScope.launch {
+            showProgressDialog(true)
             loadExpenseTableFromDBAndSaveToDefaultXlsx()
             _currencyRates.update {
                 getCurrencyRateUseCase.execute()
             }
             initFirebase()
             firebaseAuth()
+            showProgressDialog(false)
         }
     }
 
