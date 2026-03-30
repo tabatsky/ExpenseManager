@@ -1,6 +1,7 @@
 package jatx.expense.manager.data.backup
 
 import jatx.expense.manager.domain.models.PaymentEntry
+import java.util.Date
 
 data class PaymentEntryGson(
     val id: Long,
@@ -19,6 +20,17 @@ fun PaymentEntry.toPaymentEntryGson() = PaymentEntryGson(
     category = category,
     rowKeyInt = rowKeyInt,
     date = date.time,
+    amount = amount,
+    comment = comment,
+    currencyRate = currencyRate
+)
+
+fun PaymentEntryGson.toPaymentEntry() = PaymentEntry(
+    id = id,
+    cardName = cardName,
+    category = category,
+    rowKeyInt = rowKeyInt,
+    date = Date(date),
     amount = amount,
     comment = comment,
     currencyRate = currencyRate

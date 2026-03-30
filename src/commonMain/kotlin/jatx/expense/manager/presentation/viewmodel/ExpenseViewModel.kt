@@ -8,6 +8,7 @@ import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
 import jatx.expense.manager.data.backup.BackupData
+import jatx.expense.manager.data.backup.toPaymentEntry
 import jatx.expense.manager.data.backup.toPaymentEntryGson
 import jatx.expense.manager.data.db.AppDatabase
 import jatx.expense.manager.data.firebase.initFirebase
@@ -137,12 +138,13 @@ class ExpenseViewModel(
     fun onAppStart() {
         coroutineScope.launch {
             showProgressDialog(true)
+            initFirebase()
+            firebaseAuth()
+            loadDataFromFirestore()
             loadExpenseTableFromDBAndSaveToDefaultXlsx()
             _currencyRates.update {
                 getCurrencyRateUseCase.execute()
             }
-            initFirebase()
-            firebaseAuth()
             showProgressDialog(false)
         }
     }
@@ -179,7 +181,7 @@ class ExpenseViewModel(
                         }
                     }
 
-                    val allCellsWithoudPaymentId = allCells
+                    val allCellsWithoutPaymentId = allCells
                         .map { entry ->
                             val paymentsWithoutId = entry.value.payments.map {
                                 it.copy(id = 0)
@@ -188,7 +190,7 @@ class ExpenseViewModel(
                             entry.key to valueWithoutPaymentId
                         }
                         .toMap()
-                    ExpenseTable(allCellsWithoudPaymentId, tableXls.dates, tableXls.rowKeys)
+                    ExpenseTable(allCellsWithoutPaymentId, tableXls.dates, tableXls.rowKeys)
                 }
                 .let {
                     saveExpenseTableToDBUseCase.execute(it)
@@ -449,6 +451,78 @@ class ExpenseViewModel(
                     db.collection("backups")
                         .document(userUid)
                         .set(doc)
+                } catch (t: Throwable) {
+                    t.printStackTrace()
+                }
+            }
+        }
+    }
+
+    suspend fun loadDataFromFirestore() {
+        theUser?.let { user ->
+            withContext(Dispatchers.IO) {
+                val userUid = user.uid
+
+                try {
+                    val backupDataStr = db.collection("backups")
+                        .document(userUid)
+                        .get()
+                        .get<String>("backupDataStr")
+                    val backupData = Gson().fromJson(backupDataStr, BackupData::class.java)
+                    val payments = backupData.payments.map { it.toPaymentEntry() }
+
+                    println("get data from firestore success: ${payments.size}")
+
+                    val dates = payments
+                        .map { it.date.monthKey }
+                        .distinct()
+                        .map { it.dateOfMonthLastDayFromMonthKey }
+                        .sorted()
+                    val rowKeys = payments
+                        .distinctBy { it.rowKeyInt }
+                        .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
+                        .sortedBy { it.rowKeyInt }
+
+                    val allCells = hashMapOf<CellKey, ExpenseEntry>()
+
+                    dates.forEach { date ->
+                        rowKeys.forEach { rowKey ->
+                            val cellPayments = payments
+                                .filter {
+                                    it.date.monthKey == date.monthKey &&
+                                            it.rowKeyInt == rowKey.rowKeyInt
+                                }
+                                .sortedBy {
+                                    it.date
+                                }
+                            val expenseEntry = ExpenseEntry(
+                                rowKey.cardName,
+                                rowKey.category,
+                                rowKey.rowKeyInt,
+                                date,
+                                cellPayments
+                            )
+                            allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
+                                expenseEntry
+                        }
+                    }
+
+                    val expenseTable = let {
+                        val allCellsWithoutPaymentId = allCells
+                            .map { entry ->
+                                val paymentsWithoutId = entry.value.payments.map {
+                                    it.copy(id = 0)
+                                }
+                                val valueWithoutPaymentId = entry.value.copy(_payments = paymentsWithoutId)
+                                entry.key to valueWithoutPaymentId
+                            }
+                            .toMap()
+                        ExpenseTable(allCellsWithoutPaymentId, dates, rowKeys)
+                    }
+
+                    saveExpenseTableToDBUseCase.execute(expenseTable)
+
+                    println("save data to db success")
                 } catch (t: Throwable) {
                     t.printStackTrace()
                 }
