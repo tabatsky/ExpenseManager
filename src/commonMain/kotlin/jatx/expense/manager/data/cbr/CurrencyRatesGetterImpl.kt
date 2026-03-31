@@ -5,6 +5,8 @@ import io.ktor.client.engine.java.*
 import io.ktor.client.request.*
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.cbr.CurrencyRatesGetter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import me.tatarka.inject.annotations.Inject
@@ -12,8 +14,8 @@ import me.tatarka.inject.annotations.Inject
 @AppScope
 @Inject
 class CurrencyRatesGetterImpl: CurrencyRatesGetter {
-    override suspend fun getCurrencyRates(): Map<String, Float> {
-        return try {
+    override suspend fun getCurrencyRates(): Map<String, Float> = withContext(Dispatchers.IO)  {
+        try {
             val httpClient = HttpClient(Java)
             val response = httpClient.get<String> {
                 url("https://www.cbr-xml-daily.ru/latest.js")

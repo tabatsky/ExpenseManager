@@ -201,8 +201,10 @@ class ExpenseViewModel(
 
     fun saveXlsx(xlsxPath: String) {
         coroutineScope.launch {
-            _expenseTable.value?.let {
-                saveXlsxUseCase.execute(it, xlsxPath)
+            withContext(Dispatchers.IO) {
+                _expenseTable.value?.let {
+                    saveXlsxUseCase.execute(it, xlsxPath)
+                }
             }
         }
     }
@@ -384,7 +386,7 @@ class ExpenseViewModel(
         }
     }
 
-    private suspend fun loadExpenseTableFromDBAndSaveToDefaultXlsx() {
+    private suspend fun loadExpenseTableFromDBAndSaveToDefaultXlsx() = withContext(Dispatchers.IO)  {
         loadExpenseTableFromDBUseCase.execute().let {
             _expenseTable.value = it
             reloadCurrentExpenseEntry()
@@ -416,7 +418,7 @@ class ExpenseViewModel(
         return auth.signInWithEmailAndPassword(authData.email, authData.password)
     }
 
-    suspend fun firebaseAuth() {
+    suspend fun firebaseAuth() = withContext(Dispatchers.IO) {
         try {
             firebaseSignUp()
         } catch (t: Throwable) {

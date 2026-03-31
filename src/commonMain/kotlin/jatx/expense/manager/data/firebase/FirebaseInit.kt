@@ -5,8 +5,10 @@ import com.google.firebase.FirebasePlatform
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseOptions
 import dev.gitlive.firebase.initialize
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-fun initFirebase() {
+suspend fun initFirebase() = withContext(Dispatchers.IO) {
     FirebasePlatform.initializeFirebasePlatform(
         object : FirebasePlatform() {
             val storage = mutableMapOf<String, String>()

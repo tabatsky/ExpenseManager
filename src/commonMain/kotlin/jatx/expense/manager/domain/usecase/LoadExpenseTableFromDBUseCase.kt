@@ -8,6 +8,8 @@ import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.repository.PaymentRepository
 import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import java.util.*
 
@@ -16,7 +18,7 @@ import java.util.*
 class LoadExpenseTableFromDBUseCase(
     private val paymentRepository: PaymentRepository
 ) {
-    suspend fun execute(): ExpenseTable = run {
+    suspend fun execute(): ExpenseTable = withContext(Dispatchers.IO)  {
         val allPayments = paymentRepository.selectAll()
         val allRowKeys = allPayments
             .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
