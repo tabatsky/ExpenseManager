@@ -1,18 +1,12 @@
 package jatx.expense.manager.presentation.viewmodel
 
-import com.google.gson.Gson
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.app
-import dev.gitlive.firebase.auth.AuthResult
-import dev.gitlive.firebase.auth.FirebaseUser
-import dev.gitlive.firebase.auth.auth
-import dev.gitlive.firebase.firestore.firestore
-import jatx.expense.manager.data.backup.BackupData
-import jatx.expense.manager.data.backup.toPaymentEntry
-import jatx.expense.manager.data.backup.toPaymentEntryGson
+import jatx.expense.manager.data.backup.loadFromFirestoreOnAppStart
+import jatx.expense.manager.data.backup.saveToFirestoreOnAppFinish
 import jatx.expense.manager.data.db.AppDatabase
+import jatx.expense.manager.data.firebase.firebaseAuth
 import jatx.expense.manager.data.firebase.initFirebase
-import jatx.expense.manager.data.firebase.readFirebaseAuthDataFromFile
+import jatx.expense.manager.data.firebase.loadDataFromFirestore
+import jatx.expense.manager.data.firebase.saveDataToFirestore
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
@@ -47,16 +41,6 @@ class ExpenseViewModel(
     private val appDatabase: AppDatabase,
     private val coroutineScope: CoroutineScope
 ) {
-    private val auth by lazy {
-        Firebase.auth(Firebase.app("ExpenseManager"))
-    }
-
-    private var theUser: FirebaseUser? = null
-
-    private val db by lazy {
-        Firebase.firestore(Firebase.app("ExpenseManager"))
-    }
-
     private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
 
     private val _expenseTable: MutableStateFlow<ExpenseTable?> = MutableStateFlow(null)
@@ -140,7 +124,11 @@ class ExpenseViewModel(
             showProgressDialog(true)
             initFirebase()
             firebaseAuth()
-            loadDataFromFirestore()
+            if (loadFromFirestoreOnAppStart) {
+                loadDataFromFirestore()?.let {
+                    saveExpenseTableToDBUseCase.execute(it)
+                }
+            }
             loadExpenseTableFromDBAndSaveToDefaultXlsx()
             _currencyRates.update {
                 getCurrencyRateUseCase.execute()
@@ -407,140 +395,17 @@ class ExpenseViewModel(
         }
     }
 
-
-    suspend fun firebaseSignUp(): AuthResult {
-        val authData = readFirebaseAuthDataFromFile()
-        return auth.createUserWithEmailAndPassword(authData.email, authData.password)
-    }
-
-    suspend fun firebaseSignIn(): AuthResult  {
-        val authData = readFirebaseAuthDataFromFile()
-        return auth.signInWithEmailAndPassword(authData.email, authData.password)
-    }
-
-    suspend fun firebaseAuth() = withContext(Dispatchers.IO) {
-        try {
-            firebaseSignUp()
-        } catch (t: Throwable) {
-            t.printStackTrace()
-        }
-
-        val authResult = try {
-            firebaseSignIn()
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            null
-        }
-
-        println("uid: ${authResult?.user?.uid}")
-
-        theUser = authResult?.user
-    }
-
-    suspend fun saveDataToFirestore() {
-        theUser?.let { user ->
-            withContext(Dispatchers.IO) {
-                val data = selectAllUseCase.execute().map { it.toPaymentEntryGson() }
-                val backupData = BackupData(data)
-                val backupDataStr = Gson().toJson(backupData)
-                val userUid = user.uid
-
-                val doc = hashMapOf(
-                    "backupDataStr" to backupDataStr
-                )
-
-                try {
-                    db.collection("backups")
-                        .document(userUid)
-                        .set(doc)
-                } catch (t: Throwable) {
-                    t.printStackTrace()
-                }
-            }
-        }
-    }
-
-    suspend fun loadDataFromFirestore() {
-        theUser?.let { user ->
-            withContext(Dispatchers.IO) {
-                val userUid = user.uid
-
-                try {
-                    val backupDataStr = db.collection("backups")
-                        .document(userUid)
-                        .get()
-                        .get<String>("backupDataStr")
-                    val backupData = Gson().fromJson(backupDataStr, BackupData::class.java)
-                    val payments = backupData.payments.map { it.toPaymentEntry() }
-
-                    println("get data from firestore success: ${payments.size}")
-
-                    val dates = payments
-                        .map { it.date.monthKey }
-                        .distinct()
-                        .map { it.dateOfMonthLastDayFromMonthKey }
-                        .sorted()
-                    val rowKeys = payments
-                        .distinctBy { it.rowKeyInt }
-                        .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
-                        .sortedBy { it.rowKeyInt }
-
-                    val allCells = hashMapOf<CellKey, ExpenseEntry>()
-
-                    dates.forEach { date ->
-                        rowKeys.forEach { rowKey ->
-                            val cellPayments = payments
-                                .filter {
-                                    it.date.monthKey == date.monthKey &&
-                                            it.rowKeyInt == rowKey.rowKeyInt
-                                }
-                                .sortedBy {
-                                    it.date
-                                }
-                            val expenseEntry = ExpenseEntry(
-                                rowKey.cardName,
-                                rowKey.category,
-                                rowKey.rowKeyInt,
-                                date,
-                                cellPayments
-                            )
-                            allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
-                                expenseEntry
-                        }
-                    }
-
-                    val expenseTable = let {
-                        val allCellsWithoutPaymentId = allCells
-                            .map { entry ->
-                                val paymentsWithoutId = entry.value.payments.map {
-                                    it.copy(id = 0)
-                                }
-                                val valueWithoutPaymentId = entry.value.copy(_payments = paymentsWithoutId)
-                                entry.key to valueWithoutPaymentId
-                            }
-                            .toMap()
-                        ExpenseTable(allCellsWithoutPaymentId, dates, rowKeys)
-                    }
-
-                    saveExpenseTableToDBUseCase.execute(expenseTable)
-
-                    println("save data to db success")
-                } catch (t: Throwable) {
-                    t.printStackTrace()
-                }
-            }
-        }
-    }
-
     fun showProgressDialog(show: Boolean) {
         _needShowProgressDialog.value = show
     }
 
     fun onAppExit(after: () -> Unit) {
         coroutineScope.launch {
-            withContext(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
                 showProgressDialog(true)
-                saveDataToFirestore()
+                if (saveToFirestoreOnAppFinish) {
+                    saveDataToFirestore(selectAllUseCase.execute())
+                }
                 appDatabase.close()
                 showProgressDialog(false)
                 after()
