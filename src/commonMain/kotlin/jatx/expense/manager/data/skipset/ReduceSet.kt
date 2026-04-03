@@ -6,17 +6,21 @@ import java.nio.charset.Charset
 
 object ReduceSet {
     private val theSet: Set<String> by lazy {
-        val hashSet = hashSetOf<String>()
-        try {
-            File("reduce_set.txt").readLines(Charset.forName("UTF-8")).forEach {
-                println(it)
-                println(it.cp1251toUTF8())
-                hashSet.add(it.cp1251toUTF8())
+        if (loadSkipSetsFromFiles) {
+            val hashSet = hashSetOf<String>()
+            try {
+                File("reduce_set.txt").readLines(Charset.forName("UTF-8")).forEach {
+                    println(it)
+                    println(it.cp1251toUTF8())
+                    hashSet.add(it.cp1251toUTF8())
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+            hashSet
+        } else {
+            setOf()
         }
-        hashSet
     }
 
     fun containsKey(key: String) = theSet.contains(key)
