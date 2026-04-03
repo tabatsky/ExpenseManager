@@ -27,7 +27,7 @@ fun WindowScope.XlsxChooserDialogWrapper() {
             coroutineScope = rememberCoroutineScope(),
             onFileOpened = {
                 if (isSaveDialog) {
-                    expenseViewModel.saveXlsx(it.absolutePath)
+                    expenseViewModel.saveXlsxWithCoroutine(it.absolutePath)
                 } else {
                     expenseViewModel.loadXlsxToDB(it.absolutePath)
                 }

@@ -9,6 +9,7 @@ import jatx.expense.manager.data.firebase.firebaseAuth
 import jatx.expense.manager.data.firebase.initFirebase
 import jatx.expense.manager.data.firebase.loadDataFromFirestore
 import jatx.expense.manager.data.firebase.saveDataToFirestore
+import jatx.expense.manager.data.xlsx.saveToDefaultXlsx
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
@@ -131,7 +132,7 @@ class ExpenseViewModel(
                     saveExpenseTableToDBUseCase.execute(it)
                 }
             }
-            loadExpenseTableFromDBAndSaveToDefaultXlsx()
+            loadExpenseTableFromDB(saveToDefaultXlsx)
             _currencyRates.update {
                 getCurrencyRateUseCase.execute()
             }
@@ -184,17 +185,21 @@ class ExpenseViewModel(
                 }
                 .let {
                     saveExpenseTableToDBUseCase.execute(it)
-                    loadExpenseTableFromDBAndSaveToDefaultXlsx()
+                    loadExpenseTableFromDB(saveToDefaultXlsx)
                 }
         }
     }
 
-    fun saveXlsx(xlsxPath: String) {
+    private fun saveXlsx(xlsxPath: String) {
+        _expenseTable.value?.let {
+            saveXlsxUseCase.execute(it, xlsxPath)
+        }
+    }
+
+    fun saveXlsxWithCoroutine(xlsxPath: String) {
         coroutineScope.launch {
             withContext(Dispatchers.IO) {
-                _expenseTable.value?.let {
-                    saveXlsxUseCase.execute(it, xlsxPath)
-                }
+                saveXlsx(xlsxPath)
             }
         }
     }
@@ -344,43 +349,45 @@ class ExpenseViewModel(
     fun updatePaymentEntryAtDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             updatePaymentUseCase.execute(paymentEntry)
-            loadExpenseTableFromDBAndSaveToDefaultXlsx()
+            loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }
 
     fun insertPaymentEntryIntoDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             insertPaymentUseCase.execute(paymentEntry)
-            loadExpenseTableFromDBAndSaveToDefaultXlsx()
+            loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }
 
     fun deletePaymentEntryFromDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             deletePaymentUseCase.execute(paymentEntry)
-            loadExpenseTableFromDBAndSaveToDefaultXlsx()
+            loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }
 
     fun renameCategoryAndReloadExpenseTable(newCategory: String, rowKey: RowKey) {
          coroutineScope.launch {
              renameCategoryUseCase.execute(newCategory, rowKey)
-             loadExpenseTableFromDBAndSaveToDefaultXlsx()
+             loadExpenseTableFromDB(saveToDefaultXlsx)
          }
     }
 
     fun swapRowKeysIntAndReloadExpenseTable(rowKeyInt1: Int, rowKeyInt2: Int) {
         coroutineScope.launch {
             swapRowKeysIntUseCase.execute(rowKeyInt1, rowKeyInt2)
-            loadExpenseTableFromDBAndSaveToDefaultXlsx()
+            loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }
 
-    private suspend fun loadExpenseTableFromDBAndSaveToDefaultXlsx() = withContext(Dispatchers.IO)  {
+    private suspend fun loadExpenseTableFromDB(saveToDefaultXlsx: Boolean) = withContext(Dispatchers.IO)  {
         loadExpenseTableFromDBUseCase.execute().let {
             _expenseTable.value = it
             reloadCurrentExpenseEntry()
-            saveXlsx(theDefaultXlsxPath)
+            if (saveToDefaultXlsx) {
+                saveXlsx(theDefaultXlsxPath)
+            }
         }
     }
 
