@@ -3,6 +3,8 @@ package jatx.expense.manager.presentation.viewmodel
 import jatx.expense.manager.data.backup.loadFromFirestoreOnAppStart
 import jatx.expense.manager.data.backup.saveToFirestoreOnAppFinish
 import jatx.expense.manager.data.db.AppDatabase
+import jatx.expense.manager.data.firebase.FirebaseAuthData
+import jatx.expense.manager.data.firebase.FirebaseConfig
 import jatx.expense.manager.data.firebase.firebaseAuth
 import jatx.expense.manager.data.firebase.initFirebase
 import jatx.expense.manager.data.firebase.loadDataFromFirestore
@@ -119,11 +121,11 @@ class ExpenseViewModel(
             it?.byMonthData(filter) ?: listOf()
         }
 
-    fun onAppStart() {
+    fun onAppStart(firebaseConfig: FirebaseConfig, firebaseAuthData: FirebaseAuthData) {
         coroutineScope.launch {
             showProgressDialog(true)
-            initFirebase()
-            firebaseAuth()
+            initFirebase(firebaseConfig)
+            firebaseAuth(firebaseAuthData)
             if (loadFromFirestoreOnAppStart) {
                 loadDataFromFirestore()?.let {
                     saveExpenseTableToDBUseCase.execute(it)

@@ -8,7 +8,7 @@ import dev.gitlive.firebase.initialize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun initFirebase() = withContext(Dispatchers.IO) {
+suspend fun initFirebase(config: FirebaseConfig) = withContext(Dispatchers.IO) {
     FirebasePlatform.initializeFirebasePlatform(
         object : FirebasePlatform() {
             val storage = mutableMapOf<String, String>()
@@ -21,7 +21,6 @@ suspend fun initFirebase() = withContext(Dispatchers.IO) {
             override fun log(msg: String) = println(msg)
         }
     )
-    val config = readFirebaseConfigFromFile()
     val options = FirebaseOptions(
         applicationId = config.appId,
         apiKey = config.apiKey,

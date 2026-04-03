@@ -30,25 +30,23 @@ fun readFirebaseAuthDataFromFile(): FirebaseAuthData {
     )
 }
 
-private suspend fun firebaseSignUp(): AuthResult {
-    val authData = readFirebaseAuthDataFromFile()
+private suspend fun firebaseSignUp(authData: FirebaseAuthData): AuthResult {
     return auth.createUserWithEmailAndPassword(authData.email, authData.password)
 }
 
-private suspend fun firebaseSignIn(): AuthResult  {
-    val authData = readFirebaseAuthDataFromFile()
+private suspend fun firebaseSignIn(authData: FirebaseAuthData): AuthResult  {
     return auth.signInWithEmailAndPassword(authData.email, authData.password)
 }
 
-suspend fun firebaseAuth() = withContext(Dispatchers.IO) {
+suspend fun firebaseAuth(authData: FirebaseAuthData) = withContext(Dispatchers.IO) {
     try {
-        firebaseSignUp()
+        firebaseSignUp(authData)
     } catch (t: Throwable) {
         t.printStackTrace()
     }
 
     val authResult = try {
-        firebaseSignIn()
+        firebaseSignIn(authData)
     } catch (t: Throwable) {
         t.printStackTrace()
         null
