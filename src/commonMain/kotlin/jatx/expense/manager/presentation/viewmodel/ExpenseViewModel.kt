@@ -10,6 +10,7 @@ import jatx.expense.manager.data.firebase.initFirebase
 import jatx.expense.manager.data.firebase.loadDataFromFirestore
 import jatx.expense.manager.data.firebase.saveDataToFirestore
 import jatx.expense.manager.data.xlsx.saveToDefaultXlsx
+import jatx.expense.manager.di.AndroidContextProvider
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.usecase.*
@@ -42,7 +43,9 @@ class ExpenseViewModel(
     private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
     private val selectAllUseCase: SelectAllUseCase,
     private val appDatabase: AppDatabase,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+
+    private val androidContextProvider: AndroidContextProvider?
 ) {
     private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
 
@@ -125,7 +128,11 @@ class ExpenseViewModel(
     fun onAppStart(firebaseConfig: FirebaseConfig, firebaseAuthData: FirebaseAuthData) {
         coroutineScope.launch {
             showProgressDialog(true)
-            initFirebase(firebaseConfig)
+            try {
+                initFirebase(firebaseConfig, androidContextProvider)
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
             firebaseAuth(firebaseAuthData)
             if (loadFromFirestoreOnAppStart) {
                 loadDataFromFirestore()?.let {

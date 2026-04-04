@@ -11,9 +11,9 @@ import jatx.expense.manager.data.firebase.readFirebaseConfigFromFile
 import jatx.expense.manager.di.AppComponent
 import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.di.create
+import jatx.expense.manager.presentation.menu.MainMenuBar
 import jatx.expense.manager.presentation.dialog.XlsxChooserDialogWrapper
 import jatx.expense.manager.presentation.view.MainScreen
-import jatx.expense.manager.presentation.menu.MainMenuBar
 
 fun main() {
     application {

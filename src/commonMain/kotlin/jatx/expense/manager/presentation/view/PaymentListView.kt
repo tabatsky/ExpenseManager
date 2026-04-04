@@ -13,8 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import jatx.expense.manager.di.appComponent
@@ -57,11 +55,11 @@ fun PaymentListView() {
                                 }
                             }
                         )
-                        .onPointerEvent(PointerEventType.Scroll) {
-                            coroutineScope.launch {
-                                syncScroll(it.changes.first().scrollDelta.y, true)
-                            }
-                        }
+//                        .onPointerEvent(PointerEventType.Scroll) {
+//                            coroutineScope.launch {
+//                                syncScroll(it.changes.first().scrollDelta.y, true)
+//                            }
+//                        }
                         .verticalScroll(columnScrollState)
                         .wrapContentHeight()
                         .heightIn(min = 0.dp, max = paymentCellHeight * it.payments.size * 2f)

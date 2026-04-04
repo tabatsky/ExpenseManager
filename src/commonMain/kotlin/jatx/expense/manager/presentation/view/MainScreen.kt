@@ -9,14 +9,14 @@ import jatx.expense.manager.presentation.dialog.*
 @Composable
 fun MainScreen() {
     Box {
-        EditPaymentDialogWrapper()
-        AddPaymentDialogWrapper()
-        DatePickerDialogWrapper()
-        RenameAndSwapCategoryDialogWrapper()
+//        EditPaymentDialogWrapper()
+//        AddPaymentDialogWrapper()
+//        DatePickerDialogWrapper()
+//        RenameAndSwapCategoryDialogWrapper()
         PieChartDialogWrapper()
-        PieChartByCommentDialogWrapper()
-        PieChartByCommentMinusDialogWrapper()
-        ByMonthChartDialogWrapper()
+//        PieChartByCommentDialogWrapper()
+//        PieChartByCommentMinusDialogWrapper()
+//        ByMonthChartDialogWrapper()
         ProgressDialogWrapper()
 
         Row {

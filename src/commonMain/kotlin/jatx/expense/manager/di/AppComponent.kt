@@ -27,10 +27,15 @@ annotation class AppScope
 
 var appComponent by Delegates.notNull<AppComponent>()
 
+interface AndroidContextProvider {
+    fun getAndroidContext(): Any?
+}
+
 @AppScope
 @Component
 abstract class AppComponent(
-    @get: Provides protected val coroutineScope: CoroutineScope
+    @get: Provides protected val coroutineScope: CoroutineScope,
+    @get: Provides protected val androidContextProvider: AndroidContextProvider? = null
 ) {
     abstract val expenseViewModel: ExpenseViewModel
 
@@ -63,7 +68,7 @@ abstract class AppComponent(
 
     @AppScope
     @Provides
-    protected fun provideAppDatabase(): AppDatabase = getRoomDatabase(getDatabaseBuilder())
+    protected fun provideAppDatabase(): AppDatabase = getRoomDatabase(getDatabaseBuilder(androidContextProvider))
 
     protected val PaymentRepositoryImpl.bind: PaymentRepository
         @Provides get() = this

@@ -6,3 +6,5 @@ ExpenseManager.db*
 google-services.json
 google-services.txt
 firebase-auth.txt
+.kotlin
+FirebaseSecrets.kt

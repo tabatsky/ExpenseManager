@@ -16,14 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import jatx.expense.manager.data.skipset.TotalSkipSet
 import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.*
 import jatx.expense.manager.domain.util.*
+import jatx.expense.manager.presentation.util.onScroll
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
@@ -93,13 +92,8 @@ fun ExpenseTable() {
                                 }
                             }
                         )
-                        .onPointerEvent(PointerEventType.Scroll) {
-                            it.changes.forEach { it.consume() }
-                            coroutineScope.launch {
-                                it.changes.forEach {
-                                    syncScroll(it.scrollDelta.y, true)
-                                }
-                            }
+                        .onScroll(coroutineScope) { delta, isMouse ->
+                            syncScroll(delta, isMouse)
                         }
                         .wrapContentHeight()
                         .heightIn(min = 0.dp, max = cellHeight * theExpenseTable.rowKeysWithTotals.size * 2)
@@ -151,13 +145,8 @@ fun ExpenseTable() {
                                         }
                                     }
                                 )
-                                .onPointerEvent(PointerEventType.Scroll) {
-                                    it.changes.forEach { it.consume() }
-                                    coroutineScope.launch {
-                                        it.changes.forEach {
-                                            syncScroll(it.scrollDelta.y, true)
-                                        }
-                                    }
+                                .onScroll(coroutineScope) { delta, isMouse ->
+                                    syncScroll(delta, isMouse)
                                 }
                                 .wrapContentHeight()
                                 .heightIn(min = 0.dp, max = cellHeight * theExpenseTable.rowKeysWithTotals.size * 2)
