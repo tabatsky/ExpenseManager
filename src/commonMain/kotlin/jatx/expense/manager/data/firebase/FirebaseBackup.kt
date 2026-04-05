@@ -5,6 +5,7 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.app
 import dev.gitlive.firebase.firestore.firestore
 import jatx.expense.manager.data.backup.BackupData
+import jatx.expense.manager.data.backup.BackupTimeKeeper
 import jatx.expense.manager.data.backup.toPaymentEntry
 import jatx.expense.manager.data.backup.toPaymentEntryGson
 import jatx.expense.manager.domain.models.CellKey
@@ -16,13 +17,14 @@ import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Date
 import kotlin.let
 
 private val db by lazy {
     Firebase.firestore(Firebase.app("ExpenseManager"))
 }
 
-suspend fun loadDataFromFirestore() = theUser?.let { user ->
+suspend fun loadDataFromFirestore(backupTimeKeeper: BackupTimeKeeper) = theUser?.let { user ->
     withContext(Dispatchers.IO) {
         val userUid = user.uid
 
@@ -32,60 +34,74 @@ suspend fun loadDataFromFirestore() = theUser?.let { user ->
                 .get()
                 .get<String>("backupDataStr")
             val backupData = Gson().fromJson(backupDataStr, BackupData::class.java)
-            val payments = backupData.payments.map { it.toPaymentEntry() }
+            println("get data from firestore success")
 
-            println("get data from firestore success: ${payments.size}")
+            println(Date(backupTimeKeeper.lastSyncTime))
+            println(Date(backupData.lastSyncTime))
 
-            val dates = payments
-                .map { it.date.monthKey }
-                .distinct()
-                .map { it.dateOfMonthLastDayFromMonthKey }
-                .sorted()
-            val rowKeys = payments
-                .distinctBy { it.rowKeyInt }
-                .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
-                .sortedBy { it.rowKeyInt }
+            if (backupData.lastSyncTime > backupTimeKeeper.lastSyncTime) {
+                val payments = backupData.payments.map { it.toPaymentEntry() }
+                val deltaSeconds =
+                    (backupData.lastSyncTime - backupTimeKeeper.lastSyncTime) * 0.001f
 
-            val allCells = hashMapOf<CellKey, ExpenseEntry>()
+                println("firestore data was updated: ${payments.size} payments, $deltaSeconds seconds ago")
 
-            dates.forEach { date ->
-                rowKeys.forEach { rowKey ->
-                    val cellPayments = payments
-                        .filter {
-                            it.date.monthKey == date.monthKey &&
-                                    it.rowKeyInt == rowKey.rowKeyInt
-                        }
-                        .sortedBy {
-                            it.date
-                        }
-                    val expenseEntry = ExpenseEntry(
-                        rowKey.cardName,
-                        rowKey.category,
-                        rowKey.rowKeyInt,
-                        date,
-                        cellPayments
-                    )
-                    allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
-                        expenseEntry
-                }
-            }
+                val dates = payments
+                    .map { it.date.monthKey }
+                    .distinct()
+                    .map { it.dateOfMonthLastDayFromMonthKey }
+                    .sorted()
+                val rowKeys = payments
+                    .distinctBy { it.rowKeyInt }
+                    .map { RowKey(it.cardName, it.category, it.rowKeyInt) }
+                    .sortedBy { it.rowKeyInt }
 
-            val expenseTable = let {
-                val allCellsWithoutPaymentId = allCells
-                    .map { entry ->
-                        val paymentsWithoutId = entry.value.payments.map {
-                            it.copy(id = 0)
-                        }
-                        val valueWithoutPaymentId = entry.value.copy(_payments = paymentsWithoutId)
-                        entry.key to valueWithoutPaymentId
+                val allCells = hashMapOf<CellKey, ExpenseEntry>()
+
+                dates.forEach { date ->
+                    rowKeys.forEach { rowKey ->
+                        val cellPayments = payments
+                            .filter {
+                                it.date.monthKey == date.monthKey &&
+                                        it.rowKeyInt == rowKey.rowKeyInt
+                            }
+                            .sortedBy {
+                                it.date
+                            }
+                        val expenseEntry = ExpenseEntry(
+                            rowKey.cardName,
+                            rowKey.category,
+                            rowKey.rowKeyInt,
+                            date,
+                            cellPayments
+                        )
+                        allCells[CellKey(rowKey.cardName, rowKey.category, date.monthKey)] =
+                            expenseEntry
                     }
-                    .toMap()
-                ExpenseTable(allCellsWithoutPaymentId, dates, rowKeys)
+                }
+
+                val expenseTable = let {
+                    val allCellsWithoutPaymentId = allCells
+                        .map { entry ->
+                            val paymentsWithoutId = entry.value.payments.map {
+                                it.copy(id = 0)
+                            }
+                            val valueWithoutPaymentId = entry.value.copy(_payments = paymentsWithoutId)
+                            entry.key to valueWithoutPaymentId
+                        }
+                        .toMap()
+                    ExpenseTable(allCellsWithoutPaymentId, dates, rowKeys)
+                }
+
+                println("save data to db success")
+
+                backupTimeKeeper.lastSyncTime = backupData.lastSyncTime
+
+                expenseTable
+            } else {
+                println("firestore data was not updated")
+                null
             }
-
-            println("save data to db success")
-
-            expenseTable
         } catch (t: Throwable) {
             t.printStackTrace()
 
@@ -94,11 +110,13 @@ suspend fun loadDataFromFirestore() = theUser?.let { user ->
     }
 }
 
-suspend fun saveDataToFirestore(localData: List<PaymentEntry>) {
+suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper: BackupTimeKeeper) {
     theUser?.let { user ->
         withContext(Dispatchers.IO) {
+            val currentTime = System.currentTimeMillis()
+
             val data = localData.map { it.toPaymentEntryGson() }
-            val backupData = BackupData(data)
+            val backupData = BackupData(data, currentTime)
             val backupDataStr = Gson().toJson(backupData)
             val userUid = user.uid
 
@@ -110,6 +128,8 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>) {
                 db.collection("backups")
                     .document(userUid)
                     .set(doc)
+                backupTimeKeeper.lastSyncTime = currentTime
+                println(Date(currentTime))
             } catch (t: Throwable) {
                 t.printStackTrace()
             }

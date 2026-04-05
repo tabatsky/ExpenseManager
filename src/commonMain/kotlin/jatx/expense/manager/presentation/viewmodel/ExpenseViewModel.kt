@@ -1,5 +1,6 @@
 package jatx.expense.manager.presentation.viewmodel
 
+import jatx.expense.manager.data.backup.BackupTimeKeeper
 import jatx.expense.manager.data.backup.loadFromFirestoreOnAppStart
 import jatx.expense.manager.data.backup.saveToFirestoreOnAppFinish
 import jatx.expense.manager.data.db.AppDatabase
@@ -44,7 +45,7 @@ class ExpenseViewModel(
     private val selectAllUseCase: SelectAllUseCase,
     private val appDatabase: AppDatabase,
     private val coroutineScope: CoroutineScope,
-
+    private val backupTimeKeeper: BackupTimeKeeper,
     private val androidContextProvider: AndroidContextProvider?
 ) {
     private val _currencyRates = MutableStateFlow<Map<String, Float>>(mapOf())
@@ -135,7 +136,7 @@ class ExpenseViewModel(
             }
             firebaseAuth(firebaseAuthData)
             if (loadFromFirestoreOnAppStart) {
-                loadDataFromFirestore()?.let {
+                loadDataFromFirestore(backupTimeKeeper)?.let {
                     saveExpenseTableToDBUseCase.execute(it)
                 }
             }
@@ -420,7 +421,7 @@ class ExpenseViewModel(
             withContext(Dispatchers.IO) {
                 showProgressDialog(true)
                 if (saveToFirestoreOnAppFinish) {
-                    saveDataToFirestore(selectAllUseCase.execute())
+                    saveDataToFirestore(selectAllUseCase.execute(), backupTimeKeeper)
                 }
                 appDatabase.close()
                 showProgressDialog(false)
