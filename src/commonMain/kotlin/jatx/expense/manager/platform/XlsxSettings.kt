@@ -1,3 +1,9 @@
 package jatx.expense.manager.platform
 
-expect val saveToDefaultXlsx: Boolean
+val saveToDefaultXlsx = if (isAndroid)
+    saveToDefaultXlsxAndroid
+else
+    saveToDefaultXlsxJvm
+
+const val saveToDefaultXlsxAndroid = false
+const val saveToDefaultXlsxJvm = true

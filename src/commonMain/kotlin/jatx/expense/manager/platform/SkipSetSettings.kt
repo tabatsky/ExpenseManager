@@ -1,3 +1,9 @@
 package jatx.expense.manager.platform
 
-expect val loadSkipSetsFromFiles: Boolean
+val loadSkipSetsFromFiles = if (isAndroid)
+    loadSkipSetsFromFilesAndroid
+else
+    loadSkipSetsFromFilesJvm
+
+const val loadSkipSetsFromFilesAndroid = false
+const val loadSkipSetsFromFilesJvm = true
