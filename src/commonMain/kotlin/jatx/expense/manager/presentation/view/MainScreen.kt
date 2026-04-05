@@ -9,8 +9,8 @@ import jatx.expense.manager.presentation.dialog.*
 @Composable
 fun MainScreen() {
     Box {
-//        EditPaymentDialogWrapper()
-//        AddPaymentDialogWrapper()
+        EditPaymentDialogWrapper()
+        AddPaymentDialogWrapper()
 //        DatePickerDialogWrapper()
 //        RenameAndSwapCategoryDialogWrapper()
         PieChartDialogWrapper()
