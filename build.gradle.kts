@@ -51,7 +51,7 @@ kotlin {
                 implementation("org.jetbrains.compose.ui:ui:1.10.3")
                 implementation("org.jetbrains.compose.ui:ui-graphics:1.10.3")
                 implementation("org.jetbrains.compose.material:material:1.10.3")
-                implementation("org.jetbrains.compose.material3:material3:1.4.0")
+                implementation("org.jetbrains.compose.material3:material3:1.5.12")
                 implementation("me.tatarka.inject:kotlin-inject-runtime-kmp:0.7.2")
             }
         }
@@ -81,6 +81,7 @@ kotlin {
                 implementation("com.google.firebase:firebase-firestore-ktx")
                 implementation("com.google.firebase:firebase-common-ktx")
                 implementation("me.tatarka.inject:kotlin-inject-runtime:0.7.2")
+                api("androidx.compose.material3:material3:1.4.0")
             }
         }
 

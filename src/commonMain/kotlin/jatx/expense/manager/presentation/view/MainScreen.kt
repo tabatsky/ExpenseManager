@@ -11,7 +11,7 @@ fun MainScreen() {
     Box {
         EditPaymentDialogWrapper()
         AddPaymentDialogWrapper()
-//        DatePickerDialogWrapper()
+        DatePickerDialogWrapper()
 //        RenameAndSwapCategoryDialogWrapper()
         PieChartDialogWrapper()
 //        PieChartByCommentDialogWrapper()
