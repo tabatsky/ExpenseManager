@@ -64,6 +64,8 @@ const val buttonDownLabel = "Вниз"
 const val titleDeletionConfirmationDialog = "Запись будет удалена"
 const val textDeletionConfirmationDialog = "Вы уверены?"
 
+const val menuLabel = "Меню"
+
 const val menuFileLabel = "Файл"
 const val menuLoadXlsxLabel = "Загрузить XLSX"
 const val menuSaveXlsxLabel = "Сохранить XLSX"

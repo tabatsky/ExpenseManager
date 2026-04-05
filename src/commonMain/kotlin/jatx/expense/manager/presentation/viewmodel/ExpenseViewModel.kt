@@ -1,8 +1,8 @@
 package jatx.expense.manager.presentation.viewmodel
 
 import jatx.expense.manager.data.backup.BackupTimeKeeper
-import jatx.expense.manager.data.backup.loadFromFirestoreOnAppStart
-import jatx.expense.manager.data.backup.saveToFirestoreOnAppFinish
+import jatx.expense.manager.platform.loadFromFirestoreOnAppStart
+import jatx.expense.manager.platform.saveToFirestoreOnAppFinish
 import jatx.expense.manager.data.db.AppDatabase
 import jatx.expense.manager.data.firebase.FirebaseAuthData
 import jatx.expense.manager.data.firebase.FirebaseConfig
@@ -10,7 +10,7 @@ import jatx.expense.manager.data.firebase.firebaseAuth
 import jatx.expense.manager.data.firebase.initFirebase
 import jatx.expense.manager.data.firebase.loadDataFromFirestore
 import jatx.expense.manager.data.firebase.saveDataToFirestore
-import jatx.expense.manager.data.xlsx.saveToDefaultXlsx
+import jatx.expense.manager.platform.saveToDefaultXlsx
 import jatx.expense.manager.di.AndroidContextProvider
 import jatx.expense.manager.di.AppScope
 import jatx.expense.manager.domain.models.*

@@ -8,3 +8,4 @@ google-services.txt
 firebase-auth.txt
 .kotlin
 FirebaseSecrets.kt
+last_sync_time.txt

@@ -1,3 +1,3 @@
-package jatx.expense.manager.data.skipset
+package jatx.expense.manager.platform
 
 expect val loadSkipSetsFromFiles: Boolean

@@ -2,6 +2,7 @@ package jatx.expense.manager.res
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import jatx.expense.manager.platform.isAndroid
 
 val firstCellWidth = 72.dp
 val secondCellWidth = 120.dp
@@ -24,4 +25,4 @@ val buttonHeight = 36.dp
 val borderWidth = 1.dp
 
 val commonFontSize = 10.sp
-val buttonFontSize = 16.sp
+val buttonFontSize = if (isAndroid) 10.sp else 16.sp

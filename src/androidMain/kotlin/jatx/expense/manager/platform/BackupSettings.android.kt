@@ -1,4 +1,4 @@
-package jatx.expense.manager.data.backup
+package jatx.expense.manager.platform
 
 actual val loadFromFirestoreOnAppStart = true
 actual val saveToFirestoreOnAppFinish = false

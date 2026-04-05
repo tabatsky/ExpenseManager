@@ -1,6 +1,7 @@
 package jatx.expense.manager.data.skipset
 
 import jatx.expense.manager.domain.util.cp1251toUTF8
+import jatx.expense.manager.platform.loadSkipSetsFromFiles
 import java.io.File
 import java.nio.charset.Charset
 

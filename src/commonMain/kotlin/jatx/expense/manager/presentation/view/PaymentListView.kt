@@ -19,6 +19,7 @@ import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.util.formattedForPaymentList
 import jatx.expense.manager.domain.util.utf8toCP1251
+import jatx.expense.manager.platform.isAndroid
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
 
@@ -29,7 +30,7 @@ fun PaymentListView() {
 
     val expenseEntry by expenseViewModel.currentExpenseEntry.collectAsState()
 
-    expenseEntry?.let {
+    (expenseEntry?.payments ?: listOf()).let {
         val coroutineScope = rememberCoroutineScope()
         val columnScrollState = rememberScrollState()
 
@@ -62,9 +63,9 @@ fun PaymentListView() {
 //                        }
                         .verticalScroll(columnScrollState)
                         .wrapContentHeight()
-                        .heightIn(min = 0.dp, max = paymentCellHeight * it.payments.size * 2f)
+                        .heightIn(min = 0.dp, max = paymentCellHeight * it.size * 2f)
                 ) {
-                    items(it.payments.reversed()) { paymentEntry ->
+                    items(it.reversed()) { paymentEntry ->
                         PaymentItem(paymentEntry)
                     }
                 }
@@ -93,19 +94,36 @@ fun PaymentListView() {
                         .weight(0.2f)
                         .height(buttonHeight)
                 )
-                Button(
-                    modifier = Modifier
-                        .weight(1.0f)
-                        .height(buttonHeight),
-                    onClick = {
-                        expenseViewModel.saveCurrentToTxt()
+                if (isAndroid) {
+                    Button(
+                        modifier = Modifier
+                            .weight(1.0f)
+                            .height(buttonHeight),
+                        onClick = {
+                            // TODO
+                        }
+                    ) {
+                        Text(
+                            text = menuLabel,
+                            textAlign = TextAlign.Center,
+                            fontSize = buttonFontSize
+                        )
                     }
-                ) {
-                    Text(
-                        text = buttonSaveToTxtLabel,
-                        textAlign = TextAlign.Center,
-                        fontSize = buttonFontSize
-                    )
+                } else {
+                    Button(
+                        modifier = Modifier
+                            .weight(1.0f)
+                            .height(buttonHeight),
+                        onClick = {
+                            expenseViewModel.saveCurrentToTxt()
+                        }
+                    ) {
+                        Text(
+                            text = buttonSaveToTxtLabel,
+                            textAlign = TextAlign.Center,
+                            fontSize = buttonFontSize
+                        )
+                    }
                 }
             }
         }
