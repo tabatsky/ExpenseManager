@@ -4,7 +4,6 @@ build
 ExpenseManager.db*
 траты.xlsx
 google-services.json
-google-services.txt
 firebase-auth.txt
 .kotlin
 FirebaseSecrets.kt

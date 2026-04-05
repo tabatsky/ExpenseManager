@@ -6,8 +6,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import jatx.expense.manager.data.firebase.defaultFirebaseConfig
 import jatx.expense.manager.data.firebase.readFirebaseAuthDataFromFile
-import jatx.expense.manager.data.firebase.readFirebaseConfigFromFile
 import jatx.expense.manager.di.AppComponent
 import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.di.create
@@ -21,7 +21,7 @@ fun main() {
 
         appComponent = AppComponent::class.create(coroutineScope)
 
-        val firebaseConfig = readFirebaseConfigFromFile()
+        val firebaseConfig = defaultFirebaseConfig()
         val firebaseAuthData = readFirebaseAuthDataFromFile()
 
         appComponent.expenseViewModel.onAppStart(firebaseConfig, firebaseAuthData)
