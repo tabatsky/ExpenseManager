@@ -3,11 +3,11 @@ package jatx.expense.manager.presentation.dialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,12 +15,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.util.cp1251toUTF8
 import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.res.buttonCancelLabel
 import jatx.expense.manager.res.buttonDownLabel
+import jatx.expense.manager.res.buttonFontSize
 import jatx.expense.manager.res.buttonSaveLabel
 import jatx.expense.manager.res.buttonUpLabel
 
@@ -58,12 +60,16 @@ actual fun RenameAndSwapCategoryDialog(
                 }, modifier = Modifier
                     .weight(1.0f)
                 ) {
-                    Text(buttonSaveLabel)
+                    Text(
+                        text = buttonSaveLabel,
+                        textAlign = TextAlign.Center,
+                        fontSize = buttonFontSize
+                    )
                 }
 
-                Divider(
+                Spacer(
                     modifier = Modifier
-                        .weight(1.0f)
+                        .weight(0.05f)
                 )
 
                 Button(onClick = {
@@ -71,11 +77,18 @@ actual fun RenameAndSwapCategoryDialog(
                 }, modifier = Modifier
                     .weight(1.0f)
                 ) {
-                    Text(buttonCancelLabel)
+                    Text(
+                        text = buttonCancelLabel,
+                        textAlign = TextAlign.Center,
+                        fontSize = buttonFontSize
+                    )
                 }
-            }
 
-            Row {
+                Spacer(
+                    modifier = Modifier
+                        .weight(0.05f)
+                )
+
                 Button(enabled = buttonUpEnabled,
                     onClick = {
                         onUp()
@@ -83,12 +96,16 @@ actual fun RenameAndSwapCategoryDialog(
                     }, modifier = Modifier
                         .weight(1.0f)
                 ) {
-                    Text(buttonUpLabel)
+                    Text(
+                        text = buttonUpLabel,
+                        textAlign = TextAlign.Center,
+                        fontSize = buttonFontSize
+                    )
                 }
 
-                Divider(
+                Spacer(
                     modifier = Modifier
-                        .weight(1.0f)
+                        .weight(0.05f)
                 )
 
                 Button(enabled = buttonDownEnabled,
@@ -98,7 +115,11 @@ actual fun RenameAndSwapCategoryDialog(
                     }, modifier = Modifier
                         .weight(1.0f)
                 ) {
-                    Text(buttonDownLabel)
+                    Text(
+                        text = buttonDownLabel,
+                        textAlign = TextAlign.Center,
+                        fontSize = buttonFontSize
+                    )
                 }
             }
         }
