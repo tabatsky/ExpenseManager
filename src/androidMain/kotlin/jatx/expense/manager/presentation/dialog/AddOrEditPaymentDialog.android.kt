@@ -2,6 +2,8 @@ package jatx.expense.manager.presentation.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -17,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.res.buttonDeleteLabel
+import jatx.expense.manager.res.buttonFontSize
 import jatx.expense.manager.res.buttonSaveLabel
 import jatx.expense.manager.res.buttonSaveZeroLabel
 import jatx.expense.manager.res.msgWrongNumberFormat
@@ -54,6 +58,78 @@ actual fun AddOrEditPaymentDialog(
                 .background(Color.White)
         ) {
             val commentFocusRequester = remember { FocusRequester() }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Spacer(
+                    modifier = Modifier
+                        .weight(0.05f)
+                )
+                Button(
+                    modifier = Modifier
+                        .weight(1.0f),
+                    enabled = true,
+                    onClick = {
+                        expenseViewModel.showDatePickerDialog(true)
+                    }
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = sdf.format(date),
+                        textAlign = TextAlign.Center,
+                        fontSize = buttonFontSize
+                    )
+                }
+                Spacer(
+                    modifier = Modifier
+                        .weight(0.05f)
+                )
+                Button(
+                    modifier = Modifier
+                        .weight(1.0f),
+                    enabled = enabled,
+                    onClick = {
+                        onSave(paymentEntry.copy(amount = amount, comment = comment, date = date))
+                        onDismiss()
+                    }
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = saveLabel,
+                        textAlign = TextAlign.Center,
+                        fontSize = buttonFontSize
+                    )
+                }
+                onDelete?.let {
+                    Spacer(
+                        modifier = Modifier
+                            .weight(0.05f)
+                    )
+                    Button(
+                        modifier = Modifier
+                            .weight(1.0f),
+                        onClick = {
+                            it.invoke()
+                            onDismiss()
+                        }
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = buttonDeleteLabel,
+                            textAlign = TextAlign.Center,
+                            fontSize = buttonFontSize
+                        )
+                    }
+                }
+                Spacer(
+                    modifier = Modifier
+                        .weight(0.05f)
+                )
+            }
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -84,51 +160,6 @@ actual fun AddOrEditPaymentDialog(
                     comment = it
                 }
             )
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                enabled = true,
-                onClick = {
-                    expenseViewModel.showDatePickerDialog(true)
-                }
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = sdf.format(date)
-                )
-            }
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                enabled = enabled,
-                onClick = {
-                    onSave(paymentEntry.copy(amount = amount, comment = comment, date = date))
-                    onDismiss()
-                }
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = saveLabel
-                )
-            }
-            onDelete?.let {
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    onClick = {
-                        it.invoke()
-                        onDismiss()
-                    }
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = buttonDeleteLabel
-                    )
-                }
-            }
         }
     }
 }
