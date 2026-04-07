@@ -15,7 +15,7 @@ fun MainScreen() {
         RenameAndSwapCategoryDialogWrapper()
         PieChartDialogWrapper()
         PieChartByCommentDialogWrapper()
-//        PieChartByCommentMinusDialogWrapper()
+        PieChartByCommentMinusDialogWrapper()
 //        ByMonthChartDialogWrapper()
         ProgressDialogWrapper()
 
