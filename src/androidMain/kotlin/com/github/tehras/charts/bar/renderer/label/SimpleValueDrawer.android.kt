@@ -38,7 +38,7 @@ actual class SimpleValueDrawer actual constructor(
     ) = with(drawScope) {
         // TODO: исправить
 
-        val xCenter = barArea.height + 30f
+        val xCenter = barArea.left + 60f
 
 //        val yCenter = when (drawLocation) {
 //            DrawLocation.Inside -> (barArea.top + barArea.bottom) / 2

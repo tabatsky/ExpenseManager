@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.github.tehras.charts.bar.BarChart
 import com.github.tehras.charts.bar.BarChartData
 import jatx.expense.manager.di.appComponent
@@ -37,7 +38,10 @@ actual fun ByMonthChartDialogWrapper() {
         val byMonthData by expenseViewModel.byMonthData(filter).collectAsState(listOf())
 
         Dialog(
-            onDismissRequest = { close() }
+            onDismissRequest = { close() },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
+            )
         ) {
             Column(modifier =
                 Modifier
