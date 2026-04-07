@@ -20,6 +20,7 @@ import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.util.formattedForPaymentList
 import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.platform.isAndroid
+import jatx.expense.manager.presentation.menu.DropdownMenuWrapper
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
 
@@ -95,12 +96,13 @@ fun PaymentListView() {
                         .height(buttonHeight)
                 )
                 if (isAndroid) {
+                    DropdownMenuWrapper(appComponent.menuCallbacks)
                     Button(
                         modifier = Modifier
                             .weight(1.0f)
                             .height(buttonHeight),
                         onClick = {
-                            // TODO
+                            expenseViewModel.showDropdownMenu(true)
                         }
                     ) {
                         Text(

@@ -82,6 +82,9 @@ class ExpenseViewModel(
     private val _rowKeyToEdit: MutableStateFlow<RowKey?> = MutableStateFlow(null)
     val rowKeyToEdit = _rowKeyToEdit.asStateFlow()
 
+    private val _needShowDropdownMenu = MutableStateFlow(false)
+    val needShowDropdownMenu = _needShowDropdownMenu.asStateFlow()
+
     private val _needShowEditPaymentDialog = MutableStateFlow(false)
     val needShowEditPaymentDialog = _needShowEditPaymentDialog.asStateFlow()
 
@@ -104,6 +107,9 @@ class ExpenseViewModel(
     private val _pieChartFullComments = MutableStateFlow(false)
     val pieChartFullComments = _pieChartFullComments.asStateFlow()
 
+    private val _needShowByMonthChartDialog = MutableStateFlow(false)
+    val needShowByMonthChartDialog = _needShowByMonthChartDialog.asStateFlow()
+
     private val _needShowProgressDialog = MutableStateFlow(false)
     val needShowProgressDialog = _needShowProgressDialog.asStateFlow()
 
@@ -116,10 +122,6 @@ class ExpenseViewModel(
     fun pieChartDataByCommentMinus(date: Date, date2: Date? = null) = expenseTable.value?.pieChartDataByCommentMinus(date, date2) ?: listOf()
     fun overallPieChartDataByCommentMinus() = expenseTable.value?.overallPieChartDataByCommentMinus() ?: listOf()
 
-
-
-    private val _needShowByMonthChartDialog = MutableStateFlow(false)
-    val needShowByMonthChartDialog = _needShowByMonthChartDialog.asStateFlow()
 
     fun byMonthData(filter: String = "") = expenseTable
         .map {
@@ -145,7 +147,6 @@ class ExpenseViewModel(
                 getCurrencyRateUseCase.execute()
             }
             showProgressDialog(false)
-//            showByMonthChart()
         }
     }
 
@@ -415,6 +416,10 @@ class ExpenseViewModel(
 
     fun showProgressDialog(show: Boolean) {
         _needShowProgressDialog.value = show
+    }
+
+    fun showDropdownMenu(show: Boolean) {
+        _needShowDropdownMenu.value = show
     }
 
     fun onAppExit(after: () -> Unit) {
