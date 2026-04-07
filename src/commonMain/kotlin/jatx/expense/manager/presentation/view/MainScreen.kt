@@ -14,7 +14,7 @@ fun MainScreen() {
         DatePickerDialogWrapper()
         RenameAndSwapCategoryDialogWrapper()
         PieChartDialogWrapper()
-//        PieChartByCommentDialogWrapper()
+        PieChartByCommentDialogWrapper()
 //        PieChartByCommentMinusDialogWrapper()
 //        ByMonthChartDialogWrapper()
         ProgressDialogWrapper()
