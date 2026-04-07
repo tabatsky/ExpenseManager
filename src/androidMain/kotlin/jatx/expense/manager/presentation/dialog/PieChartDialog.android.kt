@@ -1,10 +1,13 @@
 package jatx.expense.manager.presentation.dialog
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.github.tehras.charts.piechart.PieChart
 import com.github.tehras.charts.piechart.PieChartData
 import jatx.expense.manager.di.appComponent
@@ -26,11 +30,14 @@ import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.domain.util.utf8toCP1251
+import jatx.expense.manager.res.buttonFontSize
 import jatx.expense.manager.res.labelJoinByCards
 import jatx.expense.manager.res.labelNotSet
 import jatx.expense.manager.res.labelOverallCategory
 import jatx.expense.manager.res.labelOverallTime
 import jatx.expense.manager.res.labelShowSkipped
+import jatx.expense.manager.res.pieChartDialogHeight
+import jatx.expense.manager.res.pieChartDialogWidth
 import jatx.expense.manager.res.pieChartSize
 import java.util.Date
 
@@ -77,8 +84,16 @@ actual fun PieChartDialogWrapper() {
 
         Dialog(
             onDismissRequest = { close() },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
+            )
         ) {
-            Row {
+            Row(
+                modifier = Modifier
+                    .width(pieChartDialogWidth)
+                    .height(pieChartDialogHeight)
+                    .background(Color.White)
+            ) {
                 PieChart(
                     pieChartData = PieChartData(slices),
                     modifier = Modifier.size(pieChartSize)
@@ -90,9 +105,15 @@ actual fun PieChartDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartPrevMonth()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text("<")
+                            Text(
+                                text = "<",
+                                fontSize = buttonFontSize
+                            )
                         }
                         Text(
                             text = labelMonthKey,
@@ -104,9 +125,15 @@ actual fun PieChartDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartNextMonth()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text(">")
+                            Text(
+                                text = ">",
+                                fontSize = buttonFontSize
+                            )
                         }
                         Box(
                             modifier = Modifier
@@ -115,9 +142,15 @@ actual fun PieChartDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartPrevMonth2()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text("<")
+                            Text(
+                                text = "<",
+                                fontSize = buttonFontSize
+                            )
                         }
                         Text(
                             text = labelMonthKey2,
@@ -129,9 +162,15 @@ actual fun PieChartDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartNextMonth2()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text(">")
+                            Text(
+                                text = ">",
+                                fontSize = buttonFontSize
+                            )
                         }
                     }
                     Row(

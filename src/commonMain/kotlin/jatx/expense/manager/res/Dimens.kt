@@ -15,7 +15,7 @@ val datePickerDialogHeight = if (isAndroid) 300.dp else 600.dp
 
 val pieChartDialogWidth = if (isAndroid) 600.dp else 1200.dp
 val pieChartDialogHeight = if (isAndroid) 300.dp else 600.dp
-val pieChartSize = 600.dp
+val pieChartSize = if (isAndroid) 300.dp else 600.dp
 
 val progressDialogSize = 400.dp
 
