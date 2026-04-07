@@ -145,6 +145,7 @@ class ExpenseViewModel(
                 getCurrencyRateUseCase.execute()
             }
             showProgressDialog(false)
+//            showByMonthChart()
         }
     }
 
