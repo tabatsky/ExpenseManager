@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -15,6 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import jatx.expense.manager.domain.models.RowKey
@@ -39,6 +44,8 @@ actual fun RenameAndSwapCategoryDialog(
     var categoryCP1251 by remember { mutableStateOf(rowKey.category.utf8toCP1251()) }
 
     Dialog(onDismissRequest = { onDismiss() }) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,7 +57,17 @@ actual fun RenameAndSwapCategoryDialog(
                 value = categoryCP1251,
                 onValueChange = {
                     categoryCP1251 = it
-                }
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Go,
+                    keyboardType = KeyboardType.Text
+                ),
+                keyboardActions = KeyboardActions(
+                    onGo = {
+                        keyboardController?.hide()
+                    }
+                )
             )
 
             Row {
