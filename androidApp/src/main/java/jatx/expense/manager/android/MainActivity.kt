@@ -1,7 +1,9 @@
 package jatx.expense.manager.android
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +44,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            BackHandler(enabled = true) {
+                Log.e("MainActivity", "finish")
+                finish()
+            }
             MaterialTheme {
                 MainScreen()
             }
