@@ -9,4 +9,5 @@ class MenuCallbacks {
     var onShowPieChartByComment: (() -> Unit)? = null
     var onShowPieChartByCommentMinus: (() -> Unit)? = null
     var onShowByMonthChart: (() -> Unit)? = null
+    var onAppExit: (() -> Unit)? = null
 }

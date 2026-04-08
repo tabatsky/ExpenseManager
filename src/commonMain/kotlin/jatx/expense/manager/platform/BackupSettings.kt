@@ -11,7 +11,7 @@ else
     saveToFirestoreOnAppFinishJvm
 
 const val loadFromFirestoreOnAppStartAndroid = true
-const val saveToFirestoreOnAppFinishAndroid = false
+const val saveToFirestoreOnAppFinishAndroid = true
 
-const val loadFromFirestoreOnAppStartJvm = false
+const val loadFromFirestoreOnAppStartJvm = true
 const val saveToFirestoreOnAppFinishJvm = true

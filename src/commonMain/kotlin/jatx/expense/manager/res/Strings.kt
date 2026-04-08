@@ -76,6 +76,7 @@ const val menuPieChart = "Диаграмма расходов"
 const val menuPieChartByComment = "Диаграмма расходов по метке"
 const val menuPieChartByCommentMinus = "Диаграмма доходов по метке"
 const val menuByMonthChart = "График по месяцам"
+const val menuByAppExit = "Выгрузить и выйти"
 
 const val dialogFileChooserOpenTitle = "Загрузить XLSX"
 const val dialogFileChooserSaveTitle = "Сохранить XLSX"

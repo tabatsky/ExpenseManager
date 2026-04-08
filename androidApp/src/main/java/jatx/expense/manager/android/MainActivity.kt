@@ -27,6 +27,12 @@ class MainActivity : ComponentActivity() {
 
         appComponent = AppComponent::class.create(coroutineScope, androidContextProvider)
 
+        appComponent.menuCallbacks.onAppExit = {
+            appComponent.expenseViewModel.onAppExit {
+                finish()
+            }
+        }
+
         val firebaseConfig = defaultFirebaseConfig()
         val firebaseAuthData = FirebaseAuthData(
             email = email,

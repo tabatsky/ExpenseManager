@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.res.buttonFontSize
+import jatx.expense.manager.res.menuByAppExit
 import jatx.expense.manager.res.menuByMonthChart
 import jatx.expense.manager.res.menuPieChart
 import jatx.expense.manager.res.menuPieChartByComment
@@ -56,6 +57,15 @@ actual fun DropdownMenuWrapper(menuCallbacks: MenuCallbacks) {
         }) {
             Text(
                 text = menuByMonthChart,
+                color = Color.Black,
+                fontSize = buttonFontSize
+            )
+        }
+        DropdownMenuItem(onClick = {
+            menuCallbacks.onAppExit?.invoke()
+        }) {
+            Text(
+                text = menuByAppExit,
                 color = Color.Black,
                 fontSize = buttonFontSize
             )
