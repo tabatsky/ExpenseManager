@@ -29,11 +29,7 @@ class MainActivity : ComponentActivity() {
 
         appComponent = AppComponent::class.create(coroutineScope, androidContextProvider)
 
-        appComponent.menuCallbacks.onAppExit = {
-            appComponent.expenseViewModel.onAppExit {
-                finish()
-            }
-        }
+        appComponent.menuCallbacks.onAppExit = ::exitApp
 
         val firebaseConfig = defaultFirebaseConfig()
         val firebaseAuthData = FirebaseAuthData(
@@ -45,12 +41,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BackHandler(enabled = true) {
-                Log.e("MainActivity", "finish")
-                finish()
+                exitApp()
             }
             MaterialTheme {
                 MainScreen()
             }
+        }
+    }
+
+    private fun exitApp() {
+        appComponent.expenseViewModel.onAppExit {
+            Log.e("MainActivity", "finish")
+            finish()
         }
     }
 }
