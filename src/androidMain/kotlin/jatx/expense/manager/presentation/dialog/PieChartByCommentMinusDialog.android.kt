@@ -1,5 +1,6 @@
 package jatx.expense.manager.presentation.dialog
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.github.tehras.charts.piechart.PieChart
 import com.github.tehras.charts.piechart.PieChartData
 import jatx.expense.manager.di.appComponent
@@ -60,9 +62,17 @@ actual fun PieChartByCommentMinusDialogWrapper() {
         val total = pieChartData.sumOf { it.second }
 
         Dialog(
-            onDismissRequest = { close() }
+            onDismissRequest = { close() },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
+            )
         ) {
-            Row {
+            Row(
+                modifier = Modifier
+                    .width(pieChartDialogWidth)
+                    .height(pieChartDialogHeight)
+                    .background(Color.White)
+            ) {
                 PieChart(
                     pieChartData = PieChartData(slices),
                     modifier = Modifier.size(pieChartSize)
@@ -74,9 +84,15 @@ actual fun PieChartByCommentMinusDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartPrevMonth()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text("<")
+                            Text(
+                                text = "<",
+                                fontSize = buttonFontSize
+                            )
                         }
                         Text(
                             text = labelMonthKey,
@@ -88,9 +104,15 @@ actual fun PieChartByCommentMinusDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartNextMonth()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text(">")
+                            Text(
+                                text = ">",
+                                fontSize = buttonFontSize
+                            )
                         }
                         Box(
                             modifier = Modifier
@@ -99,9 +121,15 @@ actual fun PieChartByCommentMinusDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartPrevMonth2()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text("<")
+                            Text(
+                                text = "<",
+                                fontSize = buttonFontSize
+                            )
                         }
                         Text(
                             text = labelMonthKey2,
@@ -113,9 +141,15 @@ actual fun PieChartByCommentMinusDialogWrapper() {
                         Button(
                             onClick = {
                                 expenseViewModel.pieChartNextMonth2()
-                            }
+                            },
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .weight(0.7f)
                         ) {
-                            Text(">")
+                            Text(
+                                text = ">",
+                                fontSize = buttonFontSize
+                            )
                         }
                     }
                     Row {

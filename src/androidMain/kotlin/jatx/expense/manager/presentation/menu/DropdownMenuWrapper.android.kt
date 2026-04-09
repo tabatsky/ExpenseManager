@@ -15,6 +15,7 @@ import jatx.expense.manager.res.menuByAppExit
 import jatx.expense.manager.res.menuByMonthChart
 import jatx.expense.manager.res.menuPieChart
 import jatx.expense.manager.res.menuPieChartByComment
+import jatx.expense.manager.res.menuPieChartByCommentMinus
 
 @Composable
 actual fun DropdownMenuWrapper(menuCallbacks: MenuCallbacks) {
@@ -48,6 +49,15 @@ actual fun DropdownMenuWrapper(menuCallbacks: MenuCallbacks) {
         }) {
             Text(
                 text = menuPieChartByComment,
+                color = Color.Black,
+                fontSize = buttonFontSize
+            )
+        }
+        DropdownMenuItem(onClick = {
+            menuCallbacks.onShowPieChartByCommentMinus?.invoke()
+        }) {
+            Text(
+                text = menuPieChartByCommentMinus,
                 color = Color.Black,
                 fontSize = buttonFontSize
             )
