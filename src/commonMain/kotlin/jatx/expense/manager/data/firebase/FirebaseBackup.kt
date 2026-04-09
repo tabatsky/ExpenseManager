@@ -111,6 +111,11 @@ suspend fun loadDataFromFirestore(backupTimeKeeper: BackupTimeKeeper) = theUser?
 }
 
 suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper: BackupTimeKeeper) {
+    if (backupTimeKeeper.lastChangeTime <= backupTimeKeeper.lastSyncTime) {
+        println("no changes, backup skipping")
+        return
+    }
+
     theUser?.let { user ->
         withContext(Dispatchers.IO) {
             val currentTime = System.currentTimeMillis()
@@ -130,6 +135,7 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
                     .set(doc)
                 backupTimeKeeper.lastSyncTime = currentTime
                 println(Date(currentTime))
+                println("backup success")
             } catch (t: Throwable) {
                 t.printStackTrace()
             }

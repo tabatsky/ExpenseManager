@@ -359,6 +359,7 @@ class ExpenseViewModel(
     fun updatePaymentEntryAtDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             updatePaymentUseCase.execute(paymentEntry)
+            backupTimeKeeper.lastChangeTime = System.currentTimeMillis()
             loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }
@@ -366,6 +367,7 @@ class ExpenseViewModel(
     fun insertPaymentEntryIntoDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             insertPaymentUseCase.execute(paymentEntry)
+            backupTimeKeeper.lastChangeTime = System.currentTimeMillis()
             loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }
@@ -373,6 +375,7 @@ class ExpenseViewModel(
     fun deletePaymentEntryFromDBAndReloadExpenseTable(paymentEntry: PaymentEntry) {
         coroutineScope.launch {
             deletePaymentUseCase.execute(paymentEntry)
+            backupTimeKeeper.lastChangeTime = System.currentTimeMillis()
             loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }
@@ -380,6 +383,7 @@ class ExpenseViewModel(
     fun renameCategoryAndReloadExpenseTable(newCategory: String, rowKey: RowKey) {
          coroutineScope.launch {
              renameCategoryUseCase.execute(newCategory, rowKey)
+             backupTimeKeeper.lastChangeTime = System.currentTimeMillis()
              loadExpenseTableFromDB(saveToDefaultXlsx)
          }
     }
@@ -387,6 +391,7 @@ class ExpenseViewModel(
     fun swapRowKeysIntAndReloadExpenseTable(rowKeyInt1: Int, rowKeyInt2: Int) {
         coroutineScope.launch {
             swapRowKeysIntUseCase.execute(rowKeyInt1, rowKeyInt2)
+            backupTimeKeeper.lastChangeTime = System.currentTimeMillis()
             loadExpenseTableFromDB(saveToDefaultXlsx)
         }
     }

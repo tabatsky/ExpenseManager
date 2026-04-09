@@ -12,6 +12,8 @@ class BackupTimeKeeper(private val androidContextProvider: AndroidContextProvide
         set(value) {
             writeLastSyncTime(value, androidContextProvider)
         }
+
+    var lastChangeTime = lastSyncTime
 }
 
 expect fun readLastSyncTime(androidContextProvider: AndroidContextProvider?): Long
