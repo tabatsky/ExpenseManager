@@ -48,6 +48,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:2.3.12")
                 implementation("org.apache.poi:poi:5.5.1")
                 implementation("org.apache.poi:poi-ooxml:5.5.1")
+                implementation("org.apache.logging.log4j:log4j-core:2.24.2")
+                runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
                 implementation("org.jetbrains.compose.ui:ui:1.10.3")
                 implementation("org.jetbrains.compose.ui:ui-graphics:1.10.3")
                 implementation("org.jetbrains.compose.material:material:1.10.3")
