@@ -57,7 +57,11 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation(compose.desktop.currentOs)
+//                implementation(compose.desktop.currentOs)
+                implementation("org.jetbrains.compose.desktop:desktop-jvm-macos-arm64:1.10.3")
+                implementation("org.jetbrains.compose.desktop:desktop-jvm-macos-x64:1.10.3")
+                implementation("org.jetbrains.compose.desktop:desktop-jvm-windows-x64:1.10.3")
+                implementation("org.jetbrains.compose.desktop:desktop-jvm-linux-x64:1.10.3")
                 implementation("org.jetbrains.compose.material3:material3-desktop:1.5.12")
                 implementation("io.ktor:ktor-client-java:2.3.12")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
