@@ -42,6 +42,8 @@ fun PaymentListView() {
             columnScrollState.scrollTo(scrollY)
         }
 
+        println(paymentCellHeight * it.size * 2f)
+        val maxHeight = (paymentCellHeight * it.size * 2f).takeIf { it <= 72000.dp } ?: 72000.dp
 
         Column {
             Box(modifier = Modifier
@@ -64,7 +66,8 @@ fun PaymentListView() {
 //                        }
                         .verticalScroll(columnScrollState)
                         .wrapContentHeight()
-                        .heightIn(min = 0.dp, max = paymentCellHeight * it.size * 2f)
+                        .heightIn(min = 0.dp, max = maxHeight)
+                        .fillMaxWidth()
                 ) {
                     items(it.reversed()) { paymentEntry ->
                         PaymentItem(paymentEntry)
