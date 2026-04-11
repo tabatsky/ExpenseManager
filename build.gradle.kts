@@ -67,7 +67,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
                 implementation("dev.gitlive:firebase-firestore-jvm:2.4.0")
                 implementation("dev.gitlive:firebase-java-sdk:0.6.2")
-                implementation("me.tatarka.inject:kotlin-inject-runtime-kmp:0.7.2")
                 implementation("org.apache.logging.log4j:log4j-core:2.24.2")
                 runtimeOnly("ch.qos.logback:logback-classic:1.4.14")
             }
