@@ -8,14 +8,19 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+var lastEventTime = 0L
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 actual fun Modifier.onScroll(coroutineScope: CoroutineScope, perform: suspend (Float, Boolean) -> Unit) = this
     .onPointerEvent(PointerEventType.Scroll) {
-        it.changes.forEach { it.consume() }
         coroutineScope.launch {
             it.changes.forEach {
-                perform(it.scrollDelta.y, true)
+                it.consume()
+                if (System.currentTimeMillis() - lastEventTime > 50) {
+                    perform(it.scrollDelta.y, true)
+                }
+                lastEventTime = System.currentTimeMillis()
             }
         }
     }

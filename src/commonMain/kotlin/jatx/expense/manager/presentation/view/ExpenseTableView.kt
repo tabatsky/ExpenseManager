@@ -41,6 +41,8 @@ fun ExpenseTable() {
 
     val rowListState = rememberLazyListState()
 
+    // TODO: implement correct scroll logic without scrollState
+
     expenseTable?.let { theExpenseTable ->
         val coroutineScope = rememberCoroutineScope()
         val firstColumnListState = rememberLazyListState()

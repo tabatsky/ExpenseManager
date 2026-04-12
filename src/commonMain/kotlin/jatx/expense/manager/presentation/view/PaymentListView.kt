@@ -4,15 +4,18 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import jatx.expense.manager.di.appComponent
@@ -21,8 +24,13 @@ import jatx.expense.manager.domain.util.formattedForPaymentList
 import jatx.expense.manager.domain.util.utf8toCP1251
 import jatx.expense.manager.platform.isAndroid
 import jatx.expense.manager.presentation.menu.DropdownMenuWrapper
+import jatx.expense.manager.presentation.util.onScroll
 import jatx.expense.manager.res.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.math.abs
+import kotlin.math.sign
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -31,25 +39,38 @@ fun PaymentListView() {
 
     val expenseEntry by expenseViewModel.currentExpenseEntry.collectAsState()
 
-    (expenseEntry?.payments ?: listOf()).let {
-        val coroutineScope = rememberCoroutineScope()
-        val columnScrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    val columnListState = rememberLazyListState()
 
-        var scrollY by remember { mutableStateOf(0) }
+    var scrollY by remember { mutableFloatStateOf(0f) }
 
-        suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) {
-            scrollY += if (isMouse) minusDelta.toInt() * 20 else minusDelta.toInt()
-            columnScrollState.scrollTo(scrollY)
+    val itemHeight = with (LocalDensity.current) {
+        cellHeight.toPx()
+    }
+    println(itemHeight)
+
+    suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) = withContext(Dispatchers.Main) {
+        if (isMouse) {
+            scrollY += minusDelta.toInt().sign * 24 * itemHeight
+            println("sync scroll to: $scrollY")
+        } else {
+            scrollY += minusDelta
         }
+        if (abs(scrollY) > itemHeight * 0.2f) {
+            println("sync scroll by: $scrollY")
+            val scrollBy = scrollY
+            scrollY = 0f
+            columnListState.scrollBy(scrollBy)
+        }
+    }
 
-        println(paymentCellHeight * it.size * 2f)
-        val maxHeight = (paymentCellHeight * it.size * 2f).takeIf { it <= 72000.dp } ?: 72000.dp
-
+    (expenseEntry?.payments ?: listOf()).let {
         Column {
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .weight(1.0f)) {
                 LazyColumn(
+                    state = columnListState,
                     modifier = Modifier
                         .draggable(
                             orientation = Orientation.Vertical,
@@ -59,14 +80,10 @@ fun PaymentListView() {
                                 }
                             }
                         )
-//                        .onPointerEvent(PointerEventType.Scroll) {
-//                            coroutineScope.launch {
-//                                syncScroll(it.changes.first().scrollDelta.y, true)
-//                            }
-//                        }
-                        .verticalScroll(columnScrollState)
+                        .onScroll(coroutineScope) { delta, isMouse ->
+                            syncScroll(delta, isMouse)
+                        }
                         .wrapContentHeight()
-                        .heightIn(min = 0.dp, max = maxHeight)
                         .fillMaxWidth()
                 ) {
                     items(it.reversed()) { paymentEntry ->
