@@ -35,7 +35,7 @@ interface AndroidContextProvider {
 @Component
 abstract class AppComponent(
     @get: Provides protected val coroutineScope: CoroutineScope,
-    @get: Provides protected val androidContextProvider: AndroidContextProvider? = null
+    @get: Provides val androidContextProvider: AndroidContextProvider? = null
 ) {
     abstract val expenseViewModel: ExpenseViewModel
 
