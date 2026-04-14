@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import jatx.expense.manager.data.skipset.TotalSkipSet
 import jatx.expense.manager.di.appComponent
 import jatx.expense.manager.domain.models.*
@@ -26,6 +26,8 @@ import jatx.expense.manager.presentation.util.onScroll
 import jatx.expense.manager.presentation.viewmodel.ExpenseViewModel
 import jatx.expense.manager.res.*
 import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.sign
 
 val fixedRowCount = if (lohCategoryEnabled) 4 else 3
 
@@ -41,26 +43,36 @@ fun ExpenseTable() {
 
     val rowListState = rememberLazyListState()
 
-    // TODO: implement correct scroll logic without scrollState
+    val coroutineScope = rememberCoroutineScope()
+    val firstColumnListState = rememberLazyListState()
+    val columnListState = rememberLazyListState()
+
+    var scrollY by remember { mutableFloatStateOf(0f) }
+
+    val itemHeight = with (LocalDensity.current) {
+        cellHeight.toPx()
+    }
+    println(itemHeight)
+
+    suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) {
+        if (isMouse) {
+            scrollY += minusDelta.toInt().sign * 4 * itemHeight
+            println("sync scroll to: $scrollY")
+        } else {
+            scrollY += minusDelta
+        }
+        if (abs(scrollY) > itemHeight * 0.2f) {
+            println("sync scroll by: $scrollY")
+            val scrollBy = scrollY
+            scrollY = 0f
+            firstColumnListState.scrollBy(scrollBy)
+            columnListState.scrollBy(scrollBy)
+        }
+    }
 
     expenseTable?.let { theExpenseTable ->
-        val coroutineScope = rememberCoroutineScope()
-        val firstColumnListState = rememberLazyListState()
-        val columnListState = rememberLazyListState()
-        val firstColumnScrollState = rememberScrollState()
-        val columnScrollState = rememberScrollState()
-
-        var scrollY by remember { mutableStateOf(0) }
-
-        suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) {
-            scrollY += if (isMouse) minusDelta.toInt() * 80 else minusDelta.toInt()
-            println("sync scroll to: $scrollY")
-            firstColumnScrollState.scrollTo(scrollY)
-            columnScrollState.scrollTo(scrollY)
-        }
-
-        Row {
-            Column {
+        Row{
+            Column{
                 Row {
                     ExpenseCell(
                         modifier = Modifier.width(firstCellWidth).height(cellHeight),
@@ -84,8 +96,8 @@ fun ExpenseTable() {
                 }
                 LazyColumn(
                     state = firstColumnListState,
+                    userScrollEnabled = false,
                     modifier = Modifier
-                        .verticalScroll(firstColumnScrollState)
                         .draggable(
                             orientation = Orientation.Vertical,
                             state = rememberDraggableState { delta ->
@@ -98,7 +110,6 @@ fun ExpenseTable() {
                             syncScroll(delta, isMouse)
                         }
                         .wrapContentHeight()
-                        .heightIn(min = 0.dp, max = cellHeight * theExpenseTable.rowKeysWithTotals.size * 2)
                 ) {
                     items(theExpenseTable.rowKeysWithTotals.drop(fixedRowCount)) { rowKey ->
                         FirstThreeColumnsRow(rowKey, theExpenseTable)
@@ -137,8 +148,8 @@ fun ExpenseTable() {
 
                         LazyColumn(
                             state = columnListState,
+                            userScrollEnabled = false,
                             modifier = Modifier
-                                .verticalScroll(columnScrollState)
                                 .draggable(
                                     orientation = Orientation.Vertical,
                                     state = rememberDraggableState { delta ->
@@ -151,7 +162,6 @@ fun ExpenseTable() {
                                     syncScroll(delta, isMouse)
                                 }
                                 .wrapContentHeight()
-                                .heightIn(min = 0.dp, max = cellHeight * theExpenseTable.rowKeysWithTotals.size * 2)
                                 .fillMaxWidth()
                         ) {
                             items(theExpenseTable.rowKeysWithTotals.drop(fixedRowCount)) { rowKey ->

@@ -51,7 +51,7 @@ fun PaymentListView() {
 
     suspend fun syncScroll(minusDelta: Float, isMouse: Boolean) = withContext(Dispatchers.Main) {
         if (isMouse) {
-            scrollY += minusDelta.toInt().sign * 24 * itemHeight
+            scrollY += minusDelta.toInt().sign * 4 * itemHeight
             println("sync scroll to: $scrollY")
         } else {
             scrollY += minusDelta
@@ -71,6 +71,7 @@ fun PaymentListView() {
                 .weight(1.0f)) {
                 LazyColumn(
                     state = columnListState,
+                    userScrollEnabled = false,
                     modifier = Modifier
                         .draggable(
                             orientation = Orientation.Vertical,
