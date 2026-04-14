@@ -141,21 +141,17 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
             val currentTime = System.currentTimeMillis()
 
             val data = localData.map { it.toPaymentEntryGson() }
-            val backupData = if (isAndroid) {
-                BackupData(data, currentTime)
-            } else {
-                BackupData(
-                    payments = data,
-                    lastSyncTime = currentTime,
-                    expenseCommentSet = readSetLines(expenseCommentSetKey),
-                    incomingCommentSet = readSetLines(incomingCommentSetKey),
-                    incomingSet = readSetLines(incomingSetKey),
-                    reduceSet = readSetLines(reduceSetKey),
-                    skipCommentSet = readSetLines(skipCommentSetKey),
-                    skipSet = readSetLines(skipSetKey),
-                    totalSkipSet = readSetLines(totalSkipSetKey)
-                )
-            }
+            val backupData = BackupData(
+                payments = data,
+                lastSyncTime = currentTime,
+                expenseCommentSet = readSetLines(expenseCommentSetKey),
+                incomingCommentSet = readSetLines(incomingCommentSetKey),
+                incomingSet = readSetLines(incomingSetKey),
+                reduceSet = readSetLines(reduceSetKey),
+                skipCommentSet = readSetLines(skipCommentSetKey),
+                skipSet = readSetLines(skipSetKey),
+                totalSkipSet = readSetLines(totalSkipSetKey)
+            )
             val backupDataStr = Gson().toJson(backupData)
             val userUid = user.uid
 
