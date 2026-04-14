@@ -1,9 +1,9 @@
 package jatx.expense.manager.data.skipset
 
 import jatx.expense.manager.domain.util.cp1251toUTF8
-import jatx.expense.manager.platform.loadSkipSetsFromFiles
+import jatx.expense.manager.platform.loadSkipSets
 
-fun readSet(setKey: String) = if (loadSkipSetsFromFiles) {
+fun readSet(setKey: String) = if (loadSkipSets) {
     val hashSet = hashSetOf<String>()
     try {
         readSetLines(setKey).forEach {
@@ -21,3 +21,4 @@ fun readSet(setKey: String) = if (loadSkipSetsFromFiles) {
 
 expect fun readSetLines(setKey: String): List<String>
 
+expect fun writeSetLines(setKey: String, lines: List<String>)

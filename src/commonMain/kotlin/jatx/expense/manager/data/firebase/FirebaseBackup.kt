@@ -16,6 +16,7 @@ import jatx.expense.manager.data.skipset.reduceSetKey
 import jatx.expense.manager.data.skipset.skipCommentSetKey
 import jatx.expense.manager.data.skipset.skipSetKey
 import jatx.expense.manager.data.skipset.totalSkipSetKey
+import jatx.expense.manager.data.skipset.writeSetLines
 import jatx.expense.manager.domain.models.CellKey
 import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.models.ExpenseTable
@@ -47,6 +48,16 @@ suspend fun loadDataFromFirestore(backupTimeKeeper: BackupTimeKeeper) = theUser?
 
             println(Date(backupTimeKeeper.lastSyncTime))
             println(Date(backupData.lastSyncTime))
+
+            if (isAndroid) {
+                writeSetLines(expenseCommentSetKey, backupData.expenseCommentSet ?: listOf())
+                writeSetLines(incomingCommentSetKey, backupData.incomingCommentSet ?: listOf())
+                writeSetLines(incomingSetKey, backupData.incomingSet ?: listOf())
+                writeSetLines(reduceSetKey, backupData.reduceSet ?: listOf())
+                writeSetLines(skipCommentSetKey, backupData.skipCommentSet ?: listOf())
+                writeSetLines(skipSetKey, backupData.skipSet ?: listOf())
+                writeSetLines(totalSkipSetKey, backupData.totalSkipSet ?: listOf())
+            }
 
             if (backupData.lastSyncTime > backupTimeKeeper.lastSyncTime) {
                 val payments = backupData.payments.map { it.toPaymentEntry() }
