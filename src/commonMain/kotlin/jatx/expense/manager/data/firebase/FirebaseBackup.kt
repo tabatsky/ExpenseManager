@@ -8,6 +8,14 @@ import jatx.expense.manager.data.backup.BackupData
 import jatx.expense.manager.data.backup.BackupTimeKeeper
 import jatx.expense.manager.data.backup.toPaymentEntry
 import jatx.expense.manager.data.backup.toPaymentEntryGson
+import jatx.expense.manager.data.skipset.expenseCommentSetKey
+import jatx.expense.manager.data.skipset.incomingCommentSetKey
+import jatx.expense.manager.data.skipset.incomingSetKey
+import jatx.expense.manager.data.skipset.readSetLines
+import jatx.expense.manager.data.skipset.reduceSetKey
+import jatx.expense.manager.data.skipset.skipCommentSetKey
+import jatx.expense.manager.data.skipset.skipSetKey
+import jatx.expense.manager.data.skipset.totalSkipSetKey
 import jatx.expense.manager.domain.models.CellKey
 import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.models.ExpenseTable
@@ -15,6 +23,7 @@ import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.models.RowKey
 import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
 import jatx.expense.manager.domain.util.monthKey
+import jatx.expense.manager.platform.isAndroid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -121,7 +130,21 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
             val currentTime = System.currentTimeMillis()
 
             val data = localData.map { it.toPaymentEntryGson() }
-            val backupData = BackupData(data, currentTime)
+            val backupData = if (isAndroid) {
+                BackupData(data, currentTime)
+            } else {
+                BackupData(
+                    payments = data,
+                    lastSyncTime = currentTime,
+                    expenseCommentSet = readSetLines(expenseCommentSetKey),
+                    incomingCommentSet = readSetLines(incomingCommentSetKey),
+                    incomingSet = readSetLines(incomingSetKey),
+                    reduceSet = readSetLines(reduceSetKey),
+                    skipCommentSet = readSetLines(skipCommentSetKey),
+                    skipSet = readSetLines(skipSetKey),
+                    totalSkipSet = readSetLines(totalSkipSetKey)
+                )
+            }
             val backupDataStr = Gson().toJson(backupData)
             val userUid = user.uid
 
