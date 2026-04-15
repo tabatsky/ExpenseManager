@@ -1,3 +1,6 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.util.Properties
+
 val roomVersion = "2.8.4"
 
 plugins {
@@ -110,8 +113,38 @@ compose.desktop {
     application {
         mainClass = "jatx.expense.manager.MainKt"
         nativeDistributions {
+            targetFormats(
+                TargetFormat.Exe,  // Windows
+                TargetFormat.Deb,   // Linux
+                TargetFormat.Dmg  // macOS
+            )
+
             packageName = "ExpenseManager"
             packageVersion = "1.0.0"
+
+            macOS {
+                bundleID = "jatx.expense.manager"
+
+                signing {
+                    sign.set(false)
+                }
+
+                notarization {
+                    val localProperties = Properties()
+                    val localPropertiesFile = rootProject.file("local.properties")
+                    if (localPropertiesFile.exists()) {
+                        localProperties.load(localPropertiesFile.inputStream())
+                    }
+
+                    val email = localProperties.getProperty("email") ?: ""
+                    val pass = localProperties.getProperty("password") ?: ""
+                    val teamId = localProperties.getProperty("teamId") ?: ""
+
+                    appleID.set(email)
+                    password.set(pass)
+                    teamID.set(teamId)
+                }
+            }
         }
         buildTypes.release {
             proguard {
@@ -120,12 +153,6 @@ compose.desktop {
         }
     }
 }
-
-//tasks.withType<Jar> {
-//    manifest {
-//        attributes["Main-Class"] = "jatx.expense.manager.MainKt"
-//    }
-//}
 
 room {
     schemaDirectory("$projectDir/schemas")
