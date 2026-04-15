@@ -17,3 +17,8 @@ jobs:
       - name: Check local.properties file
         run: |
           cat local.properties
+
+      - name: MacOS info
+        run: |
+          sw_vers
+          sysctl -n machdep.cpu.brand_string
