@@ -8,8 +8,12 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - name: Create .env file
+      - name: Create local.properties file
         run: |
-          echo "${{ secrets.APPLE_EMAIL }}"
-          echo "${{ secrets.APPLE_PASSWORD }}"
-          echo "${{ secrets.APPLE_TEAM_ID }}"
+          echo "email=\"${{ secrets.APPLE_EMAIL }}"\"" >> local.properties
+          echo "password=\"${{ secrets.APPLE_PASSWORD }}"\"" >> local.properties
+          echo "teamId=\"${{ secrets.APPLE_TEAM_ID }}"\"" >> local.properties
+
+      - name: Check local.properties file
+        run: |
+          cat local.properties
