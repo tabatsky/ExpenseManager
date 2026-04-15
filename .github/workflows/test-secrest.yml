@@ -10,9 +10,9 @@ jobs:
     steps:
       - name: Create local.properties file
         run: |
-          echo "email=\"${{ secrets.APPLE_EMAIL }}"\"" >> local.properties
-          echo "password=\"${{ secrets.APPLE_PASSWORD }}"\"" >> local.properties
-          echo "teamId=\"${{ secrets.APPLE_TEAM_ID }}"\"" >> local.properties
+          echo 'email="${{ secrets.APPLE_EMAIL }}"' >> local.properties
+          echo 'password="${{ secrets.APPLE_PASSWORD }}"' >> local.properties
+          echo 'teamId="${{ secrets.APPLE_TEAM_ID }}"' >> local.properties
 
       - name: Check local.properties file
         run: |
