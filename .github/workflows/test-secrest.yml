@@ -1,0 +1,15 @@
+name: DMGBuild
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.APPLE_EMAIL }}"
+          echo "${{ secrets.APPLE_PASSWORD }}"
+          echo "${{ secrets.APPLE_TEAM_ID }}"
