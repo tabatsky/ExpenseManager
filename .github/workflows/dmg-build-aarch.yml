@@ -30,6 +30,10 @@ jobs:
         run: |
           cat local.properties
 
+      - name: Create FirebaseSecrets.kt file
+        run: |
+          echo "${{ secrets.FIREBASE_SECRETS }}" > src/commonMain/kotlin/jatx/expense/manager/data/firebase/FirebaseSecrets.kt
+
       - name: MacOS info
         run: |
           sw_vers
