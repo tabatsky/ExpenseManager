@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  arm64:
+  aarch:
     runs-on: macos-latest
     steps:
       - name: Checkout Code
@@ -40,13 +40,17 @@ jobs:
         # Replace :composeApp if your module name is different (e.g., :desktop)
         run: ./gradlew :packageReleaseDmg
 
+      - name: Rename DMG
+        run: |
+          mv build/compose/binaries/main-release/dmg/ExpenseManager-1.0.0.dmg build/compose/binaries/main-release/dmg/ExpenseManager-aarch-1.0.0.dmg
+
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
         with:
           name: macOS-DMG
-          path: build/compose/binaries/main-release/dmg/*.dmg
+          path: build/compose/binaries/main-release/dmg/ExpenseManager-aarch-1.0.0.dmg
 
-  x86:
+  intel:
     runs-on: macos-15-intel
     steps:
       - name: Checkout Code
@@ -81,8 +85,12 @@ jobs:
         # Replace :composeApp if your module name is different (e.g., :desktop)
         run: ./gradlew :packageReleaseDmg
 
+      - name: Rename DMG
+        run: |
+          mv build/compose/binaries/main-release/dmg/ExpenseManager-1.0.0.dmg build/compose/binaries/main-release/dmg/ExpenseManager-intel-1.0.0.dmg
+
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
         with:
           name: macOS-DMG
-          path: build/compose/binaries/main-release/dmg/*.dmg
+          path: build/compose/binaries/main-release/dmg/ExpenseManager-intel-1.0.0.dmg

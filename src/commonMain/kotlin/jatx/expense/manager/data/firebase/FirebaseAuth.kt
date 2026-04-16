@@ -22,12 +22,20 @@ data class FirebaseAuthData(
 )
 
 fun readFirebaseAuthDataFromFile(): FirebaseAuthData {
-    val lines = File("firebase-auth.txt")
-        .readLines(Charset.forName("UTF-8"))
-    return FirebaseAuthData(
-        email = lines[0],
-        password = lines[1]
-    )
+    return try {
+        val lines = File("firebase-auth.txt")
+            .readLines(Charset.forName("UTF-8"))
+        FirebaseAuthData(
+            email = lines[0],
+            password = lines[1]
+        )
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        FirebaseAuthData(
+            email = "",
+            password = ""
+        )
+    }
 }
 
 private suspend fun firebaseSignUp(authData: FirebaseAuthData): AuthResult {
