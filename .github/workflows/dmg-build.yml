@@ -1,8 +1,7 @@
 name: DMGBuild
 
 on:
-  push:
-    branches: [ master ]
+  workflow_dispatch
 
 jobs:
   aarch:
@@ -49,6 +48,7 @@ jobs:
         with:
           name: macOS-DMG
           path: build/compose/binaries/main-release/dmg/ExpenseManager-aarch-1.0.0.dmg
+          retention-days: 5
 
   intel:
     runs-on: macos-15-intel
@@ -94,3 +94,4 @@ jobs:
         with:
           name: macOS-DMG
           path: build/compose/binaries/main-release/dmg/ExpenseManager-intel-1.0.0.dmg
+          retention-days: 5

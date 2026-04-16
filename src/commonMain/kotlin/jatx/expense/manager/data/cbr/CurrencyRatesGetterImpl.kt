@@ -40,8 +40,8 @@ class CurrencyRatesGetterImpl: CurrencyRatesGetter {
                 "CNY" to cnyRate,
                 "uBTC" to uBTCRate
             )
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (t: Throwable) {
+            t.printStackTrace()
             mapOf(
                 "RUR" to 1f,
                 "USD" to 1f,
