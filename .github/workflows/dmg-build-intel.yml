@@ -32,7 +32,7 @@ jobs:
 
       - name: Create FirebaseSecrets.kt file
         run: |
-          run: echo "${{ secrets.FIREBASE_SECRETS }}" | base64 --decode > src/commonMain/kotlin/jatx/expense/manager/data/firebase/FirebaseSecrets.kt
+          echo "${{ secrets.FIREBASE_SECRETS }}" | base64 --decode > src/commonMain/kotlin/jatx/expense/manager/data/firebase/FirebaseSecrets.kt
 
       - name: MacOS info
         run: |
