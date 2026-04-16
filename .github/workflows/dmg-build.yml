@@ -38,7 +38,7 @@ jobs:
 
       - name: Build DMG
         # Replace :composeApp if your module name is different (e.g., :desktop)
-        run: ./gradlew :composeApp:packageReleaseDmg
+        run: ./gradlew :packageReleaseDmg
 
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
