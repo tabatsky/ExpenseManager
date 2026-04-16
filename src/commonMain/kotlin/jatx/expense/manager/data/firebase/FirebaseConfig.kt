@@ -7,7 +7,7 @@ data class FirebaseConfig(
 )
 
 fun defaultFirebaseConfig() = FirebaseConfig(
-    projectId = "", //projectId,
-    appId = "", //appId,
-    apiKey = "", //apiKey
+    projectId = projectId,
+    appId = appId,
+    apiKey = apiKey
 )
