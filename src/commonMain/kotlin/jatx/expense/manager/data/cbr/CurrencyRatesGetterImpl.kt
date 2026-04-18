@@ -15,6 +15,13 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class CurrencyRatesGetterImpl: CurrencyRatesGetter {
     override suspend fun getCurrencyRates(): Map<String, Float> = withContext(Dispatchers.IO)  {
+        val result = hashMapOf(
+            "RUR" to 1f,
+            "USD" to 1f,
+            "CNY" to 1f,
+            "uBTC" to 1f
+        )
+
         try {
             val httpClient = httpClient()
             val response = httpClient.get {
@@ -26,6 +33,9 @@ class CurrencyRatesGetterImpl: CurrencyRatesGetter {
             val usdRate = 1f / rates["USD"].toString().toFloat()
             val cnyRate = 1f / rates["CNY"].toString().toFloat()
 
+            result["USD"] = usdRate
+            result["CNY"] = cnyRate
+
             val responseBTC = httpClient.get {
                 url("https://blockchain.info/ticker")
             }
@@ -34,21 +44,12 @@ class CurrencyRatesGetterImpl: CurrencyRatesGetter {
             val btcRate = rub["last"].toString().toFloat()
             val uBTCRate = btcRate / 1000000f
 
-            mapOf(
-                "RUR" to 1f,
-                "USD" to usdRate,
-                "CNY" to cnyRate,
-                "uBTC" to uBTCRate
-            )
+            result["uBTC"] = uBTCRate
         } catch (t: Throwable) {
             t.printStackTrace()
-            mapOf(
-                "RUR" to 1f,
-                "USD" to 1f,
-                "CNY" to 1f,
-                "uBTC" to 1f
-            )
         }
+
+        result
     }
 }
 
