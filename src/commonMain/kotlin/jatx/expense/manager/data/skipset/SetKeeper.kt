@@ -9,7 +9,9 @@ fun readSet(setKey: String) = if (loadSkipSets) {
         readSetLines(setKey).forEach {
             println(it)
             println(it.cp1251toUTF8())
-            hashSet.add(it.cp1251toUTF8())
+            if (it.cp1251toUTF8().isNotEmpty()) {
+                hashSet.add(it.cp1251toUTF8())
+            }
         }
     } catch (e: Exception) {
         e.printStackTrace()
