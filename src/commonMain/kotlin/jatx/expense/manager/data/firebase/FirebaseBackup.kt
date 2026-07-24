@@ -6,6 +6,7 @@ import dev.gitlive.firebase.app
 import dev.gitlive.firebase.firestore.firestore
 import jatx.expense.manager.data.backup.BackupData
 import jatx.expense.manager.data.backup.BackupTimeKeeper
+import jatx.expense.manager.data.backup.MonthlyBackupData
 import jatx.expense.manager.data.backup.toPaymentEntry
 import jatx.expense.manager.data.backup.toPaymentEntryGson
 import jatx.expense.manager.data.skipset.expenseCommentSetKey
@@ -22,7 +23,9 @@ import jatx.expense.manager.domain.models.ExpenseEntry
 import jatx.expense.manager.domain.models.ExpenseTable
 import jatx.expense.manager.domain.models.PaymentEntry
 import jatx.expense.manager.domain.models.RowKey
+import jatx.expense.manager.domain.util.dateFromMonthKey
 import jatx.expense.manager.domain.util.dateOfMonthLastDayFromMonthKey
+import jatx.expense.manager.domain.util.formattedMonthAndYear
 import jatx.expense.manager.domain.util.monthKey
 import jatx.expense.manager.platform.isAndroid
 import kotlinx.coroutines.Dispatchers
@@ -59,8 +62,20 @@ suspend fun loadDataFromFirestore(backupTimeKeeper: BackupTimeKeeper) = theUser?
                 writeSetLines(totalSkipSetKey, backupData.totalSkipSet ?: listOf())
             }
 
+            val payments = arrayListOf<PaymentEntry>()
+
             if (backupData.lastSyncTime > backupTimeKeeper.lastSyncTime) {
-                val payments = backupData.payments.map { it.toPaymentEntry() }
+                backupData.monthKeys.forEach { monthKey ->
+                    val monthlyBackupDataStr = db.collection("backups")
+                        .document("${userUid}_${monthKey}")
+                        .get()
+                        .get<String>("monthlyBackupDataStr")
+                    val monthlyBackupData = Gson().fromJson(monthlyBackupDataStr, MonthlyBackupData::class.java)
+                    println("get monthly data ${monthKey.dateFromMonthKey.formattedMonthAndYear} from firestore success")
+                    val monthlyPayments = monthlyBackupData.payments.map { it.toPaymentEntry() }
+                    payments.addAll(monthlyPayments)
+                }
+
                 val deltaSeconds =
                     (backupData.lastSyncTime - backupTimeKeeper.lastSyncTime) * 0.001f
 
@@ -140,9 +155,12 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
         withContext(Dispatchers.IO) {
             val currentTime = System.currentTimeMillis()
 
-            val data = localData.map { it.toPaymentEntryGson() }
+            val monthKeys = localData
+                .map { it.date.monthKey }
+                .distinct()
+                .sorted()
             val backupData = BackupData(
-                payments = data,
+                monthKeys = monthKeys,
                 lastSyncTime = currentTime,
                 expenseCommentSet = readSetLines(expenseCommentSetKey),
                 incomingCommentSet = readSetLines(incomingCommentSetKey),
@@ -168,6 +186,30 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
                 println("backup success")
             } catch (t: Throwable) {
                 t.printStackTrace()
+            }
+
+            for (monthKey in monthKeys) {
+                val data = localData
+                    .filter { it.date.monthKey == monthKey }
+                    .map { it.toPaymentEntryGson() }
+                val monthlyBackupData = MonthlyBackupData(
+                    monthKey = monthKey,
+                    payments = data
+                )
+                val monthlyBackupDataStr = Gson().toJson(monthlyBackupData)
+                val doc = hashMapOf(
+                    "monthlyBackupDataStr" to monthlyBackupDataStr
+                )
+                try {
+                    db.collection("backups")
+                        .document("${userUid}_${monthKey}")
+                        .set(doc)
+                    backupTimeKeeper.lastSyncTime = currentTime
+                    println(Date(currentTime))
+                    println("monthly backup ${monthKey.dateFromMonthKey.formattedMonthAndYear} success")
+                } catch (t: Throwable) {
+                    t.printStackTrace()
+                }
             }
         }
     }

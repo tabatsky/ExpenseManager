@@ -1,7 +1,7 @@
 package jatx.expense.manager.data.backup
 
 data class BackupData(
-    val payments: List<PaymentEntryGson>,
+    val monthKeys: List<Int>,
     val lastSyncTime: Long,
     val expenseCommentSet: List<String>? = null,
     val incomingCommentSet: List<String>? = null,
