@@ -13,7 +13,7 @@ class BackupTimeKeeper(private val androidContextProvider: AndroidContextProvide
             writeLastSyncTime(value, androidContextProvider)
         }
 
-    var lastChangeTime = lastSyncTime
+    val lastChangeTimesByMonthKey = hashMapOf<Int, Long>()
 }
 
 expect fun readLastSyncTime(androidContextProvider: AndroidContextProvider?): Long

@@ -37,7 +37,7 @@ private val db by lazy {
     Firebase.firestore(Firebase.app("ExpenseManager"))
 }
 
-suspend fun loadDataFromFirestore(backupTimeKeeper: BackupTimeKeeper) = theUser?.let { user ->
+suspend fun loadDataFromFirestore(localData: List<PaymentEntry>, backupTimeKeeper: BackupTimeKeeper) = theUser?.let { user ->
     withContext(Dispatchers.IO) {
         val userUid = user.uid
 
@@ -65,7 +65,16 @@ suspend fun loadDataFromFirestore(backupTimeKeeper: BackupTimeKeeper) = theUser?
             val payments = arrayListOf<PaymentEntry>()
 
             if (backupData.lastSyncTime > backupTimeKeeper.lastSyncTime) {
-                backupData.monthKeys.forEach { monthKey ->
+                for (lastChangeTimeAndMonthKey in backupData.lastChangeTimesByMonthKey) {
+                    val monthKey = lastChangeTimeAndMonthKey.first
+
+                    if (lastChangeTimeAndMonthKey.second <= backupTimeKeeper.lastSyncTime) {
+                        val monthlyPayments = localData
+                            .filter { it.date.monthKey == monthKey }
+                        payments.addAll(monthlyPayments)
+                        continue
+                    }
+
                     val monthlyBackupDataStr = db.collection("backups")
                         .document("${userUid}_${monthKey}")
                         .get()
@@ -146,7 +155,7 @@ suspend fun loadDataFromFirestore(backupTimeKeeper: BackupTimeKeeper) = theUser?
 }
 
 suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper: BackupTimeKeeper) {
-    if (backupTimeKeeper.lastChangeTime <= backupTimeKeeper.lastSyncTime) {
+    if (backupTimeKeeper.lastChangeTimesByMonthKey.values.none { it > backupTimeKeeper.lastSyncTime }) {
         println("no changes, backup skipping")
         return
     }
@@ -155,12 +164,17 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
         withContext(Dispatchers.IO) {
             val currentTime = System.currentTimeMillis()
 
-            val monthKeys = localData
+            val lastChangeTimesByMonthKey = localData
                 .map { it.date.monthKey }
                 .distinct()
                 .sorted()
+                .map {
+                    it to (backupTimeKeeper.lastChangeTimesByMonthKey[it]
+                        ?: backupTimeKeeper.lastChangeTimesByMonthKey[0]
+                        ?: backupTimeKeeper.lastSyncTime)
+                }
             val backupData = BackupData(
-                monthKeys = monthKeys,
+                lastChangeTimesByMonthKey = lastChangeTimesByMonthKey,
                 lastSyncTime = currentTime,
                 expenseCommentSet = readSetLines(expenseCommentSetKey),
                 incomingCommentSet = readSetLines(incomingCommentSetKey),
@@ -177,18 +191,12 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
                 "backupDataStr" to backupDataStr
             )
 
-            try {
-                db.collection("backups")
-                    .document(userUid)
-                    .set(doc)
-                backupTimeKeeper.lastSyncTime = currentTime
-                println(Date(currentTime))
-                println("backup success")
-            } catch (t: Throwable) {
-                t.printStackTrace()
-            }
+            for (lastChangeTimeAndMonthKey in lastChangeTimesByMonthKey) {
+                if (lastChangeTimeAndMonthKey.second <= backupTimeKeeper.lastSyncTime) {
+                    continue
+                }
 
-            for (monthKey in monthKeys) {
+                val monthKey = lastChangeTimeAndMonthKey.first
                 val data = localData
                     .filter { it.date.monthKey == monthKey }
                     .map { it.toPaymentEntryGson() }
@@ -204,12 +212,22 @@ suspend fun saveDataToFirestore(localData: List<PaymentEntry>, backupTimeKeeper:
                     db.collection("backups")
                         .document("${userUid}_${monthKey}")
                         .set(doc)
-                    backupTimeKeeper.lastSyncTime = currentTime
                     println(Date(currentTime))
                     println("monthly backup ${monthKey.dateFromMonthKey.formattedMonthAndYear} success")
                 } catch (t: Throwable) {
                     t.printStackTrace()
                 }
+            }
+
+            try {
+                db.collection("backups")
+                    .document(userUid)
+                    .set(doc)
+                backupTimeKeeper.lastSyncTime = currentTime
+                println(Date(currentTime))
+                println("backup success")
+            } catch (t: Throwable) {
+                t.printStackTrace()
             }
         }
     }
