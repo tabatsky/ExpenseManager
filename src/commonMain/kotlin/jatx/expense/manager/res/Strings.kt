@@ -22,9 +22,10 @@ val uBTCCategory = "uBTC".cp1251toUTF8()
 val investCategory = "инвестиции".cp1251toUTF8()
 val invest2Category = "инвестиции 2".cp1251toUTF8()
 val invest3Category = "смарт-счёт".cp1251toUTF8()
+val invest4Category = "инвесткопилка".cp1251toUTF8()
 
 val specialCategories = setOf(
-    investCategory, invest2Category, invest3Category,
+    investCategory, invest2Category, invest3Category, invest4Category,
     usdCategory, cnyCategory, uBTCCategory
 )
 
