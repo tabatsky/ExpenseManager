@@ -10,6 +10,7 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,15 +65,26 @@ actual fun PieChartByCommentDialogWrapper() {
         else
             expenseViewModel.overallPieChartDataByComment(filter, fullComments)
 
+        val checkedMap = remember { mutableStateMapOf<Int, Boolean>() }
+
         val count = pieChartData.size
         val colors = pieChartData.indices.map {
             Color.hsv(360.0f * it / count, 0.7f, 0.7f)
         }
         val slices = pieChartData.indices.map {
-            PieChartData.Slice(pieChartData[it].second.toFloat(), colors[it])
+            val amount = if (checkedMap[it] ?: true) {
+                pieChartData[it].second.toFloat()
+            } else {
+                0f
+            }
+            PieChartData.Slice(amount, colors[it])
         }
 
-        val total = pieChartData.sumOf { it.second }
+        val total = pieChartData
+            .filterIndexed { index, pair ->
+                checkedMap[index] ?: true
+            }
+            .sumOf { it.second }
 
         DialogWindow(
             onCloseRequest = { close() },
@@ -166,7 +178,7 @@ actual fun PieChartByCommentDialogWrapper() {
                         Text(
                             text = labelOverallCategory,
                             modifier = Modifier
-                                .weight(3.0f),
+                                .weight(3.25f),
                             color = Color.Black
                         )
                         Text(
@@ -195,16 +207,26 @@ actual fun PieChartByCommentDialogWrapper() {
                             .weight(1.0f)
                             .fillMaxHeight()
                     ) {
-                        items(pieChartData.indices.toList()) {
-                            val amount = pieChartData[it].second
+                        items(pieChartData.indices.toList()) { index ->
+                            val amount = pieChartData[index].second
                             val percent = 100.0f * amount / total
                             val percentStr = "%.2f".format(percent) + " %"
-                            Row {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = checkedMap[index] ?: true,
+                                    onCheckedChange = {
+                                        checkedMap[index] = it
+                                    },
+                                    modifier = Modifier
+                                        .weight(0.25f)
+                                )
                                 Text(
-                                    text = pieChartData[it].first.utf8toCP1251(),
+                                    text = pieChartData[index].first.utf8toCP1251(),
                                     modifier = Modifier
                                         .weight(3.0f),
-                                    color = colors[it]
+                                    color = colors[index]
                                 )
                                 Text(
                                     text = amount.toString(),
