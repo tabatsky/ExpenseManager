@@ -374,7 +374,9 @@ data class ExpenseTable(
         result.addAll(totalMinus2Keys)
         result.add(RowKey(overallCardName, totalCategory, 0))
         result.add(RowKey(overallCardName, totalPlusCategory, makeTotalPlusRowKey(0)))
+        result.add(RowKey(overallCardName, totalPlus2Category, makeTotalPlusRowKey(0)))
         result.add(RowKey(overallCardName, totalMinusCategory, makeTotalPlusRowKey(0)))
+        result.add(RowKey(overallCardName, totalMinus2Category, makeTotalPlusRowKey(0)))
         if (lohCategoryEnabled) {
             result.add(RowKey(overallCardName, totalLohCategory, makeRowKey(0, lohKey)))
         }
@@ -538,12 +540,48 @@ data class ExpenseTable(
             )
         }
 
+        if (rowKey.cardName == overallCardName && rowKey.category == totalPlus2Category) {
+            val payments = rowKeys
+                .filter { !ReduceSet.containsKey(it.cardName) }
+                .filter { it.category !in specialCategories }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { it.payments }
+                .filter { it.amount > 0 }
+                .sortedBy { it.date.time }
+            return ExpenseEntry(
+                rowKey.cardName,
+                totalPlus2Category,
+                makeTotalPlus2RowKey(rowKey.rowKeyInt.cardNameKey),
+                date,
+                payments,
+                currencyRates
+            )
+        }
+
         if (rowKey.cardName == overallCardName && rowKey.category == totalMinusCategory) {
             val payments = overallTotalMinusPayments(date)
             return ExpenseEntry(
                 rowKey.cardName,
                 totalMinusCategory,
                 makeTotalMinusRowKey(rowKey.rowKeyInt.cardNameKey),
+                date,
+                payments,
+                currencyRates
+            )
+        }
+
+        if (rowKey.cardName == overallCardName && rowKey.category == totalMinus2Category) {
+            val payments = rowKeys
+                .filter { !ReduceSet.containsKey(it.cardName) }
+                .filter { it.category !in specialCategories }
+                .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
+                .flatMap { it.payments }
+                .filter { it.amount < 0 }
+                .sortedBy { it.date.time }
+            return ExpenseEntry(
+                rowKey.cardName,
+                totalMinus2Category,
+                makeTotalMinus2RowKey(rowKey.rowKeyInt.cardNameKey),
                 date,
                 payments,
                 currencyRates

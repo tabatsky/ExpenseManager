@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.sign
 
-val fixedRowCount = if (lohCategoryEnabled) 4 else 3
+val fixedRowCount = if (lohCategoryEnabled) 6 else 5
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
