@@ -7,5 +7,5 @@ object SkipSet {
         readSet(skipSetKey)
     }
 
-    fun containsLabel(label: String) = theSet.contains(label)
+    fun containsLabel(label: String) = theSet.contains(label) || TransferSet.containsLabel(label)
 }

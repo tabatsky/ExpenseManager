@@ -543,6 +543,7 @@ data class ExpenseTable(
         if (rowKey.cardName == overallCardName && rowKey.category == totalPlus2Category) {
             val payments = rowKeys
                 .filter { !ReduceSet.containsKey(it.cardName) }
+                .filter { !TransferSet.containsLabel(it.label) }
                 .filter { it.category !in specialCategories }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
@@ -573,6 +574,7 @@ data class ExpenseTable(
         if (rowKey.cardName == overallCardName && rowKey.category == totalMinus2Category) {
             val payments = rowKeys
                 .filter { !ReduceSet.containsKey(it.cardName) }
+                .filter { !TransferSet.containsLabel(it.label) }
                 .filter { it.category !in specialCategories }
                 .mapNotNull { allCells[CellKey(it.cardName, it.category, date.monthKey)] }
                 .flatMap { it.payments }
